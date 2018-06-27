@@ -439,7 +439,7 @@
     [:h2 "Delete User"]]
    [:div.card-body
     [:p
-     "Deleting this user is not possible if the user is associated with contracts, reserverations, or orders. "
+     "Deleting this user is not possible if it is associated with contracts, reserverations, or orders. "
      "If this is the case this operation will fail without deleting or even changing any data. "]
     [:p.text-danger
      "Permissions, such as given by delegations, groups, or roles will not inhibt deletion of this user. 
