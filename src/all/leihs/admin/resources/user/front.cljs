@@ -65,27 +65,28 @@
    (field-component kw {}))
   ([kw opts]
    (let [opts (merge {:type :text} opts)]
-     [:div.form-group.row
-      [:label.col.col-form-label.col-sm-2 {:for kw} kw]
-      [:div.col.col-sm-10
-       [:div.input-group
-        (if @edit-mode?*
-          [:input.form-control
-           {:id kw
-            :type (:type opts)
-            :value (or (kw @user-data*) "")
-            :on-change #(swap! user-data* assoc kw (-> % .-target .-value presence))
-            :disabled (not @edit-mode?*)}]
-          [:div
-           (if-let [value (-> @user-data* kw presence)]
-             [:span.form-control-plaintext.text-truncate
-              {:style
-               {:max-width "20em"}}
-              (case (:type opts)
-                :email [:a {:href (str "mailto:" value)}
-                        [:i.fas.fa-envelope] " " value]
-                :url [:a {:href value} value]
-                value)])])]]])))
+     (when (or @edit-mode?* (not= kw :password))
+       [:div.form-group.row
+        [:label.col.col-form-label.col-sm-2 {:for kw} kw]
+        [:div.col.col-sm-10
+         [:div.input-group
+          (if @edit-mode?*
+            [:input.form-control
+             {:id kw
+              :type (:type opts)
+              :value (or (kw @user-data*) "")
+              :on-change #(swap! user-data* assoc kw (-> % .-target .-value presence))
+              :disabled (not @edit-mode?*)}]
+            [:div
+             (if-let [value (-> @user-data* kw presence)]
+               [:span.form-control-plaintext.text-truncate
+                {:style
+                 {:max-width "20em"}}
+                (case (:type opts)
+                  :email [:a {:href (str "mailto:" value)}
+                          [:i.fas.fa-envelope] " " value]
+                  :url [:a {:href value} value]
+                  value)])])]]]))))
 
 (defn checkbox-component [kw]
   [:div.form-check.form-check-inline
