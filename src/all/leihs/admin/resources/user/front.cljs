@@ -439,8 +439,11 @@
     [:h2 "Delete User"]]
    [:div.card-body
     [:p
-     "Deleting this user is not possible if the user is associated with contracts or other entities "
-     "the delete operation will just fail without destroying data. "]
+     "Deleting this user is not possible if the user is associated with contracts, reserverations, or orders. "
+     "If this is the case this operation will fail without deleting or even changing any data. "]
+    [:p.text-danger
+     "Permissions, such as given by delegations, groups, or roles will not inhibt deletion of this user. 
+     They will be deleted." ]
     [:div.float-right
      [:button.btn.btn-warning.btn-lg
       {:on-click delete-user}
@@ -471,9 +474,11 @@
     [:h2 "Transfer Data and Delete User"]]
    [:div.card-body
     [:p
-     "Related data of this user will be "
-     "transfered, respectively re-associated with the user entered below."
-     "Leihs itself will be consistent after this operation. "]
+     "Contracts, reserverations, and orders of this user will be "
+     "transfered to the user entered below. " ]
+    [:p.text-danger
+     "Permissions, such as given by delegations, groups, or roles will not be 
+     transfered! " ]
     [:p.text-danger
      "Audits will still contain references to the removed user! "]
     [:p.text-danger
@@ -481,8 +486,8 @@
      "will become inconsistent with the data in leihs!"]
     [:div.form
      [:div.form-group
-      [:label {:for :user-transfer-id} "Id of user to transfer data to:" ]
-      [:input#user-transfer-id.form-control
+      [:label {:for :target-user-id} "Target user id" ]
+      [:input#target-user-id.form-control
        {:type :text
         :value (or (-> @transfer-data* :target-user-id) "")
         :on-change #(swap! transfer-data* assoc
@@ -509,9 +514,5 @@
    [:h1 "Delete User "
     [user-name-component]]
    [user-id-component]
-   [:p.text-danger
-    "Users should never be deleted! "
-    "Instead it is recommended to " [:b " disable sign-in"]
-    " via editing the user. "]
    [delete-without-reasignment-component]
    [delete-with-transfer-component]])

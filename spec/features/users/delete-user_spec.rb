@@ -29,7 +29,7 @@ feature 'Manage users', type: :feature do
     end
 
 
-    scenario 'deleting a user' do 
+    scenario 'deleting a user via delete ' do 
 
       @to_be_deleted_user = @users.first
 
@@ -38,6 +38,47 @@ feature 'Manage users', type: :feature do
 
       fill_in 'Search term', with: \
         "#{@to_be_deleted_user.firstname} #{@to_be_deleted_user.lastname}"
+
+      click_on_first @to_be_deleted_user.lastname
+
+      click_on 'Delete'
+
+      click_on 'Delete'
+
+      wait_until do
+        page.has_content? "No (more) users found."
+      end
+
+      expect(database[:users].where(id: @to_be_deleted_user.id)).to be_empty
+
+    end
+
+
+
+    scenario 'deleting a user via transfere and delete' do 
+
+      @to_be_deleted_user = @users.first
+
+      visit '/admin/'
+      click_on 'Users'
+
+      fill_in 'Search term', with: \
+        "#{@to_be_deleted_user.firstname} #{@to_be_deleted_user.lastname}"
+
+      click_on_first @to_be_deleted_user.lastname
+
+      click_on 'Delete'
+
+      fill_in 'Target user id', with: @users.to_a.second.id
+
+      click_on 'Transfer and delete'
+
+
+      wait_until do
+        page.has_content? "No (more) users found."
+      end
+
+      expect(database[:users].where(id: @to_be_deleted_user.id)).to be_empty
 
     end
 

@@ -99,7 +99,7 @@
   ([{tx :tx {user-id :user-id target-user-id :target-user-id} :route-params}]
    (transfer-data user-id target-user-id tx))
   ([user-id target-user-id tx]
-   (doseq [table [:access_rights :reservations :contracts :orders]]
+   (doseq [table [:reservations :contracts :orders]]
      (jdbc/update! tx table
                    {:user_id target-user-id}
                    ["user_id = ?" user-id]))
