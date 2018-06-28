@@ -97,7 +97,7 @@
                   (leaf "/shib-sign-in" :auth-shib-sign-in)
                   (leaf "/password-sign-in" :auth-password-sign-in)
                   (leaf "/sign-out" :auth-sign-out))
-          (leaf "/procurement" :procurement)
+          (leaf "/procure" :procurement)
           (leaf "/manage" :lending)
           (leaf "/borrow" :borrow)
           (branch "/admin"
