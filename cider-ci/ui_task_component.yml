@@ -3,7 +3,7 @@ traits:
   S3-Cache: true
 
 scripts:
-  prepare-shared-ui:
+  prepare-shared-ui-admin:
     exclusive_executor_resource: build-leihs-ui
     environment_variables:
       RUBY: '{{RUBY_ENGINE}}-{{RUBY_VERSION}}'
@@ -14,6 +14,7 @@ scripts:
       set -euxo
 
       WORK_DIR="$LEIHS_ADMIN_DIR"
+      cd "$WORK_DIR"
 
       ARTEFACT_NAME="leihs-ui"
       DIGEST="$(cd leihs-ui && git log -n 1 HEAD --pretty=%T)v3"
@@ -24,8 +25,6 @@ scripts:
       S3_CACHED_ARTEFACT="${ARTEFACT_NAME}_${DIGEST}.tgz"         # name of the artefact in the S3 Bucket
 
       export PATH=~/.rubies/$RUBY/bin:$PATH # the s3-cache-helper needs this
-
-      cd "$WORK_DIR"
 
       # check if already locally cached
       if [ -e $LOCAL_CACHED_ARTEFACT ]; then

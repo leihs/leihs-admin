@@ -11,7 +11,7 @@ scripts:
     timeout: 5 Minutes
     start_when:
       shared ui was built:
-        script_key: prepare-shared-ui
+        script_key: prepare-shared-ui-admin
     body: |
       #!/usr/bin/env bash
       set -euxo
