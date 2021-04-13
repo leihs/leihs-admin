@@ -125,6 +125,17 @@
       :disabled (not @edit?*) :rows 3 :element :textarea
       :hint [:span "Message which is shown to the users when they try to access the manage section of any inventory pool."]]]]
 
+   [:div.row
+    [:div.col-sm-3
+     [form-components/checkbox-component data* [:lending_terms_acceptance_required_for_order]
+      :disabled (not @edit?*)
+      :hint [:span "Option to activate the obligation to accept the lending terms before submiting an order."]]]
+    [:div.col-sm
+     [form-components/input-component data* [:lending_terms_url]
+      :disabled (not @edit?*)
+      :hint [:span "Absolute URL for the web resource containing the lending terms. Required if "
+             [:code "lending_terms_acceptance_required_for_order"]
+             " is checked."]]]]
 
    (when @edit?*
      [form-components/save-submit-component])])
