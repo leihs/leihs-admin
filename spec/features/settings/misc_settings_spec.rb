@@ -36,9 +36,12 @@ feature 'SMTP-Settings' do
           fill_in "email_signature", with: "Your awesome Lending Desk"
           check "lending_terms_acceptance_required_for_order"
           fill_in "lending_terms_url", with: "https://example.org/fileadmin/leihs-terms-2000-01-01.pdf"
+
+
           click_on "Save"
           sleep 0.5
           wait_until{ all(".modal").empty? }
+
           visit current_url
           wait_until { page.has_content? "logo_url" }
           expect(find_field('logo_url', disabled: true).value).to eq 'https://my-server/leihs-logo.png'
