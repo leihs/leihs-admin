@@ -19,7 +19,7 @@
     [cljs.core.async :as async]
     [cljs.core.async :refer [timeout]]
     [cljs.pprint :refer [pprint]]
-    ["jimp" :as Jimp]
+    ["jimp/es" :as Jimp]
     [clojure.contrib.inflect :refer [pluralize-noun]]
     [reagent.core :as reagent]
 
