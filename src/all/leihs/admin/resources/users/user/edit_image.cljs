@@ -1,30 +1,29 @@
 (ns leihs.admin.resources.users.user.edit-image
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-    [reagent.ratom :as ratom :refer [reaction]]
-    [cljs.core.async.macros :refer [go]])
+   [reagent.ratom :as ratom :refer [reaction]]
+   [cljs.core.async.macros :refer [go]])
   (:require
-    [leihs.core.core :refer [keyword str presence]]
-    [leihs.core.routing.front :as routing]
+   [leihs.core.core :refer [keyword str presence]]
+   [leihs.core.routing.front :as routing]
 
-    [leihs.admin.common.breadcrumbs :as breadcrumbs]
-    [leihs.admin.common.form-components :refer [input-component]]
-    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
-    [leihs.admin.state :as state]
-    [leihs.admin.paths :as paths :refer [path]]
-    [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
-    [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
+   [leihs.admin.common.breadcrumbs :as breadcrumbs]
+   [leihs.admin.common.form-components :refer [input-component]]
+   [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
+   [leihs.admin.state :as state]
+   [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
+   [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
 
-    [accountant.core :as accountant]
-    [cljs.core.async :as async]
-    [cljs.core.async :refer [timeout]]
-    [cljs.pprint :refer [pprint]]
-    ["jimp" :as Jimp]
-    [clojure.contrib.inflect :refer [pluralize-noun]]
-    [reagent.core :as reagent]
+   [accountant.core :as accountant]
+   [cljs.core.async :as async]
+   [cljs.core.async :refer [timeout]]
+   [cljs.pprint :refer [pprint]]
+   ["jimp/es" :as Jimp]
+   [clojure.contrib.inflect :refer [pluralize-noun]]
+   [reagent.core :as reagent]
 
-    [taoensso.timbre :as logging]
-    ))
+   [taoensso.timbre :as logging]))
 
 
 ;;; image ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -128,8 +127,7 @@
           [:i.fas.fa-times] " Remove image "]])]]]
    [:div
     {:style
-     {
-      :position :absolute
+     {:position :absolute
       :left 0
       :top 0
       :width 256
@@ -137,8 +135,7 @@
       :z-index -1}}
     (if-let [img-data (:img256_url @data*)]
       [:img {:src img-data
-             :style {
-                     :display :block
+             :style {:display :block
                      :margin :auto
                      :max-width "256px"
                      :max-height "256px"
@@ -150,7 +147,7 @@
                 :top 0
                 :width "256px"
                 :height "256px"
-                :z-index -1 }}])]])
+                :z-index -1}}])]])
 
 (defn image-component []
   [:div
