@@ -5,8 +5,9 @@ import Navbar from './components/navbar/Navbar'
 import sampleNavbarProps from './components/navbar/sampleProps.json'
 import DatePicker from './components/DatePicker'
 import DemoComponent from './components/DemoComponent'
-
-// React 18: import ReactDOM from 'react-dom/client';
+import Sidebar from './components/sidebar'
+import Layout from './components/layout'
+import { faWarehouse, faBuilding } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const [selectedDate, setSelectedDate] = useState()
@@ -15,7 +16,55 @@ function App() {
   }
 
   return (
-    <>
+    <Layout>
+      <Layout.Header>
+        <Navbar {...sampleNavbarProps} />
+      </Layout.Header>
+
+      <Layout.Aside>
+        <Sidebar>
+          <Sidebar.Section title="Configuration">
+            <Sidebar.Item href="#hello-test/" icon={faBuilding}>
+              Inventory
+            </Sidebar.Item>
+            <Sidebar.Item href="#hellollllll" icon={faWarehouse}>
+              Warehouse
+            </Sidebar.Item>
+            <Sidebar.Group icon={faBuilding} title="Audits">
+              <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              <Sidebar.Group icon={faBuilding} title="Audits">
+                <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+                <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+                <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              </Sidebar.Group>
+            </Sidebar.Group>
+            <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+
+            <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+          </Sidebar.Section>
+          <Sidebar.Section title="Configuration">
+            <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+            <Sidebar.Group icon={faBuilding} title="Audits">
+              <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+              <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+            </Sidebar.Group>
+            <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+            <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+          </Sidebar.Section>
+        </Sidebar>
+      </Layout.Aside>
+
       <div className="container mt-5 p-5 border rounded">
         <h1>Leihs Admin UI Test App</h1>
 
@@ -53,7 +102,7 @@ function App() {
         <button className="btn btn-primary mr-2">Primary button</button>
         <button className="btn btn-secondary">Primary button</button>
       </div>
-    </>
+    </Layout>
   )
 }
 

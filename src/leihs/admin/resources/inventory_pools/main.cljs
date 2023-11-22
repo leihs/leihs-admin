@@ -4,26 +4,21 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async]
-   [cljs.core.async :refer [timeout]]
    [cljs.pprint :refer [pprint]]
-   [clojure.string :as str]
-   [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
-   [leihs.admin.constants :as defaults]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.admin.utils.seq :as seq :refer [with-index]]
    [leihs.core.auth.core :as auth-core]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
+   [react-bootstrap :as react-bootstrap]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -49,19 +44,29 @@
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn filter-component []
-  [:div.card.bg-light
-   [:div.card-body
-    [:div.form-row
-     [routing/form-term-filter-component]
-     [routing/select-component
-      :label "Active"
-      :query-params-key :active
-      :options {"" "any value" "yes" "yes" "no" "no"}]
-     [routing/form-per-page-component]
-     [routing/form-reset-component]]]])
+(defn filter-section []
+  [filter/container
+   [:<>
+    [filter/form-term]
+    [filter/select-component
+     :label "Active"
+     :query-params-key :active
+     :options {"" "any value" "yes" "yes" "no" "no"}]
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn create-inventory-pool []
+  [:> react-bootstrap/Button
+   {:className "ml-3"
+    :href (path :inventory-pool-create)}
+   [icons/add] " Create Inventory Pool"])
+
+(defn table-toolbar []
+  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+   [pagination]
+   [create-inventory-pool]])
 
 (defn inventory-pools-thead-component [& [more-cols]]
   [:thead
@@ -139,16 +144,13 @@
   [:div
    [routing/hidden-state-component
     {:did-change #(http/route-cached-fetch data*)}]
-   [filter-component]
-   [routing/pagination-component]
+   [filter-section]
+   [table-toolbar]
    [inventory-pools-table-component]
-   [routing/pagination-component]
+   [table-toolbar]
    [debug-component]])
 
 (defn page []
   [:div.inventory-pools
-   (breadcrumbs/nav-component
-    @breadcrumbs/left*
-    [[breadcrumbs/create-li]])
-   [:h1 [icons/inventory-pools] " Inventory-Pools"]
+   [:h1.my-5 [icons/inventory-pools] " Inventory-Pools"]
    [main-page-content-component]])

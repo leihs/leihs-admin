@@ -4,24 +4,18 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [timeout]]
-   [cljs.pprint :refer [pprint]]
-
-   [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.pagination :as pagination :refer [pagination]]
    [leihs.admin.common.icons :as icons]
-   [leihs.admin.common.roles.components :refer [roles-component put-roles<]]
+   [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.groups.breadcrumbs :as breadcrumbs]
-   [leihs.admin.resources.inventory-pools.inventory-pool.groups.shared :refer [default-query-params]]
-
+   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.state :as state]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent]))
+   [react-bootstrap :as react-bootstrap]))
 
 ;### roles ####################################################################
 
@@ -51,21 +45,18 @@
    :label "Role"
    :query-params-key :role
    :default-option "customer"
-   :options (merge {"" "(any role or none)"
-                    "none" "none"}
-                   (->> roles/hierarchy
-                        (map (fn [%1] [%1 %1]))
-                        (into {})))])
+   :options (->> roles/hierarchy
+                 (map (fn [%1] [%1 %1]))
+                 (into {}))])
 
-(defn filter-component []
-  [:div.card.bg-light
-   [:div.card-body
-    [:div.form-row
-     [groups/form-term-filter]
-     [groups/form-including-user-filter]
-     [form-role-filter]
-     [routing/form-per-page-component]
-     [routing/form-reset-component]]]])
+(defn filter-section []
+  [filter/container
+   [:<>
+    [filter/form-term]
+    [filter/form-including-user]
+    [form-role-filter]
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;### main #####################################################################
 
@@ -73,16 +64,29 @@
   (when (:debug @state/global-state*)
     [:div]))
 
+;; TODO: needs to be added
+(defn add-group-button []
+  [:> react-bootstrap/Button
+   {:href (path :inventory-pool-user-create {:inventory-pool-id @inventory-pool/id*})
+    :variant "primary"
+    :className "ml-4"}
+   [:span [icons/add] " Add Group"]])
+
+(defn table-toolbar []
+  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+   [pagination]
+   [add-group-button]])
+
 (defn main-page-component []
-  [:div
+  [:<>
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
-   [filter-component]
-   [routing/pagination-component]
+   [filter-section]
+   [table-toolbar]
    [groups/table-component
     [groups/name-th-component groups/users-count-th-component roles-th-component]
     [groups/name-td-component groups/users-count-td-component roles-td-component]]
-   [routing/pagination-component]
+   [table-toolbar]
    [debug-component]
    [groups/debug-component]])
 
@@ -90,11 +94,8 @@
   [:div.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   [breadcrumbs/nav-component
-    @breadcrumbs/left* []]
-   [:div
-    [:h1
-     "Groups with their Roles "
-     [:span " in the Inventory-Pool "]
-     [inventory-pool/name-link-component]]
+   [:h1.my-5
+    [inventory-pool/name-component]]
+   [nav/tabs]
+   [:<>
     [main-page-component]]])

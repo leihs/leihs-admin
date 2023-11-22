@@ -6,10 +6,7 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async]
-   [cljs.core.async :refer [timeout]]
-   [cljs.pprint :refer [pprint]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-
+   [clojure.string :as str]
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
@@ -17,14 +14,10 @@
    [leihs.admin.resources.inventory-pools.breadcrumbs :as breadcrumbs-parent]
    [leihs.admin.resources.inventory-pools.inventory-pool.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.state :as state]
-
+   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.routing.front :as routing]
-   [leihs.core.user.front :as core-user]
-   [leihs.core.user.shared :refer [short-id]]
-   [reagent.core :as reagent]))
+   [react-bootstrap :as BS]))
 
 (defonce edit-mode?*
   (reaction
@@ -33,6 +26,24 @@
                   (:handler-key @routing/state*))))))
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn edit-button []
+  [:> react-bootstrap/Button
+   {:on-click #(accountant/navigate!
+                (path :inventory-pool-edit
+                      {:inventory-pool-id @inventory-pool/id*}))}
+   [icons/edit]
+   " Edit "])
+
+(defn delete-button []
+  [:> react-bootstrap/Button
+   {:variant "danger"
+    :className "ml-2"
+    :onClick #(accountant/navigate!
+               (path :inventory-pool-delete
+                     {:inventory-pool-id @inventory-pool/id*}))}
+   [icons/delete]
+   " Delete "])
 
 (defn inventory-pool-component []
   (if-not @inventory-pool/data*
@@ -176,19 +187,10 @@
   [:div.inventory-pool
    [routing/hidden-state-component
     {:did-mount inventory-pool/clean-and-fetch}]
-   [breadcrumbs/nav-component
-    @breadcrumbs/left*
-    [[breadcrumbs/users-li]
-     [breadcrumbs/groups-li]
-     [breadcrumbs/delegations-li]
-     [breadcrumbs/entitlement-groups-li]
-     [breadcrumbs/delete-li]
-     [breadcrumbs/edit-li]]]
-   [:div.row
-    [:div.col-lg
-     [:h1
-      [:span " Inventory-Pool "]
-      [inventory-pool/name-link-component]]]]
-   [inventory-pool/link-to-legacy-component]
+   [:h1.my-5
+    [inventory-pool/name-component]]
+   [nav/tabs (str/join ["/admin/inventory-pools/" @inventory-pool/id*])]
    [inventory-pool-component]
+   [edit-button]
+   [delete-button]
    [inventory-pool/debug-component]])

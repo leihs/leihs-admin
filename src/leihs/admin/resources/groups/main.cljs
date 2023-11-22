@@ -94,6 +94,10 @@
    [link-to-group group [:span (:name group)]
     :authorizers [auth/admin-scopes? pool-auth/some-lending-manager?]]])
 
+(defn name-td-component-no-link [group]
+  [:td {:key :name}
+   (:name group)])
+
 (defn org-th-component []
   [:th {:key :organization} "Organization"])
 

@@ -62,6 +62,23 @@
 
 ;; delegation components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn name-component []
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch}]
+   (let [inner (when-let [dname (some-> @data* (get @id*) :name)]
+                 [:<> dname])]
+     [:<> inner])])
+
+;; (defn name-component []
+;;   [:span.delegation-name
+;;    [routing/hidden-state-component
+;;     {:did-change fetch}]
+;;    (let [inner (if-let [dname (some-> @data* (get @id*) :name)]
+;;                  [:em dname]
+;;                  [:span {:style {:font-family "monospace"}} (short-id @id*)])]
+;;      [linner])])
+
 (defn name-link-component []
   [:span.delegation-name
    [routing/hidden-state-component

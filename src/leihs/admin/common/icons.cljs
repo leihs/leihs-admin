@@ -6,6 +6,9 @@
    ["@fortawesome/react-fontawesome" :as fa-react-fontawesome :refer [FontAwesomeIcon]]))
 
 (defn add [] (FontAwesomeIcon #js{:icon solids/faPlusCircle :className ""}))
+(defn next [] (FontAwesomeIcon #js{:icon solids/faCirlceRight :className ""}))
+(defn previous [] (FontAwesomeIcon #js{:icon solids/faCircleLeft :className ""}))
+(defn back [] (FontAwesomeIcon #js{:icon solids/faArrowLeft :className ""}))
 (defn admin [] (FontAwesomeIcon #js{:icon solids/faWrench :className ""}))
 (defn authentication-system [] (FontAwesomeIcon #js{:icon solids/faExternalLinkAlt :className ""}))
 (defn authentication-systems [] (FontAwesomeIcon #js{:icon solids/faExternalLinkAlt :className ""}))

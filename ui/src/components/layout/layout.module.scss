@@ -1,0 +1,26 @@
+.header {
+  grid-area: header;
+}
+
+.aside {
+  grid-area: sidebar;
+}
+
+.main {
+  grid-area: main;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+.layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'header header'
+    'sidebar main'
+    'footer footer';
+}

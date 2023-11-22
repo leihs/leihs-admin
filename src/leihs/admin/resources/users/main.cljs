@@ -4,11 +4,9 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [timeout]]
    [cljs.pprint :refer [pprint]]
-   [clojure.string :as str]
    [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.users.shared :as users-membership]
@@ -20,8 +18,7 @@
    [leihs.admin.resources.users.user.core :as user]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
-   [leihs.admin.utils.seq :as seq]
-   [leihs.core.core :refer [keyword str presence]]
+   [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent]))
 
@@ -68,20 +65,21 @@
              "leihs-admin" "Leihs admin"
              "system-admin" "System admin"}])
 
-(defn filter-component []
-  [:div.card.bg-light
-   [:div.card-body
-    [:div.form-row
-     [form-term-filter]
-     [form-enabled-filter]
-     [users-and-groups/form-org-filter data*]
-     [users-and-groups/form-org-id-filter]
-     [form-admins-filter]
-     [users-and-groups/protected-filter]
-     [routing/form-per-page-component]
-     [routing/form-reset-component :default-query-params shared/default-query-params]]]])
+;;; filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; user
+(defn filter-component []
+  [filter/container
+   [:<>
+    [filter/form-term]
+    [form-enabled-filter]
+    [users-and-groups/form-org-filter data*]
+    [users-and-groups/form-org-id-filter]
+    [form-admins-filter]
+    [users-and-groups/protected-filter]
+    [filter/form-per-page]
+    [filter/reset :default-query-params shared/default-query-params]]])
+
+;;; user ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn user-th-component []
   [:th "User"])

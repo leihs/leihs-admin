@@ -4,23 +4,23 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async]
-   [cljs.core.async :refer [timeout]]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.shared :refer [default-query-params]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.routing.front :as routing]
+   [react-bootstrap :as react-bootstrap]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -38,26 +38,34 @@
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn filter-form []
-  [:div.card.bg-light
-   [:div.card-body
-    [:div.form-row
-     [routing/form-term-filter-component]
-     [routing/choose-user-component
-      :query-params-key :including-user
-      :input-options {:placeholder "email, login, or id"}]
-     [routing/select-component
-      :options {"any" "members and non-members"
-                "non" "non-members"
-                "member" "members"}
-      :default-option :member
-      :label "Membership"
-      :query-params-key :membership]
-     [users/form-suspension-filter]
-     [routing/form-per-page-component]
-     [routing/form-reset-component]]]])
+(defn filter-section []
+  [filter/container
+   [:<>
+    [filter/form-term]
+    [filter/form-including-user]
+    [filter/select-component
+     :label "Membership"
+     :query-params-key :membership
+     :options {"any" "members and non-members"
+               "non" "non-members"
+               "member" "members"}]
+    [filter/form-suspension]
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn add-delegation []
+  [:> react-bootstrap/Button
+   {:className "ml-4"
+    :href (path :inventory-pool-delegation-create
+                {:inventory-pool-id @inventory-pool/id*})}
+   [icons/add] " Add delegation"])
+
+(defn table-toolbar []
+  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+   [pagination]
+   [add-delegation]])
 
 (defn delegations-thead-component []
   [:thead
@@ -176,7 +184,8 @@
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
-        [:table.table.table-striped.table-sm
+        [:> react-bootstrap/Table {:striped true :hover true :borderless true :className "border-top border-bottom"}
+
          [delegations-thead-component]
          [:tbody
           (let [page (:page @current-query-paramerters-normalized*)
@@ -205,12 +214,12 @@
   [:div.delegations
    [routing/hidden-state-component
     {:did-change fetch-delegations}]
-   [breadcrumbs]
-   [:h1
-    [:span "Delegations in the Inventory-Pool "]
-    [inventory-pool/name-link-component]]
-   [filter-form]
-   [routing/pagination-component]
+   ;; [breadcrumbs]
+   [:h1.my-5
+    [inventory-pool/name-component]]
+   [nav/tabs]
+   [filter-section]
+   [table-toolbar]
    [delegations-table-component]
-   [routing/pagination-component]
+   [table-toolbar]
    [debug-component]])

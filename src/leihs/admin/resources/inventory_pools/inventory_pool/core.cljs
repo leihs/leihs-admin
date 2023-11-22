@@ -67,6 +67,14 @@
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn name-component []
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch}]
+   (let [inner (when @data*
+                 [:<> (str (:name @data*))])]
+     [:<> inner])])
+
 (defn name-link-component []
   [:span
    [routing/hidden-state-component

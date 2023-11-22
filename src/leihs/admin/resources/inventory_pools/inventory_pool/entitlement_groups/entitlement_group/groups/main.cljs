@@ -4,27 +4,18 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async]
-
-   [cljs.core.async :refer [timeout]]
-   [cljs.pprint :refer [pprint]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-   [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.navigation.back :refer [back]]
+   [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.groups.main :as groups-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-
-   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.regex :as regex]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent]))
+   [react-bootstrap :as react-bootstrap]))
 
 (defn member-path [group]
   (path :inventory-pool-entitlement-group-group
@@ -35,23 +26,41 @@
 ;### filter ###################################################################
 
 (defn filter-component []
-  [:div.card.bg-light
-   [:div.card-body
-    [:div.form-row
-     [groups/form-term-filter]
-     [groups/form-including-user-filter]
-     [groups-membership/form-membership-filter]
-     [routing/form-per-page-component]
-     [routing/form-reset-component]]]])
+  [filter/container
+   [:<>
+    [groups/form-term-filter]
+    [groups/form-including-user-filter]
+    [groups-membership/form-membership-filter]
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;### header ###################################################################
 
 (defn header-component []
-  [:h1
-   "Groups of the Entitlement-Group "
-   [entitlement-group/name-link-component]
-   " in the Inventory-Pool "
-   [inventory-pool/name-link-component]])
+  [:div.mt-5
+   [back]
+   [:h1.mb-5.mt-3
+    [:span "Groups of "]
+    [entitlement-group/name-component]
+    [:span " in "]
+    [inventory-pool/name-component]]])
+
+;### table toolbar ############################################################
+
+;; TODO: not the correct add group function
+(defn add-group-button []
+  [:> react-bootstrap/Button
+   {:href (path
+           :inventory-pool-user-create
+           {:inventory-pool-id @inventory-pool/id*})
+    :variant "primary"
+    :className "ml-4"}
+   [:span [icons/add] " Add Group"]])
+
+(defn table-toolbar []
+  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+   [pagination]
+   [add-group-button]])
 
 ;### main #####################################################################
 
@@ -64,13 +73,13 @@
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
    [filter-component]
-   [routing/pagination-component]
+   [table-toolbar]
    [groups/table-component
     [groups/name-th-component
      groups-membership/member-th-component]
     [groups/name-td-component
      (partial groups-membership/member-td-component member-path)]]
-   [routing/pagination-component]
+   [table-toolbar]
    [debug-component]
    [groups/debug-component]])
 
@@ -78,9 +87,6 @@
   [:div.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   (breadcrumbs/nav-component
-    (conj @breadcrumbs/left*
-          [breadcrumbs/groups-li]) [])
-   [:div
+   [:<>
     [header-component]
     [main-page-component]]])

@@ -4,28 +4,16 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [timeout]]
-   [cljs.pprint :refer [pprint]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-
-   [leihs.admin.common.components :as components :refer [link]]
+   [leihs.admin.common.components.navigation.back :refer [back]]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.suspension.main :as suspension]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.main :as delegations]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as delegation-users]
-   [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
-   [leihs.admin.utils.regex :as regex]
-
-   [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.routing.front :as routing]
    [leihs.core.user.front]
-   [leihs.core.user.shared :refer [short-id]]
-   [reagent.core :as reagent]))
+   [react-bootstrap :as react-bootstrap]))
 
 ;;; suspension ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -40,7 +28,7 @@
   [:div.delegation
    (if-let [delegation (get @delegation/data* @delegation/id*)]
      [:div
-      [:table.table.table-striped.table.sm.delegation-data
+      [:> react-bootstrap/Table {:striped true :hover true :borderless true}
        [:thead
         [:tr
          [:th "Property"]
@@ -92,12 +80,25 @@
          [:td.created (-> delegation :created_at humanize-datetime-component)]]]]]
      [wait-component])])
 
-(defn show-title-component []
-  [:h1
-   [:span " Delegation "]
-   [delegation/name-link-component]
-   " in the Inventory-Pool "
-   [inventory-pool/name-link-component]])
+(defn header []
+  [:header.mb-5
+   [back]
+   [:h1.mt-3 [delegation/name-component]]
+   [:h6 "Inventory Pool " [inventory-pool/name-component]]])
+
+(defn tabs []
+  [:> react-bootstrap/Tabs {:className "mb-3"}
+   [:> react-bootstrap/Tab {:eventKey "suspension" :title "Suspension"}
+    [delegation-component]
+    [:div.row
+     [:div.col-md-6
+      [:hr] [suspension-component]]]]
+   [:> react-bootstrap/Tab {:eventKey "users" :title "Users"}
+    [:p "test"]]
+    ;; [delegation-users/users-component]]
+   [:> react-bootstrap/Tab {:eventKey "groups" :title "Groups"}
+    [:p "test 1"]]])
+    ;; [:div.mt-3 [delegation-users/groups-component]]]
 
 (defn breadcrumbs []
   (breadcrumbs/nav-component
@@ -108,11 +109,7 @@
     [breadcrumbs/suspension-li]]))
 
 (defn show-page []
-  [:div.delegation
-   [breadcrumbs]
-   [show-title-component]
-   [delegation-component]
-   [:div.row
-    [:div.col-md-6
-     [:hr] [suspension-component]]]
+  [:article.delegation.my-5
+   [header]
+   [tabs]
    [delegation/debug-component]])

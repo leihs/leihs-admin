@@ -16,11 +16,13 @@
    [leihs.admin.state :as state]
    [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.user.front :as current-user]))
+   [leihs.core.user.front :as current-user]
+   [taoensso.timbre :refer [info]]))
 
 (defn page []
   [:div.admin
    (when-let [user @current-user/state*]
+     (js/console.log user)
      [breadcrumbs/nav-component
       @breadcrumbs/left*
       [[breadcrumbs-audits/audits-li]
