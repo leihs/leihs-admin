@@ -162,7 +162,7 @@
       [:pre (with-out-str (pprint @current-query-params*))]]]))
 
 (defn table-component []
-  [users/table-component
+  [users/users-table
    [user-th-component
     roles-th-component
     direct-roles-th-component

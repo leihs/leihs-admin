@@ -109,7 +109,7 @@
      [routing/form-reset-component]]]])
 
 (defn table-component []
-  [users/table-component
+  [users/users-table
    [users/user-th-component
     action-th-component]
    [users/user-td-component

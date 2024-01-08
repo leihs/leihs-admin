@@ -165,9 +165,10 @@
    :options (map str defaults/PER-PAGE-VALUES)
    :default-option (str defaults/PER-PAGE)])
 
-(defn form-term []
+(defn form-term [& {:keys [placeholder]
+                    :or {placeholder "name of the group"}}]
   [routing/form-term-filter-component
-   :placeholder "name of the group"])
+   :placeholder placeholder])
 
 (defn form-including-user []
   [routing/choose-user-component

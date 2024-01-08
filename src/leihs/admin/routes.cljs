@@ -109,12 +109,12 @@
    :inventory #'inventory/page
    :inventory-pool #'inventory-pool/show-page
    :inventory-pool-create #'inventory-pool/create-page
-   :inventory-pool-delegation #'delegation/show-page
+   :inventory-pool-delegation #'delegation/page
    :inventory-pool-delegation-create #'delegation-edit/new-page
    :inventory-pool-delegation-edit #'delegation-edit/edit-page
    :inventory-pool-delegation-groups #'delegation-groups/page
    :inventory-pool-delegation-suspension #'delegation-suspension/page
-   :inventory-pool-delegation-users #'delegation-users/index-page
+   :inventory-pool-delegation-users #'delegation-users/page
    :inventory-pool-delegations #'delegations/page
    :inventory-pool-delete #'inventory-pool/delete-page
    :inventory-pool-edit #'inventory-pool/edit-page

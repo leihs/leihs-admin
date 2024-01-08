@@ -4,12 +4,7 @@
    [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async]
-   [cljs.core.async :refer [timeout]]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components :as components]
-   [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
@@ -17,13 +12,11 @@
    [leihs.admin.resources.groups.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.groups.shared :as shared]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
+   [leihs.admin.resources.users.choose-main :refer [table]]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.admin.utils.seq :as seq]
-   [leihs.core.auth.core :as auth :refer []]
-   [leihs.core.core :refer [keyword str presence]]
+   [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [leihs.core.user.front :as current-user]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -130,11 +123,10 @@
 ;;;;;
 
 (defn groups-thead-component [more-cols]
-  [:thead
-   [:tr
-    [:th {:key :index} "Index"]
-    (for [[idx col] (map-indexed vector more-cols)]
-      ^{:key idx} [col])]])
+  [:tr
+   [:th {:key :index} "Index"]
+   (for [[idx col] (map-indexed vector more-cols)]
+     ^{:key idx} [col])])
 
 (defn group-row-component [group more-cols]
   ^{:key (:id group)}
@@ -145,14 +137,13 @@
 
 (defn core-table-component [hds tds groups]
   (if-let [groups (seq groups)]
-    [:table.groups.table.table-striped.table-sm
+    [table
      [groups-thead-component hds]
-     [:tbody
-      (let [page (:page @current-query-paramerters-normalized*)
-            per-page (:per-page @current-query-paramerters-normalized*)]
-        (doall (for [group groups]
-                 ^{:key (:id group)}
-                 [group-row-component group tds])))]]
+     (let [page (:page @current-query-paramerters-normalized*)
+           per-page (:per-page @current-query-paramerters-normalized*)]
+       (doall (for [group groups]
+                ^{:key (:id group)}
+                [group-row-component group tds])))]
     [:div.alert.alert-warning.text-center "No (more) groups found."]))
 
 (defn table-component [hds tds]

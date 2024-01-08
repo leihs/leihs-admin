@@ -45,7 +45,7 @@
           more-query-params))))
 
 (defn table-component []
-  [users/table-component
+  [users/users-table
    [users/user-th-component
     users-membership/member-user-th-component
     users-membership/direct-member-user-th-component

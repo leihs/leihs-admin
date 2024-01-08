@@ -67,7 +67,7 @@
    [pagination]
    [add-delegation]])
 
-(defn delegations-thead-component []
+(defn delegations-thead []
   [:thead
    [:tr
     [:th.text-left "Name"]
@@ -91,22 +91,22 @@
   [:button.btn.btn-warning
    [icons/delete] " Remove "])
 
-(defn name-td-component [id delegation]
+(defn name-td [id delegation]
   [:td.name.text-left
    (let [inner [:span (:firstname delegation)]]
      (if (:member delegation)
        (link-to-delegation id inner)
        inner))])
 
-(defn users-count-td-component [id delegation]
+(defn users-count-td [id delegation]
   [:td.users-count.text-right
    (-> delegation :users_count)])
 
-(defn direct-users-count-td-component [id delegation]
+(defn direct-users-count-td [id delegation]
   [:td.direct-users-count.text-right
    (-> delegation :direct_users_count)])
 
-(defn groups-count-td-component [id delegation]
+(defn groups-count-td [id delegation]
   [:td.groups-count.text-right
    (-> delegation :groups_count)])
 
@@ -121,7 +121,7 @@
              http-client/filter-success!)
         (fetch-delegations))))
 
-(defn action-td-component
+(defn action-td
   [{member :member id :id protected :pool_protected
     pools-count :pools_count :as delegation}]
   [:td.text-center
@@ -142,7 +142,7 @@
         [:button.btn.btn-danger.btn-sm
          [icons/delete] " Delete "])])])
 
-(defn suspension-td-component [delegation]
+(defn suspension-td [delegation]
   [:td.suspension.text-center
    (suspension/suspension-component
     (:suspension delegation)
@@ -157,17 +157,17 @@
                                    [(:route @routing/state*) :delegations
                                     (:page-index delegation) :suspension] data)))))])
 
-(defn delegation-row-component [{id :id :as delegation}]
+(defn delegation-row [{id :id :as delegation}]
   [:tr.delegation {:key (:id delegation)}
-   [name-td-component id delegation]
+   [name-td id delegation]
    [:td.responsible-user
     [users/user-inner-component (:responsible_user delegation)]]
    [:td.contracs-count.text-right [:span (:contracts_count_open_per_pool delegation)
                                    " / " (:contracts_count_per_pool delegation)
                                    " / " (:contracts_count delegation)]]
-   [users-count-td-component id delegation]
-   [direct-users-count-td-component id delegation]
-   [groups-count-td-component id delegation]
+   [users-count-td id delegation]
+   [direct-users-count-td id delegation]
+   [groups-count-td id delegation]
    [:td.text-right
     (let [pools-count (:pools_count delegation)]
       (if (> pools-count 1)
@@ -176,22 +176,22 @@
    [:td.text-center (if (:pool_protected delegation)
                       [:span.text-success "yes"]
                       [:span.text-warning "no"])]
-   [action-td-component delegation]
-   [suspension-td-component delegation]])
+   [action-td delegation]
+   [suspension-td delegation]])
 
-(defn delegations-table-component []
+(defn delegations-table []
   (let [current-url (:route @routing/state*)]
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
         [:> react-bootstrap/Table {:striped true :hover true :borderless true :className "border-top border-bottom"}
 
-         [delegations-thead-component]
+         [delegations-thead]
          [:tbody
           (let [page (:page @current-query-paramerters-normalized*)
                 per-page (:per-page @current-query-paramerters-normalized*)]
             (for [[k delegation] (map-indexed vector delegations)]
-              ^{:key k} [delegation-row-component delegation]))]]
+              ^{:key k} [delegation-row delegation]))]]
         [:div.alert.alert-warning.text-center "No (more) delegations found."]))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -205,21 +205,20 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-(defn breadcrumbs []
-  [breadcrumbs/nav-component
-   @breadcrumbs/left*
-   [[breadcrumbs/create-li]]])
+;; (defn breadcrumbs []
+;;   [breadcrumbs/nav-component
+;;    @breadcrumbs/left*
+;;    [[breadcrumbs/create-li]]])
 
 (defn page []
   [:div.delegations
    [routing/hidden-state-component
     {:did-change fetch-delegations}]
-   ;; [breadcrumbs]
    [:h1.my-5
     [inventory-pool/name-component]]
    [nav/tabs]
    [filter-section]
    [table-toolbar]
-   [delegations-table-component]
+   [delegations-table]
    [table-toolbar]
    [debug-component]])

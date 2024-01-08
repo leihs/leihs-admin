@@ -7,6 +7,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components]
    [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.table :refer [table]]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.users.shared :as users-membership]
@@ -154,16 +155,15 @@
 
 ;; table stuff ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn thead-component [hds]
-  [:thead
-   [:tr
-    [:th {:key :index} "Index"]
-    [account-enabled-th-component]
-    [:th {:key :image} "Image"]
-    (for [[idx hd] (map-indexed vector hds)]
-      ^{:key idx} [hd])]])
+(defn table-head [hds]
+  [:tr
+   [:th {:key :index} "Index"]
+   [account-enabled-th-component]
+   [:th {:key :image} "Image"]
+   (for [[idx hd] (map-indexed vector hds)]
+     ^{:key idx} [hd])])
 
-(defn row-component [user more-cols]
+(defn table-row [user more-cols]
   [:tr.user {:key (:id user)}
    [:td (:index user)]
    [account-enabled-td-component user]
@@ -171,7 +171,7 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col user])])
 
-(defn table-component
+(defn users-table
   [hds tds &
    {:keys [membership-filter? role-filter?]
     :or {membership-filter? false
@@ -182,11 +182,10 @@
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
-       [:table.table.table-striped.table-sm.users
-        [thead-component hds]
-        [:tbody.users
-         (doall (for [user users]
-                  (row-component user tds)))]]
+       [table
+        [table-head hds]
+        (doall (for [user users]
+                 (table-row user tds)))]
        (if @on-first-page?*
          (cond
            (and membership-filter? @users-membership/filtered-by-member?*) (users-membership/empty-members-alert)
@@ -215,7 +214,7 @@
   [:div
    [filter-component]
    [routing/pagination-component]
-   [table-component
+   [users-table
     [user-th-component
      org-th-component
      org-id-th-component

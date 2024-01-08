@@ -48,7 +48,7 @@
   [:div.entitlement-group-users
    [users/filter-component]
    [table-toolbar]
-   [users/table-component
+   [users/users-table
     [pool-users/user-th-component
      membership-users/member-user-th-component
      membership-users/direct-member-user-th-component

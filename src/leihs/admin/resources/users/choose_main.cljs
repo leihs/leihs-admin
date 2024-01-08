@@ -34,7 +34,7 @@
   [:td [users-main/user-td-inner-component user]])
 
 (defn table []
-  [users-main/table-component
+  [users-main/users-table
    [users-main/user-th-component
     choose-user-th-component]
    [user-td-component
