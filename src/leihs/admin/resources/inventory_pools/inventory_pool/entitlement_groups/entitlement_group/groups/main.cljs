@@ -5,14 +5,13 @@
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.navigation.back :refer [back]]
-   [leihs.admin.common.components.pagination :refer [pagination]]
+   [leihs.admin.common.components.table :refer [table-toolbar]]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.groups.main :as groups-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group]
+   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group :refer [header tabs]]
    [leihs.admin.state :as state]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap]))
@@ -34,33 +33,10 @@
     [filter/form-per-page]
     [filter/reset]]])
 
-;### header ###################################################################
-
-(defn header-component []
-  [:div.mt-5
-   [back]
-   [:h1.mb-5.mt-3
-    [:span "Groups of "]
-    [entitlement-group/name-component]
-    [:span " in "]
-    [inventory-pool/name-component]]])
-
-;### table toolbar ############################################################
-
-;; TODO: not the correct add group function
-(defn add-group-button []
-  [:> react-bootstrap/Button
-   {:href (path
-           :inventory-pool-user-create
-           {:inventory-pool-id @inventory-pool/id*})
-    :variant "primary"
-    :className "ml-4"}
-   [:span [icons/add] " Add Group"]])
-
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]
-   [add-group-button]])
+;; (defn table-toolbar []
+;;   [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+;;    [pagination]
+;;    [add-group-button]])
 
 ;### main #####################################################################
 
@@ -68,8 +44,8 @@
   (when (:debug @state/global-state*)
     [:div]))
 
-(defn main-page-component []
-  [:div
+(defn groups-table-section []
+  [:section
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
    [filter-component]
@@ -84,9 +60,9 @@
    [groups/debug-component]])
 
 (defn page []
-  [:div.inventory-pool-groups
+  [:article.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   [:<>
-    [header-component]
-    [main-page-component]]])
+   [header]
+   [tabs]
+   [groups-table-section]])

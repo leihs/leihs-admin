@@ -16,7 +16,7 @@
      header]
     [:tbody
      body]
-    [:footer
+    [:tfoot
      footer]]
    [:hr]])
 

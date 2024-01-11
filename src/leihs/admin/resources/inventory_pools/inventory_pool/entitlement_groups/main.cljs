@@ -1,22 +1,19 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.pagination :refer [pagination]]
+   [leihs.admin.common.components.table :refer [table table-toolbar]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool :refer [header tabs]]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap]
    [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom {}))
@@ -25,24 +22,21 @@
 (defn fetch-entitlement-groups []
   (http-client/route-cached-fetch data*))
 
-(defn entitlement-groups-thead-component []
-  [:thead
-   [:tr
-    [:th.name.text-left "Name"]
-    [:th.text-right "# Models "]
-    [:th.text-right "# Users"]
-    [:th.text-right "# Direct Users"]
-    [:th.text-right "# Groups"]]])
-    ;; [:th.text-center]]])
+(defn entitlement-groups-thead []
+  [:tr
+   [:th.name.text-left "Name"]
+   [:th.text-right "# Models "]
+   [:th.text-right "# Users"]
+   [:th.text-right "# Direct Users"]
+   [:th.text-right "# Groups"]
+   [:th.text-center]])
 
-(defn entitlement-group-row-component [{id :id :as entitlement-group}]
+(defn entitlement-group-row [{id :id :as entitlement-group}]
   ^{:key id}
   [:tr.entitlement-group.text-left
    [:td
-    [:<> (:name entitlement-group)]]
-   ;; NOTE: I removed this link because there is already all info in the table
-    ;; [:a {:href (path :inventory-pool-entitlement-group {:inventory-pool-id @inventory-pool/id* :entitlement-group-id id})}
-    ;;  (:name entitlement-group)]]
+    [:a {:href (path :inventory-pool-entitlement-group {:inventory-pool-id @inventory-pool/id* :entitlement-group-id id})}
+     (:name entitlement-group)]]
    [:td.entitlements-count.text-right (-> entitlement-group :entitlements_count)]
    [:td.users-count.text-right
     [:a {:href (path :inventory-pool-entitlement-group-users
@@ -63,24 +57,22 @@
                      {:inventory-pool-id @inventory-pool/id*
                       :entitlement-group-id id})}
      (-> entitlement-group :groups_count)
-     " " [icons/edit] " "]]])
-  ;; NOTE: removed edit since the route does not exist
-   ;; [:td.text-center [:a {:href  (str "/manage/" @inventory-pool/id* "/groups/" id "/edit")}
-   ;;                   [icons/edit] " Edit "]]])
+     " " [icons/edit] " "]]
+   [:td.text-center [:a {:href  (str "/manage/" @inventory-pool/id* "/groups/" id "/edit")}
+                     [icons/edit] " Edit "]]])
 
-(defn main-page-component []
-  [:div.entitlement-entitlement-groups
+(defn entitlement-groups-table []
+  [:section.entitlement-entitlement-groups
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [entitlement-groups (-> @data* (get  @current-route* {}) :entitlement-groups seq)]
-       [:table.entitlement-groups.table.table-striped.table-sm
-        [entitlement-groups-thead-component]
-        [:tbody
-         (doall (for [entitlement-group entitlement-groups]
-                  (entitlement-group-row-component entitlement-group)))]]
+       [table
+        [entitlement-groups-thead]
+        (doall (for [entitlement-group entitlement-groups]
+                 (entitlement-group-row entitlement-group)))]
        [:div.alert.alert-warning.text-center "No (more) entitlement-groups found."]))])
 
-(defn debug-component []
+(defn debug-info []
   (when (:debug @state/global-state*)
     [:section.debug
      [:hr]
@@ -89,9 +81,9 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]])
+;; (defn table-toolbar []
+;;   [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+;;    [pagination]])
 
 (defn filter-section []
   [filter/container
@@ -101,14 +93,14 @@
      :input-options {:placeholder "email, login, or id"}]
     [filter/reset]]])
 
-(defn index-page []
-  [:div.inventory-pool-entitlement-groups
+(defn page []
+  [:article.inventory-pool-entitlement-groups
    [routing/hidden-state-component
     {:did-change fetch-entitlement-groups}]
-   [:h1.my-5
-    [inventory-pool/name-component]]
-   [nav/tabs]
+   [header]
+   [tabs]
    [filter-section]
-   ;; [table-toolbar]
-   [main-page-component]
-   [debug-component]])
+   [table-toolbar]
+   [entitlement-groups-table]
+   [table-toolbar]
+   [debug-info]])

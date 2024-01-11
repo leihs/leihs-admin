@@ -11,10 +11,8 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.breadcrumbs :as breadcrumbs]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool :refer [tabs]]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.shared :refer [default-query-params]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
@@ -211,12 +209,12 @@
 ;;    [[breadcrumbs/create-li]]])
 
 (defn page []
-  [:div.delegations
+  [:article.delegations
    [routing/hidden-state-component
     {:did-change fetch-delegations}]
    [:h1.my-5
     [inventory-pool/name-component]]
-   [nav/tabs]
+   [tabs]
    [filter-section]
    [table-toolbar]
    [delegations-table]

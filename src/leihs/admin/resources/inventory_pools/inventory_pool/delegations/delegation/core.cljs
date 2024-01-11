@@ -70,7 +70,7 @@
                        :delegation-id @id*})]
        {:active (= (:path @routing/state*) href)
         :href href})
-     "Delegation "]]
+     "Delegation"]]
    [:> react-bootstrap/Nav.Item
     [:> react-bootstrap/Nav.Link
      (let [href (path :inventory-pool-delegation-users
@@ -88,7 +88,7 @@
         :href href})
      "Groups "]]])
 
-(defn name-component []
+(defn delegation-name []
   [:<>
    [routing/hidden-state-component
     {:did-change fetch}]
@@ -115,7 +115,7 @@
 (defn header []
   [:header.mb-5
    [back/back]
-   [:h1.mt-3 [name-component]]
+   [:h1.mt-3 [delegation-name]]
    [:h6 "Inventory Pool " [inventory-pool/name-component]]])
 
 (defn delegation-id-component []
