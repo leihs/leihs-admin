@@ -6,7 +6,7 @@
   (:require
    [cljs.core.async :as async]
    [leihs.admin.common.components :as components]
-   [leihs.admin.common.components.navigation.back :as back :refer [back]]
+   [leihs.admin.common.components.navigation.back :as back :refer [back-button]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -80,6 +80,7 @@
 
 (defn header []
   [:header.my-5
-   [back]
+   [back-button {:href (path :inventory-pool-entitlement-groups
+                             {:inventory-pool-id @inventory-pool/id*})}]
    [:h1.mt-3 [entitlement-group-name]]
    [:h6 "Inventory Pool " [inventory-pool/name-component]]])

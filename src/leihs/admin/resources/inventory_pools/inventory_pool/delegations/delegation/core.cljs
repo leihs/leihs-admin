@@ -7,7 +7,7 @@
    [cljs.core.async :as async]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components :refer [link]]
-   [leihs.admin.common.components.navigation.back :as back]
+   [leihs.admin.common.components.navigation.back :as back :refer [back-button]]
    [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
@@ -114,7 +114,8 @@
 
 (defn header []
   [:header.mb-5
-   [back/back]
+   [back-button {:href (path :inventory-pool-delegations
+                             {:inventory-pool-id @inventory-pool/id*})}]
    [:h1.mt-3 [delegation-name]]
    [:h6 "Inventory Pool " [inventory-pool/name-component]]])
 

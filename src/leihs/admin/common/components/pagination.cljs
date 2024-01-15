@@ -12,7 +12,6 @@
     (if-not hk
       [:div "pagination not ready"]
       [:div
-       ;(console.log 'HK (clj->js hk))
        (let [ppage (dec current-page)
              ppagepath (path hk route-params
                              (assoc query-parameters :page ppage))]
