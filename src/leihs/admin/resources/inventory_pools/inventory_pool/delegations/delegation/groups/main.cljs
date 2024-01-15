@@ -1,7 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.groups.main
   (:refer-clojure :exclude [str keyword])
   (:require
-   [leihs.admin.common.components.table :refer [table-toolbar]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.membership.groups.main :as groups-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.main :as groups]
@@ -36,9 +36,9 @@
 (defn main-section []
   [:section
    [groups-membership/filter-component]
-   [table-toolbar]
+   [table/toolbar]
    [table]
-   [table-toolbar]
+   [table/toolbar]
    [debug-component]
    [groups/debug-component]])
 

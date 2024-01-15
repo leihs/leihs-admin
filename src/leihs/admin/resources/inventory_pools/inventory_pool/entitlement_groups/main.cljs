@@ -5,11 +5,11 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.table :refer [table table-toolbar]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool :refer [header tabs]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [str]]
@@ -66,7 +66,7 @@
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [entitlement-groups (-> @data* (get  @current-route* {}) :entitlement-groups seq)]
-       [table
+       [table/container
         [entitlement-groups-thead]
         (doall (for [entitlement-group entitlement-groups]
                  (entitlement-group-row entitlement-group)))]
@@ -81,10 +81,6 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-;; (defn table-toolbar []
-;;   [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-;;    [pagination]])
-
 (defn filter-section []
   [filter/container
    [:<>
@@ -97,10 +93,10 @@
   [:article.inventory-pool-entitlement-groups
    [routing/hidden-state-component
     {:did-change fetch-entitlement-groups}]
-   [header]
-   [tabs]
+   [inventory-pool/header]
+   [inventory-pool/tabs]
    [filter-section]
-   [table-toolbar]
+   [table/toolbar]
    [entitlement-groups-table]
-   [table-toolbar]
+   [table/toolbar]
    [debug-info]])

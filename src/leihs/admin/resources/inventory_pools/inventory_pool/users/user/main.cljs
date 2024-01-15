@@ -3,7 +3,7 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components.navigation.back :refer [back-button]]
+   [leihs.admin.common.components.navigation.back :as  back]
    [leihs.admin.common.roles.components :as roles-ui]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -162,7 +162,7 @@
 
 (defn header []
   [:header
-   [back-button {:href (path :inventory-pool-users {:inventory-pool-id @inventory-pool/id*})}]
+   [back/button {:href (path :inventory-pool-users {:inventory-pool-id @inventory-pool/id*})}]
    [:h1.mt-3 [name-component]]
    [:h6 "In Pool " [inventory-pool/name-component]]])
 

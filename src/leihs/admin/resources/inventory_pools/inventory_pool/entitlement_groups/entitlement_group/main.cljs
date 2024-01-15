@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [str keyword])
   (:require
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components.table :as table :refer [table]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group :refer [header tabs]]
    [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.users.main]
@@ -83,7 +83,7 @@
   [:section
    (when-let [data @entitlement-group/data*]
      [:div
-      [table
+      [table/container
        [:tr
         [:th "Property"]
         [:th "Value"]]

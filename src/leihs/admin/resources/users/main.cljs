@@ -1,13 +1,12 @@
 (ns leihs.admin.resources.users.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.table :refer [table]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.users.shared :as users-membership]
@@ -182,7 +181,7 @@
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
-       [table
+       [table/container
         [table-head hds]
         (doall (for [user users]
                  (table-row user tds)))]

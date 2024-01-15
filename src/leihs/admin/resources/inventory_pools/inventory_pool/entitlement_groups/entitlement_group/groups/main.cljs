@@ -5,13 +5,13 @@
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.table :refer [table-toolbar]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.groups.main :as groups-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group :refer [header tabs]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group]
    [leihs.admin.state :as state]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap]))
@@ -24,7 +24,7 @@
 
 ;### filter ###################################################################
 
-(defn filter-component []
+(defn filter-section []
   [filter/container
    [:<>
     [groups/form-term-filter]
@@ -48,14 +48,14 @@
   [:section
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
-   [filter-component]
-   [table-toolbar]
+   [filter-section]
+   [table/toolbar]
    [groups/table-component
     [groups/name-th-component
      groups-membership/member-th-component]
     [groups/name-td-component
      (partial groups-membership/member-td-component member-path)]]
-   [table-toolbar]
+   [table/toolbar]
    [debug-component]
    [groups/debug-component]])
 
@@ -63,6 +63,6 @@
   [:article.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   [header]
-   [tabs]
+   [entitlement-group/header]
+   [entitlement-group/tabs]
    [groups-table-section]])

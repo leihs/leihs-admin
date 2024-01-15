@@ -1,10 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.users.main
   (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [cljs.core.async.macros :refer [go]]
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [leihs.admin.common.components.table :refer [table-toolbar]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.membership.users.main :as users-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -12,8 +9,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as pool-users]
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.state :as state]
-   [leihs.core.core :refer [presence]]
-   [leihs.core.routing.front :as routing]))
+   [leihs.core.core :refer [presence]]))
 
 ;;; path helpers  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -58,9 +54,9 @@
 (defn main-section []
   [:section
    [users-membership/filter-component]
-   [table-toolbar]
+   [table/toolbar]
    [table]
-   [table-toolbar]
+   [table/toolbar]
 
    [debug-component]
    [users/debug-component]])

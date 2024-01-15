@@ -7,7 +7,7 @@
    [cljs.core.async :as async]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components :refer [link]]
-   [leihs.admin.common.components.navigation.back :as back :refer [back-button]]
+   [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
@@ -108,13 +108,9 @@
                                 :delegation-id @id*})]
      [link inner delegation-path])])
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]])
-
 (defn header []
   [:header.mb-5
-   [back-button {:href (path :inventory-pool-delegations
+   [back/button {:href (path :inventory-pool-delegations
                              {:inventory-pool-id @inventory-pool/id*})}]
    [:h1.mt-3 [delegation-name]]
    [:h6 "Inventory Pool " [inventory-pool/name-component]]])
