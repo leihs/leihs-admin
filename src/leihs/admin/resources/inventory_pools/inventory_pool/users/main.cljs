@@ -6,6 +6,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.pagination :as pagination :refer [pagination]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
    [leihs.admin.common.roles.core :as roles]
@@ -148,8 +149,8 @@
     [users/form-enabled-filter]
     [form-role-filter]
     [form-suspension-filter]
-    [routing/form-per-page-component]
-    [routing/form-reset-component]]])
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;### main #####################################################################
 
@@ -161,26 +162,19 @@
      [:div "@current-query-params*"
       [:pre (with-out-str (pprint @current-query-params*))]]]))
 
-(defn table-component []
+(defn table-section []
   [users/users-table
    [user-th-component
     roles-th-component
     direct-roles-th-component
-    ;; groups-roles-th-component
+    groups-roles-th-component
     suspension-th-component]
    [user-td-component
     roles-td-component
     direct-roles-td-component
-    ;; groups-roles-td-component
+    groups-roles-td-component
     suspension-td-component]
    :role-filter? true])
-
-(defn add-user-button []
-  [:> react-bootstrap/Button
-   {:href (path :inventory-pool-user-create {:inventory-pool-id @inventory-pool/id*})
-    :variant "primary"
-    :className "ml-4"}
-   [:span [icons/add] " Add Existing User"]])
 
 (defn create-user-button []
   [:> react-bootstrap/Button
@@ -189,18 +183,14 @@
     :className "ml-4"}
    [:span [icons/add] " New User"]])
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]
-   [add-user-button]
-   [create-user-button]])
-
 (defn main-page-component []
   [:<>
    [filter-section]
-   [table-toolbar]
-   [table-component]
-   [table-toolbar]
+   [table/toolbar
+    [create-user-button]]
+   [table-section]
+   [table/toolbar
+    [create-user-button]]
    [debug-component]
    [users/debug-component]])
 
