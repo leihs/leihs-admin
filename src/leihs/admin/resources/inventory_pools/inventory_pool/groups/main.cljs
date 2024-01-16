@@ -1,11 +1,9 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.groups.main
   (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [cljs.core.async.macros :refer [go]])
   (:require
+   [cljs.core.async :refer [<! go]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.pagination :as pagination :refer [pagination]]
-   [leihs.admin.common.icons :as icons]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.paths :as paths :refer [path]]
@@ -13,8 +11,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.state :as state]
-   [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap]))
+   [leihs.core.routing.front :as routing]))
 
 ;### roles ####################################################################
 
@@ -69,38 +66,23 @@
   (when (:debug @state/global-state*)
     [:div]))
 
-;; TODO: needs to be added
-(defn add-group-button []
-  [:> react-bootstrap/Button
-   {:href (path :inventory-pool-user-create {:inventory-pool-id @inventory-pool/id*})
-    :variant "primary"
-    :className "ml-4"}
-   [:span [icons/add] " Add Group"]])
+(defn header []
+  [:header.my-5
+   [:h1.mt-5 [inventory-pool/name-component]]])
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]
-   [add-group-button]])
-
-(defn main-page-component []
-  [:<>
+(defn page []
+  [:article.inventory-pool-groups
+   [routing/hidden-state-component
+    {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
+   [header]
+   [nav/tabs]
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
    [filter-section]
-   [table-toolbar]
+   [table/toolbar]
    [groups/table-component
     [groups/name-th-component groups/users-count-th-component roles-th-component]
     [groups/name-td-component groups/users-count-td-component roles-td-component]]
-   [table-toolbar]
+   [table/toolbar]
    [debug-component]
    [groups/debug-component]])
-
-(defn page []
-  [:div.inventory-pool-groups
-   [routing/hidden-state-component
-    {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   [:h1.my-5
-    [inventory-pool/name-component]]
-   [nav/tabs]
-   [:<>
-    [main-page-component]]])

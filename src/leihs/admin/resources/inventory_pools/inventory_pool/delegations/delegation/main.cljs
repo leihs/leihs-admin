@@ -2,13 +2,12 @@
   (:refer-clojure :exclude [str keyword])
   (:require
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.suspension.main :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
    [leihs.core.user.front]
-   [react-bootstrap :as react-bootstrap]))
+   [react-bootstrap :as react-bootstrap :refer [Table]]))
 
 ;;; suspension ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -23,7 +22,7 @@
   [:section.delegation
    (if-let [delegation (get @delegation/data* @delegation/id*)]
      [:div
-      [:> react-bootstrap/Table {:striped true :hover true :borderless true}
+      [:> Table {:striped true :hover true :borderless true}
        [:thead
         [:tr
          [:th "Property"]
@@ -91,5 +90,4 @@
    [:div.row
     [:div.col-md-6
      [:hr] [suspension-section]]]
-
    [delegation/debug-component]])

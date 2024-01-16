@@ -6,12 +6,12 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.pagination :refer [pagination]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.inventory-pools.breadcrumbs :as breadcrumbs]
+   [leihs.admin.resources.inventory-pools.inventory-pool.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
@@ -57,35 +57,32 @@
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn create-inventory-pool []
-  [:> react-bootstrap/Button
-   {:className "ml-3"
-    :href (path :inventory-pool-create)}
-   [icons/add] " Create Inventory Pool"])
+(defn add-inventory-pool []
+  (let [modal-show (reagent/atom false)]
+    (fn []
+      [:<>
+       [:> react-bootstrap/Button
+        {:className "ml-3"
+         :onClick #(reset! modal-show true)}
+        [icons/add] " Add Inventory Pool"]
+       [create/dialog {:show @modal-show
+                       :onHide #(reset! modal-show false)}]])))
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]
-   [create-inventory-pool]])
-
-(defn inventory-pools-thead-component [& [more-cols]]
-  [:thead
-   [:tr
-    [:th "Index"]
-
-    [:th "Active"]
-    [:th "Short name"]
-    [:th "Name " [:a {:href (page-path-for-query-params
-                             {:order (-> [[:name :asc] [:id :asc]]
-                                         clj->js json/to-json)})} "↓"]]
-    [:th "# Users " [:a {:href (page-path-for-query-params
-                                {:order (-> [[:users_count :desc] [:id :asc]]
-                                            clj->js json/to-json)})} "↓"]]
-    [:th "# Delegations " [:a {:href (page-path-for-query-params
-                                      {:order (-> [[:delegations_count :desc] [:id :asc]]
-                                                  clj->js json/to-json)})} "↓"]]
-    (for [col more-cols]
-      col)]])
+(defn table-head [& [more-cols]]
+  [:th "Index"]
+  [:th "Active"]
+  [:th "Short name"]
+  [:th "Name " [:a {:href (page-path-for-query-params
+                           {:order (-> [[:name :asc] [:id :asc]]
+                                       clj->js json/to-json)})} "↓"]]
+  [:th "# Users " [:a {:href (page-path-for-query-params
+                              {:order (-> [[:users_count :desc] [:id :asc]]
+                                          clj->js json/to-json)})} "↓"]]
+  [:th "# Delegations " [:a {:href (page-path-for-query-params
+                                    {:order (-> [[:delegations_count :desc] [:id :asc]]
+                                                clj->js json/to-json)})} "↓"]]
+  (for [col more-cols]
+    col))
 
 (defn link-to-inventory-pool [inventory-pool inner]
   (let [id (:id inventory-pool)]
@@ -96,7 +93,7 @@
        inner]
       [:span.text-info inner])))
 
-(defn inventory-pool-row-component [inventory-pool more-cols]
+(defn table-row [inventory-pool more-cols]
   [:tr.inventory-pool {:key (:id inventory-pool)}
    [:td (:index inventory-pool)]
    [:td (if (:is_active inventory-pool) "yes" "no")]
@@ -107,20 +104,22 @@
    (for [col more-cols]
      (col inventory-pool))])
 
-(defn tbody-component [inventory-pools tds]
-  [:tbody
+(defn table-body [inventory-pools tds]
+  [:<>
    (let [page (:page @current-query-paramerters-normalized*)
          per-page (:per-page @current-query-paramerters-normalized*)]
      (doall (for [inventory-pool inventory-pools]
-              (inventory-pool-row-component inventory-pool tds))))])
+              (table-row inventory-pool tds))))])
 
-(defn inventory-pools-table-component [& [hds tds]]
+(defn inventory-pools-table [& [hds tds]]
   (if-not (contains? @data* @current-route*)
     [wait-component]
     (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
-      [:table.table.table-striped.table-sm.inventory-pools
-       [inventory-pools-thead-component hds]
-       [tbody-component inventory-pools tds]]
+      [table/container
+       [table-head hds]
+       [table-body inventory-pools tds]
+       [:<>]
+       {:className "inventory-pools"}]
       [:div.alert.alert-warning.text-center "No (more) inventory-pools found."])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -140,17 +139,16 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-(defn main-page-content-component []
-  [:div
-   [routing/hidden-state-component
-    {:did-change #(http/route-cached-fetch data*)}]
-   [filter-section]
-   [table-toolbar]
-   [inventory-pools-table-component]
-   [table-toolbar]
-   [debug-component]])
-
 (defn page []
-  [:div.inventory-pools
+  [:article.inventory-pools
    [:h1.my-5 [icons/inventory-pools] " Inventory-Pools"]
-   [main-page-content-component]])
+   [:section
+    [routing/hidden-state-component
+     {:did-change #(http/route-cached-fetch data*)}]
+    [filter-section]
+    [table/toolbar
+     [add-inventory-pool]]
+    [inventory-pools-table]
+    [table/toolbar
+     [add-inventory-pool]]
+    [debug-component]]])

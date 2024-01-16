@@ -69,13 +69,14 @@
                            [:strong "do not fill in made up email-addresses! "]
                            "Consider to use the " [:strong.text-monospace "login"] " field instead."]]]
     [:div.col-md-3 [input-component data* [:firstname]
-                    :label "First name"]]
+                    :label "First name"
+                    :required true]]
     [:div.col-md-4 [input-component data* [:lastname]
                     :label "Last name"]]]])
 
 (defn personal-and-contact-form-component []
   [:div
-   [:h3 "Personal and Contact Information "]
+   [:h3.mt-5 "Personal and Contact Information "]
    [:div.form-row
     [:div.col-md
      [input-component data* [:phone]
@@ -97,10 +98,11 @@
     [:div.col-md-3 [input-component data* [:city]
                     :label "City"]]
     [:div.col-md-3 [input-component data* [:country]
-                    :label "Country"]]]])
+                    :label "Country"]]]
+   [:hr]])
 
 (defn account-settings-form-component []
-  [:div.account-settings
+  [:div.account-settings.mt-5
    [:h3 "Account Settings "]
    [:div.form-row
     [:div.col-md-3
@@ -141,9 +143,10 @@
       :label "System admin protected"
       :hint [:span "This entity can only be modifed by system-admins. "]
       :invalid-feedback [:span "A system_admin must be system_admin_protected."]]]]
+   [:hr]
 
    [:div
-    [:h3  "Other Fields "]
+    [:h3.mt-5  "Other Fields "]
     [:div.form-row
      [:div.col-md
       [input-component data* [:badge_id]

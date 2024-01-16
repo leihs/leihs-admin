@@ -1,24 +1,26 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [cljs.core.async :as async]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
+   [clojure.set :refer [rename-keys]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.pagination :refer [pagination]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool :refer [tabs]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.create :as create]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.shared :refer [default-query-params]]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap]
+   [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -33,6 +35,15 @@
 
 (defn fetch-delegations []
   (http-client/route-cached-fetch data*))
+
+(defn set-data-by-query-params [& _]
+  (js/console.debug "set-data-by-query-params" @data*)
+  (reset! data*
+          (merge {:pool_protected true}
+                 (-> @routing/state*
+                     :query-params
+                     (select-keys [:name :responsible_user_id :user-uid :pool_protected])
+                     (rename-keys {:user-uid :responsible_user_id})))))
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -53,17 +64,26 @@
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn add-delegation []
-  [:> react-bootstrap/Button
-   {:className "ml-4"
-    :href (path :inventory-pool-delegation-create
-                {:inventory-pool-id @inventory-pool/id*})}
-   [icons/add] " Add delegation"])
+;; NOTE: This is a workaround and should be fixed
+;; currently the issue is that a user is selected by navigating to the user route
+;; on mount it is checked if user uid exists in query params
+;; if so the modal opens
+;; it would be nicer if the user selection would happen in the modal with a e.g. a combobox
+(def show* (reagent/atom false))
 
-(defn table-toolbar []
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
-   [pagination]
-   [add-delegation]])
+(defn check-user-chosen []
+  (when (contains?
+         (get @routing/state* :query-params) :user-uid)
+    (reset! show* true)))
+
+(defn add-delegation []
+  [:<>
+   [:> Button
+    {:className "ml-3"
+     :onClick #(reset! show* true)}
+    [icons/add]  " Add Delegation"]
+   [create/dialog {:show @show*
+                   :onHide #(reset! show* false)}]])
 
 (defn delegations-thead []
   [:thead
@@ -211,12 +231,16 @@
 (defn page []
   [:article.delegations
    [routing/hidden-state-component
-    {:did-change fetch-delegations}]
+    {:did-change fetch-delegations}
+    {:did-mount (check-user-chosen)}]
+
    [:h1.my-5
     [inventory-pool/name-component]]
    [tabs]
    [filter-section]
-   [table-toolbar]
+   [table/toolbar
+    [add-delegation]]
    [delegations-table]
-   [table-toolbar]
+   [table/toolbar
+    [add-delegation]]
    [debug-component]])

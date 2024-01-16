@@ -3,10 +3,7 @@
   (:require-macros
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [bidi.bidi :as bidi]
-   [clojure.pprint :refer [pprint]]
-   [leihs.admin.paths :as paths :refer [path paths]]
+   [leihs.admin.paths :as paths :refer [paths]]
    [leihs.admin.resources.audits.changes.change.main :as audited-change]
    [leihs.admin.resources.audits.changes.main :as audited-changes]
    [leihs.admin.resources.audits.main :as audits]
@@ -70,10 +67,7 @@
    [leihs.admin.resources.users.user.edit-main :as user-edit]
    [leihs.admin.resources.users.user.password-reset.main :as user-password-reset]
    [leihs.admin.resources.users.user.show :as user-show]
-   [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.routing.front :as routing]
-   [leihs.core.url.query-params :as query-params]
-   [reagent.core :as reagent]))
+   [leihs.core.routing.front :as routing]))
 
 (def resolve-table
   {:admin #'admin/page
@@ -107,8 +101,7 @@
    :groups #'groups/page
    :home #'home/page
    :inventory #'inventory/page
-   :inventory-pool #'inventory-pool/show-page
-   :inventory-pool-create #'inventory-pool/create-page
+   :inventory-pool #'inventory-pool/page
    :inventory-pool-delegation #'delegation/page
    :inventory-pool-delegation-create #'delegation-edit/new-page
    :inventory-pool-delegation-edit #'delegation-edit/edit-page
@@ -116,8 +109,6 @@
    :inventory-pool-delegation-suspension #'delegation-suspension/page
    :inventory-pool-delegation-users #'delegation-users/page
    :inventory-pool-delegations #'delegations/page
-   :inventory-pool-delete #'inventory-pool/delete-page
-   :inventory-pool-edit #'inventory-pool/edit-page
    :inventory-pool-entitlement-group #'inventory-pool-entitlement-group/page
    :inventory-pool-entitlement-group-groups #'inventory-pool-entitlement-group-groups/page
    :inventory-pool-entitlement-group-users inventory-pool-entitlement-group-users/page
@@ -125,12 +116,12 @@
    :inventory-pool-group-roles #'inventory-pool-group-roles/page
    :inventory-pool-groups #'inventory-pool-groups/page
    :inventory-pool-user #'inventory-pool-user/page
-   :inventory-pool-user-create #'inventory-pool-user-create/page
+   ;; :inventory-pool-user-create #'inventory-pool-user-create/page
    :inventory-pool-user-edit #'inventory-pool-user-edit/page
    :inventory-pool-user-direct-roles #'inventory-pool-user-direct-roles/page
    :inventory-pool-user-roles #'inventory-pool-user-roles/page
    :inventory-pool-user-suspension #'inventory-pool-user-suspension/page
-   :inventory-pool-users #'inventory-pool-users/index-page
+   :inventory-pool-users #'inventory-pool-users/page
    :inventory-pools #'inventory-pools/page
    :languages-settings #'languages-settings/page
    :misc-settings #'misc-settings/page

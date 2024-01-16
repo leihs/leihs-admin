@@ -22,7 +22,6 @@
 (defn page []
   [:div.admin
    (when-let [user @current-user/state*]
-     (js/console.log user)
      [breadcrumbs/nav-component
       @breadcrumbs/left*
       [[breadcrumbs-audits/audits-li]

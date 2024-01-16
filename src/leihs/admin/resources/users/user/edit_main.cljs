@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [str keyword])
   (:require
    [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [go timeout]]
+   [cljs.core.async :as async :refer [<! go timeout]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
@@ -42,7 +42,7 @@
 (defn inner-form-component []
   [:div
    [edit-core/essentials-form-component]
-   [:div.image
+   [:div.image.mt-5
     [:h3 "Image / Avatar"]
     [edit-image/image-component]]
    [edit-core/personal-and-contact-form-component]

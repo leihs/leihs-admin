@@ -32,10 +32,14 @@
    [pagination]
    items])
 
-(defn container [header body footer]
+(defn container [header body footer & {:keys [className]
+                                       :or {className ""}}]
   [:<>
    [:hr]
-   [:> react-bootstrap/Table {:striped true :hover true :borderless true}
+   [:> react-bootstrap/Table {:striped true
+                              :hover true
+                              :borderless true
+                              :className className}
     [:thead
      header]
     [:tbody

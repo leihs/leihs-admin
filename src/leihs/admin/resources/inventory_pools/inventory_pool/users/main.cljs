@@ -1,11 +1,10 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.users.main
   (:refer-clojure :exclude [str keyword])
   (:require
-   ["react-bootstrap" :as react-bootstrap]
+   ["react-bootstrap" :as react-bootstrap :refer [Button]]
    [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.pagination :as pagination :refer [pagination]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
@@ -15,6 +14,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.shared :refer [default-query-params]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.users.user.create :as create]
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.resources.users.user.core :as user2]
    [leihs.admin.state :as state]
@@ -178,30 +178,32 @@
     suspension-td-component]
    :role-filter? true])
 
-(defn create-user-button []
-  [:> react-bootstrap/Button
-   {:href (path :users-create {:return-to (:url @routing/state*)})
-    :variant "primary"
-    :className "ml-4"}
-   [:span [icons/add] " New User"]])
+(defn create-user []
+  (let [show (reagent/atom false)]
+    (fn []
+      [:<>
+       [:> Button
+        {:className "ml-3"
+         :onClick #(reset! show true)}
+        [icons/add]  " Add User"]
+       [create/dialog {:show @show
+                       :onHide #(reset! show false)}]])))
 
-(defn main-page-component []
-  [:<>
-   [filter-section]
-   [table/toolbar
-    [create-user-button]]
-   [table-section]
-   [table/toolbar
-    [create-user-button]]
-   [debug-component]
-   [users/debug-component]])
+(defn header []
+  [:header.my-5
+   [:h1.mt-3 [inventory-pool/name-component]]])
 
-(defn index-page []
-  [:div.inventory-pool-users
+(defn page []
+  [:article.inventory-pool-users
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch users/fetch-users))}]
-   [:h1.my-5
-    [inventory-pool/name-component]]
+   [header]
    [nav/tabs]
-   [:<>
-    [main-page-component]]])
+   [filter-section]
+   [table/toolbar
+    [create-user]]
+   [table-section]
+   [table/toolbar
+    [create-user]]
+   [debug-component]
+   [users/debug-component]])

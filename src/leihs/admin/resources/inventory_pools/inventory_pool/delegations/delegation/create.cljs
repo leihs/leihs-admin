@@ -1,0 +1,55 @@
+(ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.create
+  (:require
+   [accountant.core :as accountant]
+   [cljs.core.async :as async :refer [<! go]]
+   [clojure.set :refer [rename-keys]]
+   [leihs.admin.common.http-client.core :as http-client]
+   [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared]
+   [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
+   [leihs.core.routing.front :as routing]
+   [react-bootstrap :as react-bootstrap :refer [Button Modal]]
+   [taoensso.timbre]))
+
+(defn set-data-by-query-params [& _]
+  (reset! data*
+          (merge {:pool_protected true}
+                 (-> @routing/state*
+                     :query-params
+                     (select-keys [:name :responsible_user_id :user-uid :pool_protected])
+                     (rename-keys {:user-uid :responsible_user_id})))))
+
+(defn create [& _]
+  (go (when-let [id (some->
+                     {:chan (async/chan)
+                      :url (path :inventory-pool-delegations
+                                 {:inventory-pool-id @inventory-pool/id*})
+                      :method :post
+                      :json-params @data*}
+                     http-client/request :chan <!
+                     http-client/filter-success! :body :id)]
+        (accountant/navigate!
+         (path :inventory-pool-delegation {:inventory-pool-id @inventory-pool/id*
+                                           :delegation-id id})))))
+
+(defn dialog [& {:keys [show onHide] :or {show false}}]
+  [:<>
+   [routing/hidden-state-component
+    {:did-mount set-data-by-query-params}]
+   [:> Modal {:size "xl"
+              :centered true
+              :scrollable true
+              :show show}
+    [:> Modal.Header {:closeButton true
+                      :onHide onHide}
+     [:> Modal.Title "Add a new Delegation"]]
+    [:> Modal.Body
+     [shared/delegation-form {:action create
+                              :id "add-delegation-form"}]]
+    [:> Modal.Footer
+     [:> Button {:variant "secondary" :onClick onHide}
+      "Cancel"]
+     [:> Button {:type "submit"
+                 :form "add-delegation-form"}
+      "Add"]]]])

@@ -1,18 +1,15 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [cljs.core.async :as async]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components :refer [link]]
    [leihs.admin.common.components.navigation.back :as back]
-   [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.main :refer [add-delegation]]
    [leihs.admin.state :as state]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front]
