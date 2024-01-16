@@ -1,8 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.groups.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
-   [reagent.ratom :as ratom :refer [reaction]])
+   [cljs.core.async.macros :refer [go]])
   (:require
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.pagination :as pagination :refer [pagination]]
@@ -36,7 +35,11 @@
    [roles-component
     (get group :roles)
     :compact true
-    :update-handler #(roles-update-handler % group)]])
+    :update-handler #(roles-update-handler % group)
+
+    :label "Role"
+    :query-params-key :role
+    :default-option "customer"]])
 
 ;### actions ##################################################################
 
@@ -45,9 +48,11 @@
    :label "Role"
    :query-params-key :role
    :default-option "customer"
-   :options (->> roles/hierarchy
-                 (map (fn [%1] [%1 %1]))
-                 (into {}))])
+   :options (merge {"" "(any role or none)"
+                    "none" "none"}
+                   (->> roles/hierarchy
+                        (map (fn [%1] [%1 %1]))
+                        (into {})))])
 
 (defn filter-section []
   [filter/container
@@ -90,7 +95,7 @@
    [debug-component]
    [groups/debug-component]])
 
-(defn index-page []
+(defn page []
   [:div.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]

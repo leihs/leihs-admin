@@ -130,9 +130,11 @@
    :label "Role"
    :query-params-key :role
    :default-option "customer"
-   :options (->> roles/hierarchy
-                 (map (fn [%1] [%1 %1]))
-                 (into {}))])
+   :options (merge {"" "(any role or none)"
+                    "none" "none"}
+                   (->> roles/hierarchy
+                        (map (fn [%1] [%1 %1]))
+                        (into {})))])
 
 (defn form-suspension-filter []
   [routing/select-component

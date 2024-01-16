@@ -123,7 +123,7 @@
    :inventory-pool-entitlement-group-users inventory-pool-entitlement-group-users/page
    :inventory-pool-entitlement-groups #'inventory-pool-entitlement-groups/page
    :inventory-pool-group-roles #'inventory-pool-group-roles/page
-   :inventory-pool-groups #'inventory-pool-groups/index-page
+   :inventory-pool-groups #'inventory-pool-groups/page
    :inventory-pool-user #'inventory-pool-user/page
    :inventory-pool-user-create #'inventory-pool-user-create/page
    :inventory-pool-user-edit #'inventory-pool-user-edit/page
