@@ -98,8 +98,8 @@
 
 (defn groups []
   [:div
-   [:h3 "Groups"]])
-   ;; [groups/table]])
+   [:h3 "Groups"]
+   [groups/table-component]])
 
 (defn pool-data-li-dl-component [dt dd]
   ^{:key dt}
