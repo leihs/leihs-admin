@@ -8,7 +8,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.users.main]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [str]]
-   [react-bootstrap :as BS]))
+   [react-bootstrap :as BS :refer [Button]]))
 
 ;; (defn groups-count-component []
 ;;   [:span.entitlement-group-groups-count
@@ -71,8 +71,8 @@
 ;;    " in the Inventory-Pool "
 ;;    [inventory-pool/name-link-component]])
 
-(defn edit-group-button [id]
-  [:> react-bootstrap/Button
+(defn edit-group-button []
+  [:> Button
    {:variant "primary"
     :href (str "/manage/"
                @inventory-pool/id* "/groups/"
