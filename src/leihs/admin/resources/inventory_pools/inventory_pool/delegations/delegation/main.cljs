@@ -1,22 +1,61 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.main
   (:refer-clojure :exclude [str keyword])
   (:require
+   [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.suspension.main :as suspension]
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.edit :as edit]
+   [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
+   [leihs.core.routing.front :as routing]
    [leihs.core.user.front]
-   [react-bootstrap :as react-bootstrap :refer [Table]]))
+   [react-bootstrap :as react-bootstrap :refer [Button Table]]
+   [reagent.core :as reagent]
+   [taoensso.timbre]))
 
 ;;; suspension ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defonce data* (reagent/atom nil))
+
 (defn suspension-section []
-  [:section#suspension
-   [:h2 " Suspension "]
-   [suspension/delegation-page-suspension-component]])
+  [:div.row
+   [:div.col-md-6
+    [:hr]
+    [:section#suspension
+     [:h2 " Suspension "]
+     [:div
+      (let [suspension-path (path :inventory-pool-delegation-suspension
+                                  (some-> @routing/state* :route-params))]
+        [:<>
+         [routing/hidden-state-component
+          {:did-mount
+           #(go (reset! data* (<! (suspension-core/fetch-suspension< suspension-path))))}]
+         [suspension-core/suspension-component @data*
+          :update-handler
+          #(go (reset! data* (<! (suspension-core/put-suspension< suspension-path %))))]])]]]])
 
 ;;; show ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def show* (reagent/atom false))
+
+(defn check-user-chosen []
+  (when (contains?
+         (get @routing/state* :query-params) :user-uid)
+    (reset! show* true)))
+
+(defn edit-delegation []
+  [:<>
+   [:> Button
+    {:className ""
+     :onClick #(do
+                 (check-user-chosen)
+                 (reset! show* true))}
+    "Edit"]])
+
+(defn edit-delegation-dialog []
+  [edit/dialog {:show @show*
+                :onHide #(reset! show* false)}])
 
 (defn delegation-info-section []
   [:section.delegation
@@ -72,22 +111,14 @@
         [:tr.created
          [:td "Created "]
          [:td.created (-> delegation :created_at humanize-datetime-component)]]]]]
-     [wait-component])])
-
-;; (defn breadcrumbs []
-;;   (breadcrumbs/nav-component
-;;    @breadcrumbs/left*
-;;    [[breadcrumbs/users-li]
-;;     [breadcrumbs/groups-li]
-;;     [breadcrumbs/edit-li]
-;;     [breadcrumbs/suspension-li]]))
+     [wait-component])
+   [edit-delegation]
+   [edit-delegation-dialog]])
 
 (defn page []
   [:article.delegation.my-5
    [delegation/header]
    [delegation/tabs]
    [delegation-info-section]
-   [:div.row
-    [:div.col-md-6
-     [:hr] [suspension-section]]]
+   [suspension-section]
    [delegation/debug-component]])

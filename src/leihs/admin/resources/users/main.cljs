@@ -175,7 +175,7 @@
    {:keys [membership-filter? role-filter?]
     :or {membership-filter? false
          role-filer? false}}]
-  [:div
+  [:<>
    [routing/hidden-state-component
     {:did-change fetch-users}]
    (if-not (contains? @data* @current-route*)

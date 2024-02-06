@@ -103,8 +103,8 @@
    :inventory #'inventory/page
    :inventory-pool #'inventory-pool/page
    :inventory-pool-delegation #'delegation/page
-   :inventory-pool-delegation-create #'delegation-edit/new-page
-   :inventory-pool-delegation-edit #'delegation-edit/edit-page
+   ;; :inventory-pool-delegation-create #'delegation-edit/new-page
+   :inventory-pool-delegation-edit #'delegation/page
    :inventory-pool-delegation-groups #'delegation-groups/page
    :inventory-pool-delegation-suspension #'delegation-suspension/page
    :inventory-pool-delegation-users #'delegation-users/page

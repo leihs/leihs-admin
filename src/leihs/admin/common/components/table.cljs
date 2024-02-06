@@ -2,7 +2,7 @@
   (:require
    [leihs.core.paths :refer [path]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap]))
+   [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup ButtonToolbar Table]]))
 
 (defn pagination []
   (let [hk (some-> @routing/state* :handler-key)
@@ -15,31 +15,31 @@
        (let [ppage (dec current-page)
              ppagepath (path hk route-params
                              (assoc query-parameters :page ppage))]
-         [:> react-bootstrap/ButtonGroup
-          [:> react-bootstrap/Button
+         [:> ButtonGroup
+          [:> Button
            {:variant "primary"
             :disabled (< ppage 1)
             :href ppagepath}
            " previous "]
-          [:> react-bootstrap/Button
+          [:> Button
            {:variant "primary"
             :href (path hk route-params
                         (assoc query-parameters :page (inc current-page)))}
            " next "]])])))
 
 (defn toolbar [items]
-  [:> react-bootstrap/ButtonToolbar {:className "my-3"}
+  [:> ButtonToolbar {:className "my-3"}
    [pagination]
    items])
 
 (defn container [header body footer & {:keys [className]
-                                       :or {className ""}}]
+                                       :or {className "hello"}}]
   [:<>
    [:hr]
-   [:> react-bootstrap/Table {:striped true
-                              :hover true
-                              :borderless true
-                              :className className}
+   [:> Table {:striped true
+              :hover true
+              :borderless true
+              :className className}
     [:thead
      header]
     [:tbody

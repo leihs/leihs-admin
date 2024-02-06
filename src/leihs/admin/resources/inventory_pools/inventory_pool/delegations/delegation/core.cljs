@@ -21,7 +21,6 @@
                            ":delegation-id")))
 
 (defonce data* (reagent/atom nil))
-
 (defonce delegation* (reaction (get @data* @id*)))
 
 (defn fetch-delegation []

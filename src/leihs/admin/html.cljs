@@ -4,7 +4,6 @@
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    ["/admin-ui" :as UI]
-   ["@fortawesome/free-solid-svg-icons" :as solids]
    ["react-bootstrap" :as BS]
    [accountant.core :as accountant]
    [leihs.admin.common.http-client.modals]
@@ -13,7 +12,6 @@
    [leihs.admin.paths :refer [path]]
    [leihs.admin.sidebar :as sidebar]
    [leihs.admin.state :as state :refer [global-state*] :rename {global-state* state*}]
-   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [str]]
    [leihs.core.dom :as dom]
    [leihs.core.routing.front :as routing]
@@ -45,17 +43,25 @@
      [state/debug-component]]))
 
 (defn current-page []
-  [leihs.admin.common.http-client.modals/modal-component]
-  (let [navbar-data (dom/data-attribute "body" "navbar")]
-    [:> UI/Components.Layout
-     [:> UI/Components.Layout.Header
-      [:> UI/Components.Navbar navbar-data]]
-     [:> UI/Components.Layout.Aside
-      (sidebar/sidebar)]
-     [:> UI/Components.Layout.Main
-      [main]]
-     [:> UI/Components.Layout.Footer
-      [footer]]]))
+  [:<>
+   [leihs.admin.common.http-client.modals/modal-component]
+   (let [navbar-data (dom/data-attribute "body" "navbar")]
+     [:> UI/Components.Layout
+      [:> UI/Components.Layout.Header
+       [:> UI/Components.Navbar navbar-data]]
+      [:> UI/Components.Layout.Aside
+       (sidebar/sidebar)]
+      [:> UI/Components.Layout.Main
+       [main]]
+      [:> UI/Components.Layout.Footer
+       [footer]]])])
+   ;; [:div.container-fluid
+   ;;  (if-let [page (:page @routing/state*)]
+   ;;    [page]
+   ;;    [:div.page
+   ;;     [:h1.text-danger
+   ;;      [:b "Error 404 - There is no handler for the current path defined."]]])]
+   ;; [state/debug-component]])
 
 (defn mount []
   (when-let [app (.getElementById js/document "app")]

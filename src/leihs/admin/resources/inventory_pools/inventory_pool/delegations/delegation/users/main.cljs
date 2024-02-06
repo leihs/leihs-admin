@@ -51,19 +51,16 @@
     (users-membership/create-group-member-user-td-component
      groups-path-fn)]])
 
-(defn main-section []
-  [:section
-   [users-membership/filter-component]
-   [table/toolbar]
-   [table]
-   [table/toolbar]
-
-   [debug-component]
-   [users/debug-component]])
-
 (defn page []
   [:article.delegation.my-5
    [delegation/header]
    [delegation/tabs]
-   [main-section]
-   [delegation/debug-component]])
+   [:section
+    [users-membership/filter-component]
+    [table/toolbar]
+    [table]
+    [table/toolbar]
+
+    [debug-component]
+    [users/debug-component]
+    [delegation/debug-component]]])

@@ -20,7 +20,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button]]
+   [react-bootstrap :as react-bootstrap :refer [Button Table]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -55,9 +55,9 @@
     [filter/select-component
      :label "Membership"
      :query-params-key :membership
-     :options {"any" "members and non-members"
+     :options {"member" "members"
                "non" "non-members"
-               "member" "members"}]
+               "any" "members and non-members"}]
     [filter/form-suspension]
     [filter/form-per-page]
     [filter/reset]]])
@@ -81,9 +81,11 @@
    [:> Button
     {:className "ml-3"
      :onClick #(reset! show* true)}
-    [icons/add]  " Add Delegation"]
-   [create/dialog {:show @show*
-                   :onHide #(reset! show* false)}]])
+    [icons/add]  " Add Delegation"]])
+
+(defn create-delegation-dialog []
+  [create/dialog {:show @show*
+                  :onHide #(reset! show* false)}])
 
 (defn delegations-thead []
   [:thead
@@ -202,7 +204,10 @@
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
-        [:> react-bootstrap/Table {:striped true :hover true :borderless true :className "border-top border-bottom"}
+        [:> Table {:striped true
+                   :hover true
+                   :borderless true
+                   :className "border-top border-bottom"}
 
          [delegations-thead]
          [:tbody
@@ -243,4 +248,5 @@
    [delegations-table]
    [table/toolbar
     [add-delegation]]
+   [create-delegation-dialog]
    [debug-component]])

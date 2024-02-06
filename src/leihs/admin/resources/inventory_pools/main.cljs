@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
@@ -18,7 +17,7 @@
    [leihs.core.auth.core :as auth-core]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap]
+   [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -58,31 +57,33 @@
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn add-inventory-pool []
-  (let [modal-show (reagent/atom false)]
-    (fn []
-      [:<>
-       [:> react-bootstrap/Button
-        {:className "ml-3"
-         :onClick #(reset! modal-show true)}
-        [icons/add] " Add Inventory Pool"]
-       [create/dialog {:show @modal-show
-                       :onHide #(reset! modal-show false)}]])))
+  (when (auth-core/allowed? [auth-core/admin-scopes?])
+    (let [modal-show (reagent/atom false)]
+      (fn []
+        [:<>
+         [:> Button
+          {:className "ml-3"
+           :onClick #(reset! modal-show true)}
+          [icons/add] " Add Inventory Pool"]
+         [create/dialog {:show @modal-show
+                         :onHide #(reset! modal-show false)}]]))))
 
 (defn table-head [& [more-cols]]
-  [:th "Index"]
-  [:th "Active"]
-  [:th "Short name"]
-  [:th "Name " [:a {:href (page-path-for-query-params
-                           {:order (-> [[:name :asc] [:id :asc]]
-                                       clj->js json/to-json)})} "↓"]]
-  [:th "# Users " [:a {:href (page-path-for-query-params
-                              {:order (-> [[:users_count :desc] [:id :asc]]
-                                          clj->js json/to-json)})} "↓"]]
-  [:th "# Delegations " [:a {:href (page-path-for-query-params
-                                    {:order (-> [[:delegations_count :desc] [:id :asc]]
-                                                clj->js json/to-json)})} "↓"]]
-  (for [col more-cols]
-    col))
+  [:tr
+   [:th "Index"]
+   [:th "Active"]
+   [:th "Short name"]
+   [:th "Name " [:a {:href (page-path-for-query-params
+                            {:order (-> [[:name :asc] [:id :asc]]
+                                        clj->js json/to-json)})} "↓"]]
+   [:th "# Users " [:a {:href (page-path-for-query-params
+                               {:order (-> [[:users_count :desc] [:id :asc]]
+                                           clj->js json/to-json)})} "↓"]]
+   [:th "# Delegations " [:a {:href (page-path-for-query-params
+                                     {:order (-> [[:delegations_count :desc] [:id :asc]]
+                                                 clj->js json/to-json)})} "↓"]]
+   (for [col more-cols]
+     col)])
 
 (defn link-to-inventory-pool [inventory-pool inner]
   (let [id (:id inventory-pool)]

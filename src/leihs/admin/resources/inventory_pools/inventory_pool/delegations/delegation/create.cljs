@@ -12,21 +12,13 @@
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [taoensso.timbre]))
 
-(defn set-data-by-query-params [& _]
-  (reset! data*
-          (merge {:pool_protected true}
-                 (-> @routing/state*
-                     :query-params
-                     (select-keys [:name :responsible_user_id :user-uid :pool_protected])
-                     (rename-keys {:user-uid :responsible_user_id})))))
-
-(defn create [& _]
+(defn create [data]
   (go (when-let [id (some->
                      {:chan (async/chan)
                       :url (path :inventory-pool-delegations
                                  {:inventory-pool-id @inventory-pool/id*})
                       :method :post
-                      :json-params @data*}
+                      :json-params data}
                      http-client/request :chan <!
                      http-client/filter-success! :body :id)]
         (accountant/navigate!
@@ -34,22 +26,19 @@
                                            :delegation-id id})))))
 
 (defn dialog [& {:keys [show onHide] :or {show false}}]
-  [:<>
-   [routing/hidden-state-component
-    {:did-mount set-data-by-query-params}]
-   [:> Modal {:size "xl"
-              :centered true
-              :scrollable true
-              :show show}
-    [:> Modal.Header {:closeButton true
-                      :onHide onHide}
-     [:> Modal.Title "Add a new Delegation"]]
-    [:> Modal.Body
-     [shared/delegation-form {:action create
-                              :id "add-delegation-form"}]]
-    [:> Modal.Footer
-     [:> Button {:variant "secondary" :onClick onHide}
-      "Cancel"]
-     [:> Button {:type "submit"
-                 :form "add-delegation-form"}
-      "Add"]]]])
+  [:> Modal {:size "lg"
+             :centered true
+             :scrollable true
+             :show show}
+   [:> Modal.Header {:closeButton true
+                     :onHide onHide}
+    [:> Modal.Title "Add a new Delegation"]]
+   [:> Modal.Body
+    [shared/delegation-form {:action create
+                             :id "add-delegation-form"}]]
+   [:> Modal.Footer
+    [:> Button {:variant "secondary" :onClick onHide}
+     "Cancel"]
+    [:> Button {:type "submit"
+                :form "add-delegation-form"}
+     "Add"]]])
