@@ -62,6 +62,9 @@ function App() {
             <Sidebar.Item icon={faBuilding}>Inventory</Sidebar.Item>
             <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
           </Sidebar.Section>
+          <Sidebar.Section title="Empty">
+            <Sidebar.Group icon={faBuilding} title="Empty Group"></Sidebar.Group>
+          </Sidebar.Section>
         </Sidebar>
       </Layout.Aside>
 

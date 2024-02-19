@@ -52,12 +52,24 @@ function Sidebar({ children, className }) {
 }
 
 function Section({ title, children, className }) {
+  const listRef = useRef(null)
+  const [hasChildren, setHasChildren] = useState(true)
+
+  useEffect(() => {
+    if (listRef.current) {
+      setHasChildren(listRef.current.childElementCount > 0)
+    }
+  }, [listRef])
+
+  // return nothing when children are empty
+  if (!hasChildren) return null
+
   return (
     <li>
       <h1 role="heading" className={cx(s['section-title'], className)}>
         {title}
       </h1>
-      <ul role="list" className={cx(s.section, s['list'], className)}>
+      <ul ref={listRef} role="list" className={cx(s.section, s['list'], className)}>
         {children}
       </ul>
     </li>
@@ -131,6 +143,8 @@ function Group({ icon = null, title = '', children, className }) {
       ref.current.removeEventListener('keydown', handleEsc)
     }
   }, [])
+
+  if (!children) return null
 
   return (
     <li className={cx(s['group'], s['item'], className)}>
