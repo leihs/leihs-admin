@@ -53,16 +53,18 @@ function Sidebar({ children, className }) {
 
 function Section({ title, children, className }) {
   const listRef = useRef(null)
-  const [hasChildren, setHasChildren] = useState(true)
+  const [hasItems, setHasItems] = useState(true)
 
   useEffect(() => {
-    if (listRef.current) {
-      setHasChildren(listRef.current.childElementCount > 0)
-    }
-  }, [listRef])
+    if (!children || !listRef.current) return
+
+    const items = listRef.current.querySelectorAll("[class^='item']")
+
+    setHasItems(items.length)
+  }, [children, listRef, hasItems])
 
   // return nothing when children are empty
-  if (!hasChildren) return null
+  if (!hasItems || !children) return null
 
   return (
     <li>
@@ -109,6 +111,7 @@ function Item({ icon = null, href = null, active = false, children, className })
 
 function Group({ icon = null, title = '', children, className }) {
   const [open, setOpen] = useState(false)
+  const [hasItems, setHasItems] = useState(true)
   const ref = useRef(null)
   const id = crypto.randomUUID()
 
@@ -127,7 +130,9 @@ function Group({ icon = null, title = '', children, className }) {
   }
 
   function onTransitionEnd() {
+    if (!ref.current) return
     const first = ref.current.firstChild
+    if (!first) return
     first.querySelector('a, button').focus()
   }
 
@@ -139,12 +144,26 @@ function Group({ icon = null, title = '', children, className }) {
     ref.current.addEventListener('keydown', handleEsc)
 
     return () => {
-      ref.current.removeEventListener('transitionend', onTransitionEnd)
-      ref.current.removeEventListener('keydown', handleEsc)
+      if (ref.current) {
+        ref.current.removeEventListener('transitionend', onTransitionEnd)
+        ref.current.removeEventListener('keydown', handleEsc)
+      }
     }
   }, [])
 
-  if (!children) return null
+  useEffect(() => {
+    if (!children || !ref.current) return
+
+    const items = ref.current.querySelectorAll("[class^='item']")
+    if (!items) {
+      ref.current.removeEventListener('transitionend', onTransitionEnd)
+      ref.current.removeEventListener('keydown', handleEsc)
+    }
+
+    setHasItems(items.length)
+  }, [children, ref])
+
+  if (!children || !hasItems) return null
 
   return (
     <li className={cx(s['group'], s['item'], className)}>

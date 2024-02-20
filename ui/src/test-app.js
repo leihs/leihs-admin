@@ -63,7 +63,12 @@ function App() {
             <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
           </Sidebar.Section>
           <Sidebar.Section title="Empty">
-            <Sidebar.Group icon={faBuilding} title="Empty Group"></Sidebar.Group>
+            <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item>
+            <Sidebar.Group icon={faBuilding} title="Second Empty Group">
+              <Sidebar.Group icon={faBuilding} title="Second Empty Group">
+                {/* <Sidebar.Item icon={faWarehouse}>Warehouse</Sidebar.Item> */}
+              </Sidebar.Group>
+            </Sidebar.Group>
           </Sidebar.Section>
         </Sidebar>
       </Layout.Aside>
