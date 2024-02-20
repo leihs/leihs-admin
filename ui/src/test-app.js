@@ -24,10 +24,10 @@ function App() {
       <Layout.Aside>
         <Sidebar>
           <Sidebar.Section title="Configuration">
-            <Sidebar.Item href="#hello-test/" icon={faBuilding}>
+            <Sidebar.Item href="#link-test/" icon={faBuilding}>
               Inventory
             </Sidebar.Item>
-            <Sidebar.Item href="#hellollllll" icon={faWarehouse}>
+            <Sidebar.Item href="#link" icon={faWarehouse}>
               Warehouse
             </Sidebar.Item>
             <Sidebar.Group icon={faBuilding} title="Audits">

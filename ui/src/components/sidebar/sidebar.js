@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function Sidebar({ children, className }) {
   const [open, setOpen] = useState(false)
-  // navigate up and down with arrow keys for all li childs
+  const [hasItems, setHasItems] = useState(true)
   const ref = useRef(null)
 
   function handleKeyDown(event) {
@@ -37,9 +37,24 @@ function Sidebar({ children, className }) {
     }
 
     return () => {
-      ref.current.removeEventListener('keydown', handleKeyDown)
+      if (ref.current) {
+        ref.current.removeEventListener('keydown', handleKeyDown)
+      }
     }
   }, [])
+
+  useEffect(() => {
+    if (!children || !ref.current) return
+
+    const items = ref.current.querySelectorAll("[class^='item']")
+    if (!items) {
+      ref.current.removeEventListener('keydown', handleKeyDown)
+    }
+
+    setHasItems(items.length)
+  }, [children, ref])
+
+  if (!children || !hasItems) return null
 
   return (
     <nav ref={ref} role="navigation" className={cx(s['sidebar'], open && s['open'], className)}>
