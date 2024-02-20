@@ -83,15 +83,23 @@
   [:section
    (when-let [data @entitlement-group/data*]
      [:div
-      [table/container
-       [:tr
-        [:th "Property"]
-        [:th "Value"]]
-       (for [{key :key label :label value-component :value-component
-              :or {value-component default-value-component}} table-conf]
-         [:tr {:key key}
-          [:td.label label]
-          [:td.value [value-component (-> data key)]]])]])])
+      [table/container {:className "entitlement-group-overview-table"
+                        :header [:tr
+                                 [:th "Property"]
+                                 [:th "Value"]]
+                        :body (for [{key :key label :label value-component :value-component
+                                     :or {value-component default-value-component}} table-conf]
+                                [:tr {:key key}
+                                 [:td.label label]
+                                 [:td.value [value-component (-> data key)]]])}]])])
+       ;; [:tr
+       ;;  [:th "Property"]
+       ;;  [:th "Value"]]
+       ;; (for [{key :key label :label value-component :value-component
+       ;;        :or {value-component default-value-component}} table-conf]
+       ;;   [:tr {:key key}
+       ;;    [:td.label label]
+       ;;    [:td.value [value-component (-> data key)]]])
 
 (defn page []
   [:article.entitlement-group

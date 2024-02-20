@@ -66,10 +66,10 @@
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [entitlement-groups (-> @data* (get  @current-route* {}) :entitlement-groups seq)]
-       [table/container
-        [entitlement-groups-thead]
-        (doall (for [entitlement-group entitlement-groups]
-                 (entitlement-group-row entitlement-group)))]
+       [table/container {:className "entitlement-groups"
+                         :header (entitlement-groups-thead)
+                         :body (doall (for [entitlement-group entitlement-groups]
+                                        (entitlement-group-row entitlement-group)))}]
        [:div.alert.alert-warning.text-center "No (more) entitlement-groups found."]))])
 
 (defn debug-info []

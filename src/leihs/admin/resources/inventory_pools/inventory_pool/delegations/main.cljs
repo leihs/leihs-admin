@@ -7,7 +7,6 @@
    [cljs.pprint :refer [pprint]]
    [clojure.set :refer [rename-keys]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.pagination :refer [pagination]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]

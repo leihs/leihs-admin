@@ -107,20 +107,16 @@
 
 (defn table-body [inventory-pools tds]
   [:<>
-   (let [page (:page @current-query-paramerters-normalized*)
-         per-page (:per-page @current-query-paramerters-normalized*)]
-     (doall (for [inventory-pool inventory-pools]
-              (table-row inventory-pool tds))))])
+   (doall (for [inventory-pool inventory-pools]
+            (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
   (if-not (contains? @data* @current-route*)
     [wait-component]
     (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
-      [table/container
-       [table-head hds]
-       [table-body inventory-pools tds]
-       [:<>]
-       {:className "inventory-pools"}]
+      [table/container {:className "inventory-pools"
+                        :header (table-head hds)
+                        :body (table-body inventory-pools tds)}]
       [:div.alert.alert-warning.text-center "No (more) inventory-pools found."])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

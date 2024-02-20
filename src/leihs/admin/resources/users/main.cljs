@@ -182,17 +182,16 @@
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
        [table/container
-        [table-head hds]
-        (doall (for [user users]
-                 (table-row user tds)))]
+        {:className "users"
+         :header (table-head hds)
+         :body (doall (for [user users]
+                        (table-row user tds)))}]
        (if @on-first-page?*
          (cond
            (and membership-filter? @users-membership/filtered-by-member?*) (users-membership/empty-members-alert)
            (and role-filter? @roles/filtered-by-role?*) (roles/empty-alert)
            :else [:div.alert.alert-warning.text-center "No users found."])
          [:div.alert.alert-warning.text-center "No more users found."])))])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn debug-component []
   (when (:debug @state/global-state*)

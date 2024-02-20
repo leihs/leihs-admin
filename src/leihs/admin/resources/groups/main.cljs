@@ -137,13 +137,10 @@
 
 (defn core-table-component [hds tds groups]
   (if-let [groups (seq groups)]
-    [table/container
-     [groups-thead-component hds]
-     (let [page (:page @current-query-paramerters-normalized*)
-           per-page (:per-page @current-query-paramerters-normalized*)]
-       (doall (for [group groups]
-                ^{:key (:id group)}
-                [group-row-component group tds])))]
+    [table/container {:header (groups-thead-component hds)
+                      :body (doall (for [group groups]
+                                     ^{:key (:id group)}
+                                     [group-row-component group tds]))}]
     [:div.alert.alert-warning.text-center "No (more) groups found."]))
 
 (defn table-component [hds tds]
