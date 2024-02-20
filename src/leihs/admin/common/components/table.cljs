@@ -32,12 +32,11 @@
    [pagination]
    items])
 
-(defn container [header body footer & {:keys [className]
-                                       :or {className "hello"}}]
+(defn container [& {:keys [className header body footer]
+                    :or {className nil header nil body nil footer nil}}]
   [:<>
    [:hr]
    [:> Table {:striped true
-              :hover true
               :borderless true
               :className className}
     [:thead
