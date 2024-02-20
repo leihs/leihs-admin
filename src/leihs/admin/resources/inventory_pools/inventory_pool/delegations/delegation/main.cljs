@@ -61,7 +61,7 @@
   [:section.delegation
    (if-let [delegation (get @delegation/data* @delegation/id*)]
      [:div
-      [:> Table {:striped true :hover true :borderless true}
+      [:> Table {:striped true :borderless true}
        [:thead
         [:tr
          [:th "Property"]

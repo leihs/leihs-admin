@@ -6,8 +6,8 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
+   [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
-   [leihs.admin.resources.users.user.edit-main :as edit-main]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]))
 
 (defn post []
@@ -21,13 +21,12 @@
                                          (fn [s] (.parse js/JSON s))))}
                      http-client/request :chan <!
                      http-client/filter-success! :body :id)]
-
         (accountant/navigate!
          (path :inventory-pool-user
-               {:inventory-pool-id @inventory-pool/id*
-                :user-id id})))))
+               {:inventory-pool-id @inventory-pool/id* :user-id id})))))
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(defn dialog [& {:keys [show onHide]
+                 :or {show false}}]
   [:> Modal {:size "xl"
              :centered true
              :scrollable true
@@ -38,7 +37,7 @@
    [:> Modal.Body
     [:> Form {:id "add-user-to-inventory-pool-form"
               :on-submit (fn [e] (.preventDefault e) (post))}
-     [edit-main/inner-form-component]]]
+     [edit/inner-form-component]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary" :onClick onHide}
      "Cancel"]

@@ -227,11 +227,6 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-;; (defn breadcrumbs []
-;;   [breadcrumbs/nav-component
-;;    @breadcrumbs/left*
-;;    [[breadcrumbs/create-li]]])
-
 (defn page []
   [:article.delegations
    [routing/hidden-state-component

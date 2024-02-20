@@ -23,7 +23,8 @@
                http-client/filter-success!)
           (delegation/fetch-delegation)))))
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(defn dialog [& {:keys [show onHide]
+                 :or {show false}}]
   [:> Modal {:size "lg"
              :centered true
              :scrollable true

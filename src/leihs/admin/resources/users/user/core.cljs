@@ -70,12 +70,12 @@
        (filter identity)))
 
 (defn name-component [user]
-  [:span
+  [:<>
    (when-not user
      (error "use name-link-component when you call wo argument and :user-id is in the routes"))
-   (let [p (path :user {:user-id (:id user)})
+   (let [path (path :user {:user-id (:id user)})
          name-or-id (fullname-or-some-uid user)]
-     [components/link [:em name-or-id] p])])
+     [components/link [:<> name-or-id] path])])
 
 (defn name-link-component []
   [:span

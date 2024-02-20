@@ -2,13 +2,10 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [clojure.set :refer [rename-keys]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared]
-   [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
-   [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [taoensso.timbre]))
 

@@ -161,13 +161,13 @@
 ;;; page ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn header []
-  [:header
+  [:header.my-5
    [back/button {:href (path :inventory-pool-users {:inventory-pool-id @inventory-pool/id*})}]
    [:h1.mt-3 [name-component]]
    [:h6 "In Pool " [inventory-pool/name-component]]])
 
 (defn page []
-  [:article.user-roles.my-5
+  [:article.user-roles
    [header]
    [overview-component]
    [:div.row

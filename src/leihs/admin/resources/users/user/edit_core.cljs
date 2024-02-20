@@ -1,20 +1,15 @@
 (ns leihs.admin.resources.users.user.edit-core
   (:refer-clojure :exclude [str keyword])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [go timeout]]
    [cljs.pprint :refer [pprint]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-   [leihs.admin.common.form-components :refer [checkbox-component input-component]]
+   [leihs.admin.common.form-components :refer [checkbox-component
+                                               input-component]]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
-   [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.users.user.core :as core :refer [user-id* user-data*]]
+   [leihs.admin.resources.users.user.core :as core :refer [user-data*]]
    [leihs.admin.state :as state]
-   [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.routing.front :as routing]
+   [leihs.core.core :refer [presence]]
    [leihs.core.user.front :as current-user]
-   [reagent.core :as reagent :refer [reaction]]
-   [taoensso.timbre :refer [error warn info debug spy]]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (def data* user-data*)
 

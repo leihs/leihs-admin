@@ -62,11 +62,8 @@
    [leihs.admin.resources.system.main :as system]
    [leihs.admin.resources.users.choose-main :as users-choose]
    [leihs.admin.resources.users.main :as users]
-   [leihs.admin.resources.users.user.create :as user-create]
-   [leihs.admin.resources.users.user.delete-main :as user-delete]
-   [leihs.admin.resources.users.user.edit-main :as user-edit]
+   [leihs.admin.resources.users.user.main :as user]
    [leihs.admin.resources.users.user.password-reset.main :as user-password-reset]
-   [leihs.admin.resources.users.user.show :as user-show]
    [leihs.core.routing.front :as routing]))
 
 (def resolve-table
@@ -143,11 +140,9 @@
    :suppliers #'suppliers/page
    :syssec-settings #'syssec-settings/page
    :system #'system/page
-   :user #'user-show/page
-   :user-create #'user-create/page
-   :user-delete #'user-delete/page
+   :user #'user/page
+   ;; :user-delete #'user-delete/page
    :user-password-reset #'user-password-reset/page
-   :user-edit #'user-edit/page
    :users #'users/page
    :users-choose #'users-choose/page})
 

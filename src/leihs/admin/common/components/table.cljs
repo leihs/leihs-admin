@@ -32,9 +32,11 @@
    [pagination]
    items])
 
-(defn container [& {:keys [className header body footer]
-                    :or {className nil header nil body nil footer nil}}]
-  [:<>
+(defn container
+  [& {:keys [className header body footer actions]
+      :or {className nil header nil body nil footer nil actions nil}}]
+  [:section
+   [:<> actions]
    [:hr]
    [:> Table {:striped true
               :borderless true
@@ -45,5 +47,6 @@
      body]
     [:tfoot
      footer]]
-   [:hr]])
+   [:hr]
+   [:<> actions]])
 

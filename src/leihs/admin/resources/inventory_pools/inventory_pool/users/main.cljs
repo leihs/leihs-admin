@@ -189,21 +189,14 @@
        [create/dialog {:show @show
                        :onHide #(reset! show false)}]])))
 
-(defn header []
-  [:header.my-5
-   [:h1.mt-3 [inventory-pool/name-component]]])
-
 (defn page []
   [:article.inventory-pool-users
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch users/fetch-users))}]
-   [header]
+   [:header.my-5
+    [:h1.mt-3 [inventory-pool/name-component]]]
    [nav/tabs]
    [filter-section]
-   [table/toolbar
-    [create-user]]
    [table-section]
-   [table/toolbar
-    [create-user]]
    [debug-component]
    [users/debug-component]])

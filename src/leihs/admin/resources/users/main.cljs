@@ -13,13 +13,14 @@
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.users.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.users.shared :as shared]
    [leihs.admin.resources.users.user.core :as user]
+   [leihs.admin.resources.users.user.create :as create]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
    [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
+   [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
 (def current-query-params*
@@ -170,6 +171,18 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col user])])
 
+(defn create-user []
+  (let [show (reagent/atom false)]
+    (reset! user/user-data* {})
+    (fn []
+      [:<>
+       [:> Button
+        {:className "ml-3"
+         :onClick #(reset! show true)}
+        [icons/add]  " Add User"]
+       [create/dialog {:show @show
+                       :onHide #(reset! show false)}]])))
+
 (defn users-table
   [hds tds &
    {:keys [membership-filter? role-filter?]
@@ -183,6 +196,8 @@
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
        [table/container
         {:className "users"
+         :actions [table/toolbar
+                   [create-user]]
          :header (table-head hds)
          :body (doall (for [user users]
                         (table-row user tds)))}]
@@ -208,30 +223,23 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-(defn main-page-content-component []
-  [:div
-   [filter-component]
-   [routing/pagination-component]
-   [users-table
-    [user-th-component
-     org-th-component
-     org-id-th-component
-     contracts-count-th-component
-     pools-count-th-component
-     groups-count-th-component]
-    [user-td-component
-     org-td-component
-     org-id-td-component
-     contracts-count-td-component
-     pools-count-td-component
-     groups-count-td-component]]
-   [routing/pagination-component]
-   [debug-component]])
-
 (defn page []
-  [:div.users
-   [breadcrumbs/nav-component
-    @breadcrumbs/left*
-    [[breadcrumbs/user-create-li]]]
-   [:h1 [icons/users] " Users"]
-   [main-page-content-component]])
+  [:article.inventory-pool.my-5
+   [:h1.my-5
+    [icons/users] " Users"]
+   [:section
+    [filter-component]
+    [users-table
+     [user-th-component
+      org-th-component
+      org-id-th-component
+      contracts-count-th-component
+      pools-count-th-component
+      groups-count-th-component]
+     [user-td-component
+      org-td-component
+      org-id-td-component
+      contracts-count-td-component
+      pools-count-td-component
+      groups-count-td-component]]
+    [debug-component]]])
