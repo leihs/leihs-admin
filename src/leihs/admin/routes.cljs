@@ -12,9 +12,9 @@
    [leihs.admin.resources.buildings.building.main :as building]
    [leihs.admin.resources.buildings.main :as buildings]
    [leihs.admin.resources.groups.group.create :as group-create]
-   [leihs.admin.resources.groups.group.del :as group-delete]
-   [leihs.admin.resources.groups.group.edit :as group-edit]
-   [leihs.admin.resources.groups.group.show :as group-show]
+   ;; [leihs.admin.resources.groups.group.del :as group-delete]
+   ;; [leihs.admin.resources.groups.group.edit :as group-edit]
+   [leihs.admin.resources.groups.group.main :as group]
    [leihs.admin.resources.groups.group.users.main :as group-users]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-fields.inventory-field.main :as inventory-field]
@@ -90,11 +90,11 @@
    :inventory-field-delete #'inventory-field/delete-page
    :inventory-field-edit #'inventory-field/edit-page
    :inventory-fields #'inventory-fields/page
-   :group #'group-show/page
-   :group-create #'group-create/page
-   :group-delete #'group-delete/page
-   :group-edit #'group-edit/page
-   :group-users #'group-users/index-page
+   :group #'group/page
+   ;; :group-create #'group-create/page
+   ;; :group-delete #'group-delete/page
+   ;; :group-edit #'group-edit/page
+   :group-users #'group-users/page
    :groups #'groups/page
    :home #'home/page
    :inventory #'inventory/page

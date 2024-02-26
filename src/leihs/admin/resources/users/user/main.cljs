@@ -12,7 +12,7 @@
    [leihs.admin.resources.users.user.password-reset.main :as password-reset]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup DropdownButton Dropdown]]
+   [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup DropdownButton Dropdown Tabs Tab]]
    [reagent.core :as reagent]))
 
 ;; (defn breadcrumbs []
@@ -103,26 +103,13 @@
      [reset-password-button]]
     [delete-user-button]]])
 
-(defn inventory-pools []
-  [:section
-   [:h2.mt-5.mb-3 "Inventory Pools"]
-   [inventory-pools/table-component]])
-
-(defn groups []
-  [:div
-   [:h2.mt-5.mb-3 [:a {:href (path :groups {} {:including-user @user-id*})}
-                   "Groups"]]
-   [groups/table-component]])
-
 (defn extended-info []
-  [:div.row
-   [:div.col-md
-    [:h2.mt-5.mb-3 "Extended User Info"]
-    (if-let [ext-info (some-> @user-data* :extended_info presence
-                              (->> (.parse js/JSON)) presence)]
-      [:div.bg-light [:pre (.stringify js/JSON ext-info nil 2)]]
-      [:div.alert.alert-secondary.text-center
-       "There is no extended info available for this user."])]])
+  [:div.mt-3
+   (if-let [ext-info (some-> @user-data* :extended_info presence
+                             (->> (.parse js/JSON)) presence)]
+     [:div.bg-light [:pre (.stringify js/JSON ext-info nil 2)]]
+     [:div.alert.alert-secondary.text-center
+      "There is no extended info available for this user."])])
 
 (defn page []
   [:article.users
@@ -135,8 +122,12 @@
     [:h1.mt-3 (when-not (empty? @user-data*)
                 [user-core/name-component @user-data*])]]
    [basic-properties]
-   [inventory-pools]
-   [groups]
-   [extended-info]
+   [:> Tabs {:className "mt-5" :defaultActiveKey "inventory-pools" :transition false}
+    [:> Tab {:eventKey "inventory-pools" :title "Inventory Pools"}
+     [inventory-pools/table-component {:chrome false}]]
+    [:> Tab {:eventKey "groups" :title "Groups"}
+     [groups/table-component]]
+    [:> Tab {:eventKey "extended-info" :title "Extended Info"}
+     [extended-info]]]
    [delete-user-dialog]
    [user-core/debug-component]])

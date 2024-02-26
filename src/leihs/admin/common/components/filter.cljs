@@ -14,7 +14,7 @@
    [reagent.core :as reagent]))
 
 (defn container [children]
-  [:section.my-5
+  [:section.my-5.sticky-top.bg-light.p-3
    ;; [:h1 "Filters"]
    [:div.form-row
     children]])

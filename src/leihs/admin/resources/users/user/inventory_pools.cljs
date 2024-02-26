@@ -82,14 +82,16 @@
    " / "
    (:reservations_count row)])
 
-(defn table-component []
+(defn table-component [& {:keys [chrome]
+                          :or {chrome true}}]
   [:div.user-inventory-pools
    [routing/hidden-state-component
     {:did-mount clean-and-fetch-inventory-pools
      :did-change clean-and-fetch-inventory-pools}]
    (if (and @data* @user-data*)
      [table/container
-      {:header [:tr
+      {:borders chrome
+       :header [:tr
                 [:th "User in pool"]
                 [:th "Roles"]
                 [:th "Submitted ; approved / total reservations"]

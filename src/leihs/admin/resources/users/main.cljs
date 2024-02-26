@@ -104,8 +104,6 @@
          [:span.text-success "yes"]
          [:span.text-warning "no"])])
 
-;;; protected
-
 (defn protected-th-component []
   [:th {:key :admin_protected} "Protected"])
 
@@ -171,7 +169,7 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col user])])
 
-(defn create-user []
+(defn add-user-button []
   (let [show (reagent/atom false)]
     (reset! user/user-data* {})
     (fn []
@@ -179,7 +177,7 @@
        [:> Button
         {:className "ml-3"
          :onClick #(reset! show true)}
-        [icons/add]  " Add User"]
+        "Add User"]
        [create/dialog {:show @show
                        :onHide #(reset! show false)}]])))
 
@@ -197,7 +195,7 @@
        [table/container
         {:className "users"
          :actions [table/toolbar
-                   [create-user]]
+                   [add-user-button]]
          :header (table-head hds)
          :body (doall (for [user users]
                         (table-row user tds)))}]
@@ -224,7 +222,7 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.inventory-pool.my-5
+  [:article.users.my-5
    [:h1.my-5
     [icons/users] " Users"]
    [:section

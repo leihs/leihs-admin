@@ -26,7 +26,7 @@
     {:did-change fetch-groups}]
    (if-not (and @data* @user-data*)
      [wait-component]
-     [groups-core/core-table-component
+     [groups-core/core-table-component {:chrome false}
       [groups-core/name-th-component
        groups-core/org-th-component
        groups-core/org-id-th-component]

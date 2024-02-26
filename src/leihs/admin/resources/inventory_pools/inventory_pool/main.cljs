@@ -3,6 +3,7 @@
   (:require
    [clojure.core :as core]
    [clojure.string :as str]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -53,32 +54,31 @@
 (defn inventory-pool-info-table []
   (if-not @inventory-pool/data*
     [wait-component]
-    [:> Table {:striped true :hover true :borderless true :responsive true}
-     [:thead
-      [:tr
-       [:th "Property"]
-       [:th.w-75 "Value"]]]
-     [:tbody
-      [:tr.active
-       [:td "Active" [:small " (is_active)"]]
-       [:td.active (core/str  (:is_active @inventory-pool/data*))]]
-      [:tr.shortname
-       [:td "Short Name" [:small " (shortname)"]]
-       [:td.shortname
-        (:shortname @inventory-pool/data*)]]
-      [:tr.name
-       [:td "Name" [:small " (name)"]]
-       [:td.name
-        (:name @inventory-pool/data*)]]
-      [:tr.email
-       [:td "Email" [:small " (email)"]]
-       [:td.email
-        (:email @inventory-pool/data*)]]
-      [:tr.description
-       [:td "Description" [:small " (description)"]]
-       [:td.description
-        {:style {:white-space "break-spaces"}}
-        (:description @inventory-pool/data*)]]]]))
+    [table/container
+     {:borders false
+      :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+      :body
+      [:<>
+       [:tr.active
+        [:td "Active" [:small " (is_active)"]]
+        [:td.active (core/str  (:is_active @inventory-pool/data*))]]
+       [:tr.shortname
+        [:td "Short Name" [:small " (shortname)"]]
+        [:td.shortname
+         (:shortname @inventory-pool/data*)]]
+       [:tr.name
+        [:td "Name" [:small " (name)"]]
+        [:td.name
+         (:name @inventory-pool/data*)]]
+       [:tr.email
+        [:td "Email" [:small " (email)"]]
+        [:td.email
+         (:email @inventory-pool/data*)]]
+       [:tr.description
+        [:td "Description" [:small " (description)"]]
+        [:td.description
+         {:style {:white-space "break-spaces"}}
+         (:description @inventory-pool/data*)]]]}]))
 
 (defn page []
   [:article.inventory-pool.my-5

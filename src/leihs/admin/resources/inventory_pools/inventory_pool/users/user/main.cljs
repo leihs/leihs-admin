@@ -15,6 +15,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.roles.main :as user-roles]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.suspension.main :as suspension]
    [leihs.admin.resources.users.user.core :as user :refer [user-data* user-id*]]
+   [leihs.admin.resources.users.user.main :as user-main]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
@@ -156,7 +157,8 @@
     [:div.col-lg-3
      [:hr]
      [:h3 "Account Properties"]
-     [user/account-properties-component @user-data*]]]])
+     [user/account-properties-component @user-data*]]
+    [user-main/edit-user-button]]])
 
 ;;; page ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
