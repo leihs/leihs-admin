@@ -70,37 +70,34 @@
      [icons/email] " Send per Mail"]))
 
 (defn show-component []
-  [:<>
-   [:div
-    (let [url (reset-full-url (:token @data*))]
-      [:div
-       [:> InputGroup {:className "mb-3"}
-        [:> FormControl {:value (reset-path-url)
-                         :disabled true}]
-        [:> InputGroup.Append
-         [:> Button
-          {:variant "secondary"
-           :href (reset-path-url)
-           :target "_blank"}
-          "Visit"]]]
-       [:> InputGroup {:className "mb-5"}
-        [:> InputGroup.Prepend
-         [:> InputGroup.Text "Reset Token"]]
-
-        [:> FormControl {:value (:token @data*)
-                         :disabled true}]
-        [:> InputGroup.Append
-         [:> Button {:variant "secondary"
-                     :onClick #(js/navigator.clipboard.writeText (:token @data*))}
-          "Copy"]]]
-       [:div.d-flex.justify-content-center
-        [qrcode-recat/QRCodeSVG #js{:value url :size 256}]]
-       [:hr]
-       [:div
-        [:p.font-weight-bold "Valid until"]
-        [:p
-         (when (@data* :valid_until)
-           (-> @data* :valid_until format-date))]]])]])
+  (let [url (reset-full-url (:token @data*))]
+    [:<>
+     [:> InputGroup {:className "mb-3"}
+      [:> FormControl {:value (or (reset-path-url) "")
+                       :disabled true}]
+      [:> InputGroup.Append
+       [:> Button
+        {:variant "secondary"
+         :href (reset-path-url)
+         :target "_blank"}
+        "Visit"]]]
+     [:> InputGroup {:className "mb-5"}
+      [:> InputGroup.Prepend
+       [:> InputGroup.Text "Reset Token"]]
+      [:> FormControl {:value (:token (or @data* ""))
+                       :disabled true}]
+      [:> InputGroup.Append
+       [:> Button {:variant "secondary"
+                   :onClick #(js/navigator.clipboard.writeText (:token @data*))}
+        "Copy"]]]
+     [:div.d-flex.justify-content-center
+      [qrcode-recat/QRCodeSVG #js{:value url :size 256}]]
+     [:hr]
+     [:div
+      [:p.font-weight-bold "Valid until"]
+      [:p
+       (when (@data* :valid_until)
+         (-> @data* :valid_until format-date))]]]))
 
 (defn reset-link-no-possible-warning-component []
   [:div.alert.alert-warning {:role :alert}
@@ -123,19 +120,18 @@
    [:> Modal.Body
     (if-not @user-password-resetable?*
       [reset-link-no-possible-warning-component]
-          ;; (if (= (:mode @data*) :create)
-            ;; (when show (submit data*))
-      [show-component data*])]
+      (when (seq @data*)
+        [show-component data*]))]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :onClick onHide}
      "Cancel"]
     [mail-link-button data*]]])
 
-- (defn page [])
--  [:div.user-password-reset]
--   [routing/hidden-state-component]
--    {:did-change #(core/clean-and-fetch)}
--   [:h1 "Password Reset Link for "]
--    [core/name-link-component]
+(defn page []
+  [:div.user-password-reset
+   [routing/hidden-state-component
+    {:did-change #(core/clean-and-fetch)}]
+   [:h1 "Password Reset Link for "
+    [core/name-link-component]]])
 
