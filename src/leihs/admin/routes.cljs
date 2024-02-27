@@ -80,10 +80,10 @@
    :authentication-system-groups #'authentication-system-groups/page
    :authentication-system-users #'authentication-system-users/page
    :authentication-systems #'authentication-systems/page
-   :building #'building/show-page
-   :building-create #'building/create-page
-   :building-delete #'building/delete-page
-   :building-edit #'building/edit-page
+   :building #'building/page
+   ;; :building-create #'building/create-page
+   ;; :building-delete #'building/delete-page
+   ;; :building-edit #'building/edit-page
    :buildings #'buildings/page
    :inventory-field #'inventory-field/show-page
    :inventory-field-create #'inventory-field/create-page

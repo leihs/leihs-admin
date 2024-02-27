@@ -1,20 +1,14 @@
 (ns leihs.admin.resources.buildings.building.main
   (:refer-clojure :exclude [str keyword])
-  (:require [leihs.core.core :refer [keyword str presence]])
   (:require
-   [clojure.set :refer [rename-keys]]
    [compojure.core :as cpj]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.resources.buildings.shared :as shared]
-   [leihs.core.auth.core :as auth]
    [leihs.core.uuid :refer [uuid]]
-   [logbug.catcher :as catcher]
-   [logbug.debug :as debug]
    [next.jdbc :as jdbc]
-   [next.jdbc.sql :refer [query update! delete! insert!] :rename {query jdbc-query update! jdbc-update! delete! jdbc-delete! insert! jdbc-insert!}]
-   [taoensso.timbre :refer [error warn info debug spy]]))
+   [next.jdbc.sql :refer [insert! query] :rename {query jdbc-query update! jdbc-update! delete! jdbc-delete! insert! jdbc-insert!}]))
 
 ;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

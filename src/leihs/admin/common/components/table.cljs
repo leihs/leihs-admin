@@ -45,6 +45,7 @@
    (when borders
      [:hr])
    [:> Table {:striped true
+              :bordered true
               :borderless true
               :className className}
     [:thead
