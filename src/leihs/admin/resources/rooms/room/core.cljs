@@ -1,23 +1,16 @@
 (ns leihs.admin.resources.rooms.room.core
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [timeout]]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components :as components]
-
-   [leihs.admin.common.http-client.core :as http-client]
+   [leihs.admin.common.http-client.core :as http]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.rooms.room.breadcrumbs :as breadcrumbs]
    [leihs.admin.state :as state]
-   [leihs.core.core :refer [keyword str presence]]
-
+   [leihs.core.core :refer [presence str]]
    [leihs.core.routing.front :as routing]
-   [leihs.core.user.front :as core-user]
-   [leihs.core.user.shared :refer [short-id]]
+   [react-bootstrap :as react-bootstrap :refer [Form]]
    [reagent.core :as reagent]))
 
 (defonce id*
@@ -28,32 +21,59 @@
 
 (defonce buildings-data* (reagent/atom nil))
 
-(defonce edit-mode?*
-  (reaction
-   (and (map? @data*)
-        (boolean ((set '(:room-edit :room-create))
-                  (:handler-key @routing/state*))))))
-
-;;; fetch ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn clean-and-fetch [& args]
+(defn clean-and-fetch []
   (reset! data* nil)
   (reset! buildings-data* nil)
   (go (reset! buildings-data*
               (some-> {:chan (async/chan)
                        :url (path :buildings)}
-                      http-client/request :chan <!
-                      http-client/filter-success!
+                      http/request :chan <!
+                      http/filter-success!
                       :body :buildings))
-      (if (= (:route @routing/state*) (path :room-create))
-        (reset! data* {:building_id nil #_(-> @buildings-data* first :id)})
+      (if (= (:route @routing/state*) (path :rooms))
+        (reset! data* {:building_id nil})
         (reset! data*
                 (some->
                  {:chan (async/chan)
                   :url (path :room
                              (-> @routing/state* :route-params))}
-                 http-client/request :chan <!
-                 http-client/filter-success! :body)))))
+                 http/request :chan <!
+                 http/filter-success! :body)))
+      (http/route-cached-fetch data*)))
+
+(defn room-form [action]
+  [:> Form {:id "room-form"
+            :on-submit (fn [e] (.preventDefault e) (action))}
+   [:> Form.Group]
+   [:> Form.Label "Name"]
+   [:> Form.Control
+    {:type "text"
+     :required true
+     :placeholder "Enter Name"
+     :value (or (:name @data*) "")
+     :onChange (fn [e] (swap! data* assoc :name (-> e .-target .-value)))}]
+   [:> Form.Group
+    [:> Form.Label "Description"]
+    [:> Form.Control
+     {:as "textarea"
+      :placeholder "Enter description"
+      :rows 10
+      :value (or (:description @data*) "")
+      :onChange (fn [e] (swap! data* assoc :description (-> e .-target .-value)))}]]
+   [:> Form.Group
+    [:> Form.Label "Building"]
+    [:> Form.Control
+     {:required true
+      :value (or (:building_id @data*)
+                 (swap! data* assoc :building_id
+                        (-> @buildings-data* first :id)))
+      :onChange (fn [e] (swap! data* assoc :building_id (-> e .-target .-value)))
+      :as "select"}
+     (->> @buildings-data*
+          (map-indexed
+           #(vector :option {:key %1
+                             :value (:id %2)}
+                    (:name %2))))]]])
 
 ;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -63,25 +83,10 @@
      [:div.room-debug
       [:hr]
       [:div.room-data
-       [:h3 "@data*"]
+       [:h2 "@data*"]
        [:pre (with-out-str (pprint @data*))]]]
      [:div.room-debug
       [:hr]
       [:div.room-data
-       [:h3 "@buildings-data*"]
+       [:h2 "@buildings-data*"]
        [:pre (with-out-str (pprint @buildings-data*))]]]]))
-
-;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn id-component []
-  [:p "id: " [:span {:style {:font-family "monospace"}} (:id @data*)]])
-
-(defn name-link-component []
-  [:span
-   ; [routing/hidden-state-component
-   ;  {:did-change fetch}]
-   (let [p (path :room {:room-id @id*})
-         inner (if @data*
-                 [:em (str (:name @data*))]
-                 [:span {:style {:font-family "monospace"}} (short-id @id*)])]
-     [components/link inner p])])

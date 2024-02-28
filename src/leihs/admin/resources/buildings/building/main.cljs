@@ -53,8 +53,8 @@
 ;;; show ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn page []
-  [routing/hidden-state-component {:did-mount #(clean-and-fetch)}]
   [:article.building
+   [routing/hidden-state-component {:did-mount #(clean-and-fetch)}]
    [:header.my-5
     [back/button {:href (path :buildings)}]
     [:h1.mt-3

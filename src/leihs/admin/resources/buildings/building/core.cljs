@@ -25,6 +25,7 @@
                {:chan (async/chan)
                 :url (path :building
                            (-> @routing/state* :route-params))}
+
                http-client/request :chan <!
                http-client/filter-success! :body))))
 

@@ -125,10 +125,10 @@
    :mail-template #'mail-template/show-page
    :mail-template-edit #'mail-template/edit-page
    :mail-templates #'mail-templates/page
-   :room #'room/show-page
-   :room-create #'room/create-page
-   :room-delete #'room/delete-page
-   :room-edit #'room/edit-page
+   :room #'room/page
+   ;; :room-create #'room/create-page
+   ;; :room-delete #'room/delete-page
+   ;; :room-edit #'room/edit-page
    :rooms #'rooms/page
    :settings #'settings/page
    :smtp-settings #'smtp-settings/page

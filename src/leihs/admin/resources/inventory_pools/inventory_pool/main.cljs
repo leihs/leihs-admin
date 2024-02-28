@@ -4,7 +4,6 @@
    [clojure.core :as core]
    [clojure.string :as str]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -14,14 +13,8 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as BS :refer [Button Table]]
+   [react-bootstrap :as BS :refer [Button]]
    [reagent.core :as reagent]))
-
-;; (defonce edit-mode?*
-;;   (reaction
-;;    (and (map? @inventory-pool/data*)
-;;         (boolean ((set '(:inventory-pool-edit :inventory-pool-create))
-;;                   (:handler-key @routing/state*))))))
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
