@@ -20,7 +20,7 @@
        (first)
        :name))
 
-(defn room-info-table []
+(defn info-table []
   (let [data @room/data*]
     (fn []
       [table/container
@@ -44,7 +44,7 @@
       [:<>
        [:> Button
         {:onClick #(reset! show true)}
-        "Edit Room"]
+        "Edit"]
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 
@@ -56,7 +56,7 @@
         {:variant "danger"
          :className "ml-3"
          :onClick #(reset! show true)}
-        "Delete Room"]
+        "Delete"]
        [delete/dialog {:show @show
                        :onHide #(reset! show false)}]])))
 (defn header []
@@ -77,7 +77,7 @@
      [:article.room
       [header]
       [:section
-       [room-info-table]
+       [info-table]
        [edit-building-button]
        [delete-building-button]
        [room/debug-component]]])])

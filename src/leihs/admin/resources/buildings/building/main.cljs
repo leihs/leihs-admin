@@ -33,7 +33,7 @@
       [:<>
        [:> Button
         {:onClick #(reset! show true)}
-        "Edit Building"]
+        "Edit"]
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 
@@ -45,7 +45,7 @@
         {:variant "danger"
          :className "ml-3"
          :onClick #(reset! show true)}
-        "Delete Building"]
+        "Delete"]
        [delete/dialog {:show @show
                        :onHide #(reset! show false)}]])))
 

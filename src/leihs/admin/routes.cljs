@@ -133,10 +133,10 @@
    :settings #'settings/page
    :smtp-settings #'smtp-settings/page
    :statistics #'statistics/page
-   :supplier #'supplier/show-page
-   :supplier-create #'supplier/create-page
-   :supplier-delete #'supplier/delete-page
-   :supplier-edit #'supplier/edit-page
+   :supplier #'supplier/page
+   ;; :supplier-create #'supplier/create-page
+   ;; :supplier-delete #'supplier/delete-page
+   ;; :supplier-edit #'supplier/edit-page
    :suppliers #'suppliers/page
    :syssec-settings #'syssec-settings/page
    :system #'system/page
