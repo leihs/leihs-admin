@@ -33,11 +33,12 @@
   (reset! data* nil)
   (fetch))
 
-(defn building-form [data*]
+(defn building-form [action]
   [:div.building.mt-3
    (when (:is_general @data*)
      [:div.alert.alert-info "This is a general building which is used for unknown locations of items."])
-   [:> Form
+   [:> Form {:id "building-form"
+             :on-submit (fn [e] (.preventDefault e) (action))}
     [:> Form.Group
      [:> Form.Label "Name"]
      [:> Form.Control
@@ -61,9 +62,3 @@
      [:div.building-data
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
-
-(defn building-name []
-  [:span
-   [routing/hidden-state-component
-    {:did-change fetch}]
-   [:<> (str (:name @data*))]])

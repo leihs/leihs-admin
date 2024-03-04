@@ -6,16 +6,13 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.buildings.building.core :as building-core]
-   [react-bootstrap :as react-bootstrap :refer [Button Modal]]
-   [reagent.core :as reagent]))
-
-(defonce data* (reagent/atom {}))
+   [react-bootstrap :as react-bootstrap :refer [Button Modal]]))
 
 (defn create []
   (go (when-let [id (some->
                      {:url (path :buildings)
                       :method :post
-                      :json-params  @data*
+                      :json-params  @building-core/data*
                       :chan (async/chan)}
                      http-client/request :chan <!
                      http-client/filter-success!
@@ -25,6 +22,7 @@
 
 (defn dialog [& {:keys [show onHide]
                  :or {show false}}]
+  (reset! building-core/data* {})
   [:> Modal {:size "md"
              :centered true
              :scrollable true
@@ -33,12 +31,11 @@
                      :onHide onHide}
     [:> Modal.Title "Edit Building"]]
    [:> Modal.Body
-    [building-core/building-form data*]]
+    [building-core/building-form create]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :onClick onHide}
      "Cancel"]
-    [:> Button {:onClick #(do
-                            (onHide)
-                            (create))}
+    [:> Button {:type "submit"
+                :form "building-form"}
      "Save"]]])

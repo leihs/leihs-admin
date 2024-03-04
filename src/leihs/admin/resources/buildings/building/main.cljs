@@ -13,20 +13,19 @@
    [reagent.core :as reagent]))
 
 (defn building-info-table []
-  (if-not @building/data*
-    [wait-component]
-    [table/container
-     {:borders false
-      :header [:tr [:th "Property"] [:th.w-75 "Value"]]
-      :body
-      [:<>
-       [:tr.name
-        [:td "Name" [:small " (name)"]]
-        [:td.name (clojure.core/str  (:name @building/data*))]]
-       [:tr.code
-        [:td "Code" [:small " (code)"]]
-        [:td.code
-         (:code @building/data*)]]]}]))
+  (let [data @building/data*]
+    (fn []
+      [table/container
+       {:borders false
+        :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+        :body
+        [:<>
+         [:tr.name
+          [:td "Name" [:small " (name)"]]
+          [:td.name  (:name data)]]
+         [:tr.code
+          [:td "Code" [:small " (code)"]]
+          [:td.code (:code data)]]]}])))
 
 (defn edit-building-button []
   (let [show (reagent/atom false)]
@@ -50,16 +49,23 @@
        [delete/dialog {:show @show
                        :onHide #(reset! show false)}]])))
 
-;;; show ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn header []
+  (let [name (:name @building/data*)]
+    (fn []
+      [:header.my-5
+       [back/button {:to (path :buildings)}]
+       [:h1.mt-3 name]])))
 
 (defn page []
-  [:article.building
-   [routing/hidden-state-component {:did-mount #(clean-and-fetch)}]
-   [:header.my-5
-    [back/button {:href (path :buildings)}]
-    [:h1.mt-3
-     [building/building-name]]]
-   [building-info-table]
-   [edit-building-button]
-   [delete-building-button]
-   [building/debug-component]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change clean-and-fetch}]
+   (if-not @building/data*
+     [:div.my-5
+      [wait-component " Loading Room Data ..."]]
+     [:article.building
+      [header]
+      [building-info-table]
+      [edit-building-button]
+      [delete-building-button]
+      [building/debug-component]])])
