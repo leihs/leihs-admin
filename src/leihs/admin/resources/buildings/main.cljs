@@ -148,24 +148,21 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
-(defn main-page-content-component []
-  [:div
-   [routing/hidden-state-component {:did-change fetch-buildings}]
-   [filter-component]
-   [table-component
-    [name-th-component
-     code-th-component
-     rooms-count-th-component
-     items-count-th-component]
-    [name-td-component
-     code-td-component
-     rooms-count-td-component
-     items-count-td-component]]
-   [debug-component]])
-
 (defn page []
   [:article.buildings
    [:header.my-5
     [:h1 [icons/building] " Buildings"]]
    [:section
-    [main-page-content-component]]])
+    [routing/hidden-state-component
+     {:did-change fetch-buildings}]
+    [filter-component]
+    [table-component
+     [name-th-component
+      code-th-component
+      rooms-count-th-component
+      items-count-th-component]
+     [name-td-component
+      code-td-component
+      rooms-count-td-component
+      items-count-td-component]]
+    [debug-component]]])
