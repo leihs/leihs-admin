@@ -35,15 +35,6 @@
 (defn fetch-delegations []
   (http-client/route-cached-fetch data*))
 
-(defn set-data-by-query-params [& _]
-  (js/console.debug "set-data-by-query-params" @data*)
-  (reset! data*
-          (merge {:pool_protected true}
-                 (-> @routing/state*
-                     :query-params
-                     (select-keys [:name :responsible_user_id :user-uid :pool_protected])
-                     (rename-keys {:user-uid :responsible_user_id})))))
-
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn filter-section []

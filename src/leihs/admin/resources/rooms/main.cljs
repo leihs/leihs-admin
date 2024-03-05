@@ -10,7 +10,6 @@
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   ;; [leihs.admin.resources.buildings.building.core :as buildings-core]
    [leihs.admin.resources.rooms.room.core :as room :refer [buildings-data*]]
    [leihs.admin.resources.rooms.room.create :as create]
    [leihs.admin.resources.rooms.shared :as shared]
@@ -19,7 +18,7 @@
    [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [detect str]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button]]
+   [react-bootstrap :as react-bootstrap :refer [Alert Button]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -32,7 +31,6 @@
   (reaction (shared/normalized-query-parameters @current-query-paramerters*)))
 
 (def data* (reagent/atom {}))
-;; (defonce buildings-data* (reagent/atom nil))
 
 (defn clean-and-fetch []
   (go (reset! buildings-data*
@@ -135,7 +133,9 @@
       (doall (for [room rooms]
                ^{:key (:id room)}
                [room-row-component room tds]))}]
-    [:div.alert.alert-warning.text-center "No (more) rooms found."]))
+    [:> Alert {:variant "info"
+               :className "text-center"}
+     "No (more) rooms found."]))
 
 (defn table-component [hds tds]
   (if (empty? @data*)

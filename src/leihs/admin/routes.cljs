@@ -85,10 +85,10 @@
    ;; :building-delete #'building/delete-page
    ;; :building-edit #'building/edit-page
    :buildings #'buildings/page
-   :inventory-field #'inventory-field/show-page
-   :inventory-field-create #'inventory-field/create-page
-   :inventory-field-delete #'inventory-field/delete-page
-   :inventory-field-edit #'inventory-field/edit-page
+   :inventory-field #'inventory-field/page
+   ;; :inventory-field-create #'inventory-field/create-page
+   ;; :inventory-field-delete #'inventory-field/delete-page
+   ;; :inventory-field-edit #'inventory-field/edit-page
    :inventory-fields #'inventory-fields/page
    :group #'group/page
    ;; :group-create #'group-create/page

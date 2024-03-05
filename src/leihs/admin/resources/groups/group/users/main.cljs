@@ -147,7 +147,6 @@
   [:article.group
    [routing/hidden-state-component
     {:did-mount group-core/clean-and-fetch}]
-   (js/console.debug (-> @routing/state* :route-params :group-id))
    [:header.my-5
     [back/button  {:href (path :groups {})}]
     [:h1.mt-3 [group-core/group-name-component]]]
