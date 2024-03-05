@@ -122,8 +122,8 @@
    :inventory-pools #'inventory-pools/page
    :languages-settings #'languages-settings/page
    :misc-settings #'misc-settings/page
-   :mail-template #'mail-template/show-page
-   :mail-template-edit #'mail-template/edit-page
+   :mail-template #'mail-template/page
+   ;; :mail-template-edit #'mail-template/edit-page
    :mail-templates #'mail-templates/page
    :room #'room/page
    ;; :room-create #'room/create-page
