@@ -17,6 +17,7 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
+          (js/console.log route)
           (accountant/navigate! route)))))
 
 (defn dialog [& {:keys [show onHide]

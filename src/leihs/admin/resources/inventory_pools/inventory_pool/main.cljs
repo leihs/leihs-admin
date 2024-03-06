@@ -57,16 +57,14 @@
         [:td.active (core/str  (:is_active @inventory-pool/data*))]]
        [:tr.shortname
         [:td "Short Name" [:small " (shortname)"]]
-        [:td.shortname
-         (:shortname @inventory-pool/data*)]]
+        [:td.shortname (:shortname @inventory-pool/data*)]]
        [:tr.name
         [:td "Name" [:small " (name)"]]
         [:td.name
          (:name @inventory-pool/data*)]]
        [:tr.email
         [:td "Email" [:small " (email)"]]
-        [:td.email
-         (:email @inventory-pool/data*)]]
+        [:td.email (:email @inventory-pool/data*)]]
        [:tr.description
         [:td "Description" [:small " (description)"]]
         [:td.description
