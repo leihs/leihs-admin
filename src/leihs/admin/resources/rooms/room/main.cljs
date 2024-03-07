@@ -38,7 +38,7 @@
           [:td "Building" [:small " (building)"]]
           [:td.building (get-building-name (:building_id data))]]]}])))
 
-(defn edit-building-button []
+(defn edit-button []
   (let [show (reagent/atom false)]
     (fn []
       [:<>
@@ -48,7 +48,7 @@
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 
-(defn delete-building-button []
+(defn delete-button []
   (let [show (reagent/atom false)]
     (fn []
       [:<>
@@ -78,6 +78,6 @@
       [header]
       [:section
        [info-table]
-       [edit-building-button]
-       [delete-building-button]
+       [edit-button]
+       [delete-button]
        [room/debug-component]]])])

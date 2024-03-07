@@ -42,19 +42,19 @@
            borders true}}]
   [:section
    [:<> actions]
-   (when borders
-     [:hr])
+   (when true
+     [:hr.mb-0])
    [:> Table {:striped true
-              :bordered true
+              :bordered false
               :borderless true
-              :className className}
+              :className (str "m-0" className)}
     [:thead
      header]
     [:tbody
      body]
     [:tfoot
      footer]]
-   (when borders
-     [:hr])
+   (when true
+     [:hr.mt-0])
    [:<> actions]])
 

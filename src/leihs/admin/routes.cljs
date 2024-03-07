@@ -73,10 +73,10 @@
    :audited-request #'audited-request/page
    :audited-requests #'audited-requests/page
    :audits #'audits/page
-   :authentication-system #'authentication-system/show-page
-   :authentication-system-create #'authentication-system/create-page
-   :authentication-system-delete #'authentication-system/delete-page
-   :authentication-system-edit #'authentication-system/edit-page
+   :authentication-system #'authentication-system/page
+   ;; :authentication-system-create #'authentication-system/create-page
+   ;; :authentication-system-delete #'authentication-system/delete-page
+   ;; :authentication-system-edit #'authentication-system/edit-page
    :authentication-system-groups #'authentication-system-groups/page
    :authentication-system-users #'authentication-system-users/page
    :authentication-systems #'authentication-systems/page
