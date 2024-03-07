@@ -1,38 +1,38 @@
-(ns leihs.admin.resources.settings.misc.edit
+(ns leihs.admin.resources.settings.smtp.edit
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
-   [leihs.admin.resources.settings.misc.core :as misc-core]
+   [leihs.admin.resources.settings.smtp.core :as smtp-core]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]))
 
-(defn put []
-  (go (when-let [data (some->
-                       {:chan (async/chan)
-                        :json-params @misc-core/data*
-                        :method :put}
-                       http-client/request :chan <!
-                       http-client/filter-success :body)]
-        (js/console.debug "put data" data @misc-core/data*)
-        (accountant/navigate! "/admin/settings/misc/"))))
+(defn put [& _]
+  (go (when (some->
+             {:chan (async/chan)
+              :json-params @smtp-core/data*
+              :method :put}
+             http-client/request
+             :chan <!
+             http-client/filter-success :body)
+        (accountant/navigate! "/admin/settings/smtp/"))))
 
 (defn dialog [& {:keys [show onHide]
                  :or {show false}}]
-  (misc-core/fetch)
+  (smtp-core/fetch)
   [:> Modal {:size "lg"
              :centered true
              :scrollable true
              :show show}
    [:> Modal.Header {:closeButton true
                      :onHide onHide}
-    [:> Modal.Title "Edit Miscellaneous"]]
+    [:> Modal.Title "Edit SMTP"]]
    [:> Modal.Body
-    [misc-core/form put]]
+    [smtp-core/form put]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "misc-form"}
+                :form "smtp-form"}
      "Save"]]])
 
