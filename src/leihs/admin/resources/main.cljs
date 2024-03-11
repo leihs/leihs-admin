@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [str keyword]))
 
 (defn page []
-  [:div.admin
+  [:article.admin.my-5
    #_(when-let [user @current-user/state*]
        [breadcrumbs/nav-component
         @breadcrumbs/left*
