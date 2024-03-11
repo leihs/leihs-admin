@@ -28,7 +28,7 @@
                      :onHide onHide}
     [:> Modal.Title "Edit Inventory Pool"]]
    [:> Modal.Body
-    [inventory-pool/inventory-pool-form]]
+    [inventory-pool/inventory-pool-form {:is-editing true}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary" :onClick onHide}
      "Cancel"]

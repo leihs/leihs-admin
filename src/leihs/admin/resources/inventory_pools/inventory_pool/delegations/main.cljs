@@ -66,12 +66,12 @@
          (get @routing/state* :query-params) :user-uid)
     (reset! show* true)))
 
-(defn add-delegation []
+(defn add-button []
   [:<>
    [:> Button
     {:className "ml-3"
      :onClick #(reset! show* true)}
-    [icons/add]  " Add Delegation"]])
+    "Add Delegation"]])
 
 (defn create-delegation-dialog []
   [create/dialog {:show @show*
@@ -229,9 +229,9 @@
    [tabs]
    [filter-section]
    [table/toolbar
-    [add-delegation]]
+    [add-button]]
    [delegations-table]
    [table/toolbar
-    [add-delegation]]
+    [add-button]]
    [create-delegation-dialog]
    [debug-component]])

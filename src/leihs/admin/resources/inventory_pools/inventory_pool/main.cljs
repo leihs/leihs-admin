@@ -27,7 +27,7 @@
          [:> Button
           {:className ""
            :onClick #(reset! show true)}
-          [icons/edit]  " Edit"]
+          "Edit"]
          [edit/dialog {:show @show
                        :onHide #(reset! show false)}]]))))
 
@@ -40,7 +40,7 @@
           {:className "ml-3"
            :variant "danger"
            :onClick #(reset! show true)}
-          [icons/delete]  " Delete"]
+          "Delete"]
          [delete/dialog {:show @show
                          :onHide #(reset! show false)}]]))))
 

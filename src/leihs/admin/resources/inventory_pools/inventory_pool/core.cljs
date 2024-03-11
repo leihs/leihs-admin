@@ -67,7 +67,8 @@
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn inventory-pool-form []
+(defn inventory-pool-form [& {:keys [is-editing]
+                              :or {is-editing false}}]
   (if-not @data*
     [wait-component]
     [:div.inventory-pool.mt-3
@@ -77,6 +78,7 @@
      [:div
       [form-components/input-component data* [:shortname]
        :label "Short name"
+       :disabled is-editing
        :required true]]
      [:div
       [form-components/input-component data* [:name]

@@ -22,7 +22,7 @@
 
 (defn responsible-user-choose-component []
   [:div.input-group-append
-   [:a.btn.btn-info
+   [:a.btn.btn-primary
     {:tab-index form-components/TAB-INDEX
      :href (path :users-choose {}
                  {:return-to (path (:handler-key @routing/state*)
