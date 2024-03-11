@@ -7,7 +7,7 @@
 (defn page []
   [:article.page.inventory-page
    [:header.my-5
-    [:h1 [icons/inventory] " Inventory"]]
+    [:h1 [icons/file-export] " Inventory"]]
    [:section
     [:h2 "Export / Download Inventory"]
     [:ul

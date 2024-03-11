@@ -29,7 +29,7 @@
                      :href "/admin/statistics/"
                      :children "Statistics"
                      :authorizers [auth/admin-scopes?]}
-                    {:icon solids/faChartColumn
+                    {:icon solids/faFileExport
                      :href "/admin/inventory/"
                      :children "Inventory-Export"
                      :authorizers [auth/admin-scopes?]}
@@ -48,11 +48,11 @@
                                         ;;  :children "Legacy"
                                         ;;  :authorizers [auth/admin-scopes?]}]}]}
            {:section-title "Configuration"
-            :items [{:icon solids/faBoxesStacked
+            :items [{:icon solids/faTableList
                      :href "/admin/inventory-fields/"
                      :children "Fields"
                      :authorizers [auth/admin-scopes?]}
-                    {:icon solids/faPersonShelter
+                    {:icon solids/faBuilding
                      :href "/admin/buildings/"
                      :children "Buildings"
                      :authorizers [auth/admin-scopes?]}

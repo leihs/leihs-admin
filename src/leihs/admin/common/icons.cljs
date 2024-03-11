@@ -45,6 +45,8 @@
 (defn warehouse [] (FontAwesomeIcon #js{:icon solids/faWarehouse :className ""}))
 (defn chevron-right [] (FontAwesomeIcon #js{:icon solids/faChevronRight :className ""}))
 (defn chevron-left [] (FontAwesomeIcon #js{:icon solids/faChevronLeft :className ""}))
+(defn file-export [] (FontAwesomeIcon #js{:icon solids/faFileExport :className ""}))
+(defn table-list [] (FontAwesomeIcon #js{:icon solids/faTableList :className ""}))
 
 
 

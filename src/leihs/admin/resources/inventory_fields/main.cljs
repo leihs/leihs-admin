@@ -199,7 +199,7 @@
 (defn page []
   [:article.inventory-fields
    [:header.my-5
-    [:h1 [icons/inventory-fields] " Inventory-Fields"]]
+    [:h1 [icons/table-list] " Inventory-Fields"]]
    [:section
     [routing/hidden-state-component
      {:did-change fetch-inventory-fields
