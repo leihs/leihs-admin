@@ -169,7 +169,7 @@
    [user-th-component
     roles-th-component
     direct-roles-th-component
-    groups-roles-th-component
+    ;; groups-roles-th-component
     suspension-th-component]
    [user-td-component
     roles-td-component
