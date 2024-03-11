@@ -42,6 +42,9 @@
 (defn view [] (FontAwesomeIcon #js{:icon solids/faEye :className ""}))
 (defn waiting [& {:keys [size] :or {size "1x"}}] (FontAwesomeIcon #js{:icon solids/faCircleNotch :className "" :spin true :size size}))
 (defn award [] (FontAwesomeIcon #js{:icon solids/faAward :className ""}))
+(defn warehouse [] (FontAwesomeIcon #js{:icon solids/faWarehouse :className ""}))
+(defn chevron-right [] (FontAwesomeIcon #js{:icon solids/faChevronRight :className ""}))
+(defn chevron-left [] (FontAwesomeIcon #js{:icon solids/faChevronLeft :className ""}))
 
 
 

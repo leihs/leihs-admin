@@ -1,5 +1,6 @@
 (ns leihs.admin.common.components.table
   (:require
+   [leihs.admin.common.icons :as icons]
    [leihs.core.paths :refer [path]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup ButtonToolbar Table]]))
@@ -20,12 +21,12 @@
            {:variant "outline-primary"
             :disabled (< ppage 1)
             :href ppagepath}
-           " < "]
+           [icons/chevron-left]]
           [:> Button
            {:variant "outline-primary"
             :href (path hk route-params
                         (assoc query-parameters :page (inc current-page)))}
-           " > "]])])))
+           [icons/chevron-right]]])])))
 
 (defn toolbar [items]
   [:> ButtonToolbar {:className "my-3"}

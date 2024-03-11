@@ -64,7 +64,7 @@
          [:> Button
           {:className "ml-3"
            :onClick #(reset! modal-show true)}
-          [icons/add] " Add Inventory Pool"]
+          "Add Inventory Pool"]
          [create/dialog {:show @modal-show
                          :onHide #(reset! modal-show false)}]]))))
 
@@ -138,7 +138,7 @@
 
 (defn page []
   [:article.inventory-pools
-   [:h1.my-5 [icons/inventory-pools] " Inventory-Pools"]
+   [:h1.my-5 [icons/warehouse] " Inventory-Pools"]
    [:section
     [routing/hidden-state-component
      {:did-change #(http/route-cached-fetch data*)}]

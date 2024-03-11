@@ -47,5 +47,5 @@
                       {:inventory-pool-id @inventory-pool/id*})]
        {:active (clojure.string/includes? (:path @routing/state*) href)
         :href href})
-     [icons/entitlement-groups]
+     [icons/award]
      " Entitlement-Groups "]]])
