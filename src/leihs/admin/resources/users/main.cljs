@@ -48,18 +48,18 @@
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn form-term-filter []
-  [routing/form-term-filter-component
+  [filter/form-term-filter-component
    :placeholder "part of the name, exact email-address"])
 
 (defn form-enabled-filter []
-  [routing/select-component
+  [filter/select-component
    :query-params-key :account_enabled
    :label "Enabled"
    :options {"" "(any value)" "yes" "yes" "no" "no"}
    :default-option "yes"])
 
 (defn form-admins-filter []
-  [routing/select-component
+  [filter/select-component
    :label "Admin"
    :query-params-key :admin
    :options {"" "(any value)"
@@ -71,7 +71,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term]
+    [form-term-filter]
     [form-enabled-filter]
     [users-and-groups/form-org-filter data*]
     [users-and-groups/form-org-id-filter]

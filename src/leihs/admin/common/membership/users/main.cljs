@@ -18,7 +18,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term {:placeholder  "part of the name, exact email-address"}]
+    [filter/form-term-filter-component {:placeholder  "part of the name, exact email-address"}]
     [filter/select-component
      :label "Membership"
      :query-params-key MEMBERSHIP-QUERY-PARAM-KEY

@@ -52,8 +52,7 @@
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn form-term-filter []
-  [routing/form-term-filter-component
-   :placeholder "name of the group"])
+  [filter/form-term-filter-component :placeholder "Name of the Group"])
 
 (defn form-including-user-filter []
   [filter/choose-user-component
@@ -70,7 +69,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term]
+    [form-term-filter]
     [filter/form-including-user]
     [users-and-groups/form-org-filter data*]
     [users-and-groups/form-org-id-filter]

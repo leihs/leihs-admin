@@ -54,7 +54,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term {:placeholder "Enter Inventory Field Name"}]
+    [filter/form-term-filter-component {:placeholder "Enter Inventory Field Name"}]
     [filter/select-component
      :label "Target-Type"
      :query-params-key :target_type

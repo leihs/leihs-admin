@@ -37,8 +37,8 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [routing/form-per-page-component]
-    [routing/form-reset-component]]])
+    [filter/form-per-page]
+    [filter/reset]]])
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -65,7 +65,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term {:placeholder "Search for mail-templates"}]
+    [filter/form-term-filter-component {:placeholder "Search for mail-templates"}]
     [filter/select-component
      :label "Name"
      :query-params-key :name

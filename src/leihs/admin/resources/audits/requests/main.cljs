@@ -47,7 +47,7 @@
 
 (defn responsible-user-choose-component []
   [:div.input-group-prepend
-   [:a.btn.btn-info
+   [:a.btn.btn-primary
     {:tab-index form-components/TAB-INDEX
      :href (path :users-choose {}
                  {:return-to (:route @routing/state*)})}
@@ -73,7 +73,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [routing/delayed-query-params-input-component
+    [filter/delayed-query-params-input-component
      :label "Requester"
      :query-params-key :user-uid
      :prepend responsible-user-choose-component]

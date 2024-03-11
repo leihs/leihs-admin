@@ -41,7 +41,7 @@
 ;### actions ##################################################################
 
 (defn form-role-filter []
-  [routing/select-component
+  [filter/select-component
    :label "Role"
    :query-params-key :role
    :default-option "customer"
@@ -54,7 +54,7 @@
 (defn filter-section []
   [filter/container
    [:<>
-    [filter/form-term]
+    [filter/form-term-filter-component :placeholder "Name of the Group"]
     [filter/form-including-user]
     [form-role-filter]
     [filter/form-per-page]

@@ -53,7 +53,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term {:placeholder "Search for buildings"}]
+    [filter/form-term-filter-component {:placeholder "Search for buildings"}]
     [filter/form-per-page]
     [filter/reset]]])
 

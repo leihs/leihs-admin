@@ -41,6 +41,7 @@
 (defn users [] (FontAwesomeIcon #js{:icon solids/faUserFriends :className ""}))
 (defn view [] (FontAwesomeIcon #js{:icon solids/faEye :className ""}))
 (defn waiting [& {:keys [size] :or {size "1x"}}] (FontAwesomeIcon #js{:icon solids/faCircleNotch :className "" :spin true :size size}))
+(defn award [] (FontAwesomeIcon #js{:icon solids/faAward :className ""}))
 
 
 

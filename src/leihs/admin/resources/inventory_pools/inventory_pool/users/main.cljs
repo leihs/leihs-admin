@@ -126,7 +126,7 @@
    :placeholder "part of the name, exact email-address"])
 
 (defn form-role-filter []
-  [routing/select-component
+  [filter/select-component
    :label "Role"
    :query-params-key :role
    :default-option "customer"
@@ -137,7 +137,7 @@
                         (into {})))])
 
 (defn form-suspension-filter []
-  [routing/select-component
+  [filter/select-component
    :label "Suspension"
    :query-params-key :suspension
    :options {"" "(suspended or not)"

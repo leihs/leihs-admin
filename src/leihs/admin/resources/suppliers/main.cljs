@@ -59,7 +59,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term {:placeholder "Supplier Name"}]
+    [filter/form-term-filter-component {:placeholder "Supplier Name"}]
     [filter/select-component
      :label "Inventory Pool"
      :query-params-key :inventory_pool_id

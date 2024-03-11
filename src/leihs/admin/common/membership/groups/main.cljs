@@ -33,7 +33,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term]
+    [filter/form-term-filter-component]
     [filter/form-including-user]
     [form-membership-filter]
     [filter/form-per-page]

@@ -91,15 +91,15 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [routing/delayed-query-params-input-component
+    [filter/delayed-query-params-input-component
      :label "Search in changed data"
      :query-params-key :term
      :input-options {:placeholder "fuzzy term"}]
-    [routing/delayed-query-params-input-component
+    [filter/delayed-query-params-input-component
      :label "TXID"
      :query-params-key :txid
      :input-options {:placeholder "transaction id"}]
-    [routing/delayed-query-params-input-component
+    [filter/delayed-query-params-input-component
      :label "Primarky key"
      :query-params-key :pkey]
     [table-filter-component]
@@ -151,20 +151,6 @@
     :body
     (doall (for [change changes]
              (row-component change tds)))}])
-
-(defn main-component []
-  [:div.main-component
-   [routing/hidden-state-component
-    {:did-change fetch-changes}]
-   [routing/pagination-component]
-   (if-not (contains? @data* (:route @routing/state*))
-     [wait-component]
-     (if-let [changes (-> @data* (get (:route @routing/state*) {}) :changes seq)]
-       [table-component changes]
-       [:div.alert.alert-warning.text-center "No (more) audited-changes found."]))
-   [routing/pagination-component]])
-
-;;; page ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn debug-component []
   (when (:debug @state/global-state*)

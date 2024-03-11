@@ -55,7 +55,7 @@
                                                query-params-key newval})))))))}
           input-options)]
         [:div.input-group-append
-         [:button.btn.btn-outline-warning
+         [:button.btn.btn-secondary
           {:on-click (fn [_]
                        (reset! value* "")
                        (accountant/navigate!

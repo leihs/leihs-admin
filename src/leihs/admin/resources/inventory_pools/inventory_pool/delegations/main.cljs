@@ -40,7 +40,7 @@
 (defn filter-section []
   [filter/container
    [:<>
-    [filter/form-term]
+    [filter/form-term-filter-component :placeholder "Name of the Delegation"]
     [filter/form-including-user]
     [filter/select-component
      :label "Membership"

@@ -54,7 +54,7 @@
 (defn filter-component []
   [filter/container
    [:<>
-    [filter/form-term]
+    [filter/form-term-filter-component]
     [filter/select-component
      :label "Building"
      :query-params-key :building_id

@@ -46,7 +46,7 @@
 (defn filter-section []
   [filter/container
    [:<>
-    [filter/form-term]
+    [filter/form-term-filter-component :placeholder "Name of the Inventory Pool"]
     [filter/select-component
      :label "Active"
      :query-params-key :active
