@@ -17,15 +17,15 @@
                              (assoc query-parameters :page ppage))]
          [:> ButtonGroup
           [:> Button
-           {:variant "primary"
+           {:variant "outline-primary"
             :disabled (< ppage 1)
             :href ppagepath}
-           " previous "]
+           " < "]
           [:> Button
-           {:variant "primary"
+           {:variant "outline-primary"
             :href (path hk route-params
                         (assoc query-parameters :page (inc current-page)))}
-           " next "]])])))
+           " > "]])])))
 
 (defn toolbar [items]
   [:> ButtonToolbar {:className "my-3"}

@@ -56,7 +56,7 @@
    :placeholder "name of the group"])
 
 (defn form-including-user-filter []
-  [routing/choose-user-component
+  [filter/choose-user-component
    :query-params-key :including-user
    :input-options {:placeholder "email, login, or id"}])
 

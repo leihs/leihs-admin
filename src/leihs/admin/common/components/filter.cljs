@@ -15,7 +15,6 @@
 
 (defn container [children]
   [:section.my-5.sticky-top.bg-light.p-3
-   ;; [:h1 "Filters"]
    [:div.form-row
     children]])
 
@@ -83,7 +82,7 @@
 (defn user-choose-prepend-component
   [& {:keys [text query-params-key] :or {text "Choose"}}]
   [:div.input-group-prepend
-   [:a.btn.btn-info
+   [:a.btn.btn-primary
     {:tab-index constants/TAB-INDEX
      :href (path :users-choose {}
                  {:return-to (:url @routing/state*)
@@ -147,7 +146,7 @@
        (for [[k n] options]
          [:option {:key k :value k} n])]
       [:div.input-group-append
-       [:button.btn.btn-outline-warning
+       [:button.btn.btn-secondary
         {:on-click (fn [_]
                      (accountant/navigate!
                       (path (:handler-key @routing/state*)
@@ -171,7 +170,7 @@
    :placeholder placeholder])
 
 (defn form-including-user []
-  [routing/choose-user-component
+  [choose-user-component
    :query-params-key :including-user
    :input-options {:placeholder "email, login, or id"}])
 
@@ -188,7 +187,7 @@
   [:div.form-group.m-2
    [:label {:for :reset-query-params} "Filters"]
    [:div
-    [:button#reset-query-params.btn.btn-outline-warning
+    [:button#reset-query-params.btn.btn-secondary
      {:tab-index 1
       :on-click #(do (accountant/navigate!
                       (path (:handler-key @routing/state*)

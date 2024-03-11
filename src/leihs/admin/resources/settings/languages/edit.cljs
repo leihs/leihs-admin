@@ -1,37 +1,37 @@
-(ns leihs.admin.resources.settings.smtp.edit
+(ns leihs.admin.resources.settings.languages.edit
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
-   [leihs.admin.resources.settings.smtp.core :as smtp-core]
+   [leihs.admin.resources.settings.languages.core :as languages-core]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]))
 
-(defn put [& _]
+(defn put []
   (go (when (some->
              {:chan (async/chan)
-              :json-params @smtp-core/data*
+              :json-params @languages-core/data*
               :method :put}
              http-client/request :chan <!
              http-client/filter-success :body)
-        (accountant/navigate! "/admin/settings/smtp/"))))
+        (accountant/navigate! "/admin/settings/languages/"))))
 
 (defn dialog [& {:keys [show onHide]
                  :or {show false}}]
-  (smtp-core/fetch)
+  (languages-core/fetch)
   [:> Modal {:size "lg"
              :centered true
              :scrollable true
              :show show}
    [:> Modal.Header {:closeButton true
                      :onHide onHide}
-    [:> Modal.Title "Edit SMTP"]]
+    [:> Modal.Title "Edit Languages"]]
    [:> Modal.Body
-    [smtp-core/form put]]
+    [languages-core/form put {:is-editable true}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "smtp-form"}
+                :form "languages-form"}
      "Save"]]])
 
