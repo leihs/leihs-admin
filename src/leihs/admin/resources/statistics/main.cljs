@@ -103,7 +103,7 @@
 (defn page []
   [:article.statistics
    [:header.my-5
-    [:h1 "Statistics"]]
+    [:h1 [icons/chart-column] " Statistics"]]
    [:section.statistics-basic
     [routing/hidden-state-component
      {:did-mount fetch}]

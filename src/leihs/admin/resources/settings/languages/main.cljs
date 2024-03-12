@@ -3,7 +3,7 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.resources.settings.icons :as icons]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.settings.languages.core :as languages-core]
    [leihs.admin.resources.settings.languages.edit :as edit]
    [leihs.admin.state :as state]
@@ -60,7 +60,7 @@
      [wait-component]
      [:article.settings-page.smtp
       [:header.my-5
-       [:h1 icons/languages " Languages Settings"]]
+       [:h1 [icons/language] " Languages Settings"]]
       [:section
        [info-table]
        [edit-button]

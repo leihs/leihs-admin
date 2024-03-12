@@ -3,7 +3,7 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.resources.settings.icons :as icons]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.settings.smtp.core :as smtp-core]
    [leihs.admin.resources.settings.smtp.edit :as edit]
    [leihs.admin.state :as state]
@@ -79,7 +79,7 @@
      [wait-component]
      [:article.settings-page.smtp
       [:header.my-5
-       [:h1 icons/smtp " SMTP Settings"]]
+       [:h1 [icons/paper-plane] " SMTP Settings"]]
       [:section
        [info-table]
        [edit-button]

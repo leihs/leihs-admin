@@ -31,7 +31,7 @@
 (defn mail-template [] (FontAwesomeIcon #js{:icon solids/faEnvelope :className ""}))
 (defn mail-templates [] (FontAwesomeIcon #js{:icon solids/faEnvelope :className ""}))
 (defn password-reset [] (FontAwesomeIcon #js{:icon solids/faKey :className ""}))
-(defn rooms [] (FontAwesomeIcon #js{:icon solids/faWarehouse :className ""}))
+(defn rooms [] (FontAwesomeIcon #js{:icon solids/faPersonShelter :className ""}))
 (defn save [] (FontAwesomeIcon #js{:icon solids/faSave :className ""}))
 (defn suppliers [] (FontAwesomeIcon #js{:icon solids/faTruck :className ""}))
 (defn system [] (FontAwesomeIcon #js{:icon solids/faUserServer :className ""}))
@@ -47,6 +47,11 @@
 (defn chevron-left [] (FontAwesomeIcon #js{:icon solids/faChevronLeft :className ""}))
 (defn file-export [] (FontAwesomeIcon #js{:icon solids/faFileExport :className ""}))
 (defn table-list [] (FontAwesomeIcon #js{:icon solids/faTableList :className ""}))
-
-
-
+(defn language [] (FontAwesomeIcon #js{:icon solids/faLanguage :className ""}))
+(defn list-icon [] (FontAwesomeIcon #js{:icon solids/faList :className ""}))
+(defn paper-plane [] (FontAwesomeIcon #js{:icon solids/faPaperPlane :className ""}))
+(defn shield-halved [] (FontAwesomeIcon #js{:icon solids/faShieldHalved :className ""}))
+(defn key-icon [] (FontAwesomeIcon #js{:icon solids/faKey :className ""}))
+(defn chart-column [] (FontAwesomeIcon #js{:icon solids/faChartColumn :className ""}))
+(defn code-pull-request [] (FontAwesomeIcon #js{:icon solids/faCodePullRequest :className ""}))
+(defn arrow-right-arrow-left [] (FontAwesomeIcon #js{:icon solids/faArrowRightArrowLeft :className ""}))

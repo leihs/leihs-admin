@@ -7,15 +7,15 @@
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.system.authentication-systems.authentication-system.create :as create]
-   [leihs.admin.resources.system.authentication-systems.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.system.authentication-systems.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button Modal]]
+   [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -123,7 +123,7 @@
 (defn page []
   [:article.authentication-systems
    [:header.my-5
-    [:h1 "Authentication-Systems"]]
+    [:h1 [icons/key-icon] " Authentication-Systems"]]
    [:section
     [routing/hidden-state-component
      {:did-change fetch-authentication-systems}]

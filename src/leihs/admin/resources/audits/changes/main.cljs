@@ -1,30 +1,24 @@
 (ns leihs.admin.resources.audits.changes.main
   (:refer-clojure :exclude [str keyword])
   (:require-macros
-   [cljs.core.async.macros :refer [go]]
    [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [timeout]]
    [cljs.pprint :refer [pprint]]
    [clojure.string :as str]
    [leihs.admin.common.components :as components]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.audits.changes.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.audits.changes.shared :refer [default-query-params]]
    [leihs.admin.resources.audits.core :as audits]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.clipboard :as clipboard]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
-   [leihs.core.core :refer [keyword str presence]]
+   [leihs.core.core :refer [presence str]]
    [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent]
-   [taoensso.timbre :refer [debug info warn error spy]]))
+   [reagent.core :as reagent]))
 
 ;;; data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -166,7 +160,7 @@
 (defn page []
   [:article.audited-changes-page
    [:header.my-5
-    [:h1 audits/icon-changes " Audited Changes "]]
+    [:h1 [icons/arrow-right-arrow-left] " Audited Changes "]]
    [:section
     [filter-component]
     [routing/hidden-state-component

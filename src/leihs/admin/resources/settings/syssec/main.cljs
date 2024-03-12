@@ -1,14 +1,9 @@
 (ns leihs.admin.resources.settings.syssec.main
   (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [cljs.core.async.macros :refer [go]])
   (:require
-   [cljs.core.async :as async]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
-   [leihs.admin.resources.settings.icons :as icons]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.settings.syssec.core :as syssec-core]
    [leihs.admin.resources.settings.syssec.edit :as edit]
    [leihs.admin.state :as state]
@@ -69,7 +64,7 @@
      [wait-component]
      [:article.settings-page.smtp
       [:header.my-5
-       [:h1 icons/syssec " System and Security Settings"]]
+       [:h1 [icons/shield-halved] " System and Security Settings"]]
       [:section
        [info-table]
        [edit-button]

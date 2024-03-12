@@ -166,7 +166,7 @@
 (defn page []
   [:article.audited-requests-page
    [:header.my-5
-    [:h1 audits/icon-requests " Audited Requests"]]
+    [:h1 [icons/code-pull-request] " Audited Requests"]]
    [:section
     [filter-component]
     [main-component]

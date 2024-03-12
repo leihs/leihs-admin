@@ -3,7 +3,7 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.resources.settings.icons :as icons]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.settings.misc.core :as misc-core]
    [leihs.admin.resources.settings.misc.edit :as edit]
    [leihs.admin.state :as state]
@@ -92,7 +92,7 @@
      [wait-component]
      [:article.settings-page
       [:header.my-5
-       [:h1 icons/misc " Miscellaneous Settings"]]
+       [:h1 [icons/list-icon] " Miscellaneous Settings"]]
       [:section
        [info-table]
        [edit-button]
