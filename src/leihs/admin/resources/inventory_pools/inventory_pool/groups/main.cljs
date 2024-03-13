@@ -79,8 +79,10 @@
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
    [filter-section]
+   [table/toolbar]
    [groups/table-component
     [groups/name-th-component groups/users-count-th-component roles-th-component]
     [groups/name-td-component groups/users-count-td-component roles-td-component]]
+   [table/toolbar]
    [debug-component]
    [groups/debug-component]])

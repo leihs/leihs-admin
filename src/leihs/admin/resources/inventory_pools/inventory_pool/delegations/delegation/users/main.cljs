@@ -60,7 +60,6 @@
     [table/toolbar]
     [table]
     [table/toolbar]
-
     [debug-component]
     [users/debug-component]
     [delegation/debug-component]]])

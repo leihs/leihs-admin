@@ -17,7 +17,7 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button]]
+   [react-bootstrap :as react-bootstrap :refer [Button Alert]]
    [reagent.core :as reagent]))
 
 (def current-query-paramerters*
@@ -145,21 +145,21 @@
        [create/dialog  {:show @show
                         :onHide #(reset! show false)}]])))
 
-(defn core-table-component [{:keys [chrome]} hds tds groups]
+(defn core-table-component [hds tds groups]
   (if-let [groups (seq groups)]
     [table/container
-     {:borders chrome
-      :actions (when chrome [table/toolbar [add-group-button]])
-      :header (groups-thead-component hds)
+     {:header (groups-thead-component hds)
       :body (doall (for [group groups]
                      ^{:key (:id group)}
                      [group-row-component group tds]))}]
-    [:div.alert.alert-warning.text-center "No (more) groups found."]))
+    [:> Alert {:variant "info"
+               :className "text-center"}
+     "No (more) groups found."]))
 
 (defn table-component [hds tds]
   (if-not (contains? @data* (:route @routing/state*))
     [wait-component]
-    [core-table-component {:chrome true} hds tds
+    [core-table-component hds tds
      (-> @data* (get (:route @routing/state*) {}) :groups)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -187,6 +187,7 @@
     [routing/hidden-state-component
      {:did-change fetch-groups}]
     [filter-component]
+    [table/toolbar [add-group-button]]
     [table-component
      [name-th-component
       org-th-component
@@ -196,4 +197,5 @@
       org-td-component
       org-id-td-component
       users-count-td-component]]
+    [table/toolbar [add-group-button]]
     [debug-component]]])

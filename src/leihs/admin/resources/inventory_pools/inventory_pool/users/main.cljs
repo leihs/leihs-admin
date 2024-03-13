@@ -197,6 +197,8 @@
     [:h1.mt-3 [inventory-pool/name-component]]]
    [nav/tabs]
    [filter-section]
+   [table/toolbar]
    [table-section]
+   [table/toolbar]
    [debug-component]
    [users/debug-component]])

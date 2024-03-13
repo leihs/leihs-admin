@@ -20,7 +20,7 @@
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
    [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button]]
+   [react-bootstrap :as react-bootstrap :refer [Button Alert]]
    [reagent.core :as reagent]))
 
 (def current-query-params*
@@ -194,8 +194,6 @@
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
        [table/container
         {:className "users"
-         :actions [table/toolbar
-                   [add-user-button]]
          :header (table-head hds)
          :body (doall (for [user users]
                         (table-row user tds)))}]
@@ -203,8 +201,8 @@
          (cond
            (and membership-filter? @users-membership/filtered-by-member?*) (users-membership/empty-members-alert)
            (and role-filter? @roles/filtered-by-role?*) (roles/empty-alert)
-           :else [:div.alert.alert-warning.text-center "No users found."])
-         [:div.alert.alert-warning.text-center "No more users found."])))])
+           :else [:> Alert {:variant "info" :className "my-3 text-center"} "No users found."])
+         [:> Alert {:variant "info" :className "my-3 text-center"} "No more users found."])))])
 
 (defn debug-component []
   (when (:debug @state/global-state*)
@@ -227,6 +225,7 @@
     [icons/users] " Users"]
    [:section
     [filter-component]
+    [table/toolbar  [add-user-button]]
     [users-table
      [user-th-component
       org-th-component
@@ -240,4 +239,5 @@
       contracts-count-td-component
       pools-count-td-component
       groups-count-td-component]]
+    [table/toolbar  [add-user-button]]
     [debug-component]]])

@@ -1,6 +1,7 @@
 (ns leihs.admin.resources.system.authentication-systems.authentication-system.users.main
   (:refer-clojure :exclude [str keyword])
   (:require
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.membership.users.main :as users-membership]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.system.authentication-systems.authentication-system.core :as auth-core]
@@ -54,5 +55,7 @@
       [:section
        [auth-core/tabs "users"]
        [users-membership/filter-component]
+       [table/toolbar]
        [table-component]
+       [table/toolbar]
        [users/debug-component]]])])

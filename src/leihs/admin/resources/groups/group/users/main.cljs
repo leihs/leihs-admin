@@ -8,6 +8,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.navigation.back :as back]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
@@ -139,12 +140,14 @@
       "This group is " [:strong "protected"] ". "
       "Memebership can be inspected but not changed!"])
    [filter-component]
+   [table/toolbar]
    [table-component]
+   [table/toolbar]
    [debug-component]
    [users/debug-component]])
 
 (defn page []
-  [:article.group
+  [:article.group.my-5
    [routing/hidden-state-component
     {:did-mount group-core/clean-and-fetch}]
    [:header.my-5
