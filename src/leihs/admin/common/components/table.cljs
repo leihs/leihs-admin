@@ -18,12 +18,16 @@
                              (assoc query-parameters :page ppage))]
          [:> ButtonGroup
           [:> Button
-           {:variant "outline-primary"
+           {:aria-label "previous"
+            :data-test-id "previous"
+            :variant "outline-primary"
             :disabled (< ppage 1)
             :href ppagepath}
            [icons/chevron-left]]
           [:> Button
-           {:variant "outline-primary"
+           {:aria-label "next"
+            :data-test-id "next"
+            :variant "outline-primary"
             :href (path hk route-params
                         (assoc query-parameters :page (inc current-page)))}
            [icons/chevron-right]]])])))
