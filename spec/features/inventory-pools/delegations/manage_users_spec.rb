@@ -76,7 +76,6 @@ shared_examples :group_user do
     end
     within("tr td.group-member"){ click_on 'Add' }
     click_on_first 'Add'
-    binding.pry
     wait_until { all('.modal').empty? }
     visit @delegation_users_url
     wait_until{ all('tr.user').count == 1 }

@@ -29,7 +29,9 @@ feature 'Manage inventory-pools', type: :feature do
 
         fill_in 'name', with: name
         fill_in 'description', with: description
-        fill_in 'shortname', with: shortname
+
+        expect(page).to have_selector('input#shortname[disabled]')
+        # fill_in 'shortname', with: shortname
         fill_in 'email', with: email
         uncheck 'is_active'
         click_on 'Save'
@@ -38,7 +40,7 @@ feature 'Manage inventory-pools', type: :feature do
         wait_until { all(".wait-component").empty? }
 
         expect(page.text).to have_content name
-        expect(page.text).to have_content shortname
+        # expect(page.text).to have_content shortname
         expect(page.text).to have_content email
         expect(page.text).to have_content description
         click_on 'Inventory Pools'
