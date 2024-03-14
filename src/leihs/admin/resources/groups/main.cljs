@@ -148,7 +148,8 @@
 (defn core-table-component [hds tds groups]
   (if-let [groups (seq groups)]
     [table/container
-     {:header (groups-thead-component hds)
+     {:className "groups"
+      :header (groups-thead-component hds)
       :body (doall (for [group groups]
                      ^{:key (:id group)}
                      [group-row-component group tds]))}]

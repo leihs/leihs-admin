@@ -101,8 +101,8 @@
      [:> Nav.Link {:active true} "Inventory Pools"]]
 
     (when (auth/allowed?
-           [pool-auth/some-lending-manager?
-            auth/system-admin-scopes?])
+           [auth/admin-scopes?
+            pool-auth/some-lending-manager?])
       [:> Nav.Item
        [:> Nav.Link
         {:href (-> (:path @routing/state*)

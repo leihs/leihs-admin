@@ -63,6 +63,7 @@
    (if (seq @data*)
      [table/container
       {:borders false
+       :className "group"
        :header [:tr [:th "Pool"] [:th "Roles"]]
        :body
        (for [row (->>  @data*
