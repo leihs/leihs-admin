@@ -24,7 +24,7 @@ feature 'Extended info of users ', type: :feature do
 
       visit '/admin/'
       click_on 'Users'
-      click_on 'Create user'
+      click_on 'Add User'
       uncheck 'is_admin'
       check 'account_enabled'
       check 'password_sign_in_enabled'

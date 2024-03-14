@@ -30,10 +30,10 @@ feature 'Authentication-Systems', type: :feature do
 
         scenario 'CRUD' do
           click_on 'System'
-          click_on 'Authentication-Systems'
-          click_on 'Create Authentication-System'
+          click_on 'Authentication Systems'
+          click_on 'Add Authentication System'
           fill_in 'id', with: 'test-auth-system'
-          fill_in 'name', with: 'Test Authentication-System'
+          fill_in 'name', with: 'Test Authentication System'
           fill_in 'type', with: 'external'
           fill_in 'description', with: 'foo bar baz'
           fill_in 'internal_private_key', with: 'INT PRIV-KEY'
@@ -47,7 +47,7 @@ feature 'Authentication-Systems', type: :feature do
           end
           sleep 1
           field_content = all("input, textarea").map(&:value).join(" ")
-          expect(page.text + field_content).to have_content /Test Authentication-System/
+          expect(page.text + field_content).to have_content /Test Authentication System/
           expect(page.text + field_content).to have_content /foo bar baz/
           expect(page.text + field_content).to have_content /external/
           expect(page.text + field_content).to have_content /INT PRIV-KEY/
@@ -71,7 +71,7 @@ feature 'Authentication-Systems', type: :feature do
         scenario 'adding and removing a direct user' do
           @user = @users.sample
           click_on "System"
-          click_on "Authentication-Systems"
+          click_on "Authentication Systems"
           click_on @auth_system.id
           click_on "Users"
           select "members and non-members", from: 'Membership'
@@ -101,7 +101,7 @@ feature 'Authentication-Systems', type: :feature do
         scenario 'adding and removing a user via a group' do
           @user = @users.sample
           click_on "System"
-          click_on "Authentication-Systems"
+          click_on "Authentication Systems"
           click_on @auth_system.id
           click_on "Users"
           select "members and non-members", from: 'Membership'

@@ -52,7 +52,7 @@
    [:> Table {:striped true
               :bordered false
               :borderless true
-              :className (str "m-0" className)}
+              :className (str "m-0 " className)}
     [:thead
      header]
     [:tbody

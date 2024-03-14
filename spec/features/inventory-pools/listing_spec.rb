@@ -62,7 +62,7 @@ feature 'Managing inventory-pools:', type: :feature do
 
         scenario "can see all pools but only click on the ones where he is manager" do
           click_on "Inventory Pools"
-          expect(all("table.inventory-pools tbody tr").count).to be== 3
+          expect(all("table.inventory-pools tbody tr").count).to be == 3
           pool2_row = find("table.inventory-pools tbody tr", text: @pool2.name)
           within pool2_row do
             expect(all("a")).to be_empty

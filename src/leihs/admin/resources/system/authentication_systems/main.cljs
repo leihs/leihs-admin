@@ -123,7 +123,7 @@
 (defn page []
   [:article.authentication-systems
    [:header.my-5
-    [:h1 [icons/key-icon] " Authentication-Systems"]]
+    [:h1 [icons/key-icon] " Authentication Systems"]]
    [:section
     [routing/hidden-state-component
      {:did-change fetch-authentication-systems}]

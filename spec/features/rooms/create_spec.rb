@@ -27,7 +27,7 @@ feature 'Manage rooms', type: :feature do
       select(@building.name, from: 'Building')
       click_on 'Create'
       wait_until { all(".modal").empty? }
-      wait_until { not page.has_content? "Create Room" }
+      wait_until { not page.has_content? "Add Room" }
       @room_path = current_path
       @inventory_pool_id = current_path.match(/.*\/([^\/]+)/)[1]
       input_values = all("input").map(&:value).join(" ")

@@ -18,13 +18,13 @@ feature 'Manage Buildings', type: :feature do
 
       visit '/admin/'
       click_on 'Buildings'
-      expect(all("a, button", text: 'Create')).not_to be_empty
+      expect(all("a, button", text: 'Add')).not_to be_empty
       click_on 'Create'
       fill_in 'name', with: name
       fill_in 'code', with: code
       click_on 'Create'
       wait_until { all(".modal").empty? }
-      wait_until { not page.has_content? "Create Building" }
+      wait_until { not page.has_content? "Add Building" }
       @building_path = current_path
       input_values = all("input").map(&:value).join(" ")
       expect(page.text + input_values).to have_content name

@@ -24,7 +24,7 @@ feature 'Manage suppliers', type: :feature do
       fill_in 'note', with: note
       click_on 'Create'
       wait_until { all(".modal").empty? }
-      wait_until { not page.has_content? "Create Supplier" }
+      wait_until { not page.has_content? "Add Supplier" }
       @supplier_path = current_path
       @inventory_pool_id = current_path.match(/.*\/([^\/]+)/)[1]
       input_values = all("input").map(&:value).join(" ")
