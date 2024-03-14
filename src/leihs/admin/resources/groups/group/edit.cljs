@@ -28,7 +28,7 @@
              :show show}
    [:> Modal.Header {:closeButton true
                      :onHide onHide}
-    [:> Modal.Title "Edit User"]]
+    [:> Modal.Title "Edit Group"]]
    [:> Modal.Body
     [:> Form {:id "add-user-form"
               :on-submit (fn [e] (.preventDefault e) (patch))}
