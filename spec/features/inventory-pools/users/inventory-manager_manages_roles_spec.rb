@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'pry'
 
-
-
 feature 'Manage inventory-pool users ', type: :feature do
 
   context ' an admin, a pool, an inventory_manager, and  several users ' do
