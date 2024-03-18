@@ -10,8 +10,10 @@
    [leihs.admin.resources.inventory-fields.inventory-field.delete :as delete]
    [leihs.admin.resources.inventory-fields.inventory-field.edit :as edit]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [str]] ;; [leihs.core.core :refer [dissoc-in keyword str presence flip drop-at]]
    [leihs.core.routing.front :as routing]
+   [leihs.core.user.front :as current-user]
    [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
@@ -58,27 +60,34 @@
               [:td "Type" [:small " (data:type)"]]
               [:td.type (-> data :data :type)]]])]}]])))
 
-(defn edit-building-button []
-  (let [show (reagent/atom false)]
-    (fn []
-      [:<>
-       [:> Button
-        {:onClick #(reset! show true)}
-        "Edit"]
-       [edit/dialog {:show @show
-                     :onHide #(reset! show false)}]])))
+(defn modifieable? [current-user-state _]
+  (auth/admin-scopes? current-user-state _))
 
-(defn delete-building-button []
+(defn edit-button []
   (let [show (reagent/atom false)]
     (fn []
-      [:<>
-       [:> Button
-        {:variant "danger"
-         :className "ml-3"
-         :onClick #(reset! show true)}
-        "Delete"]
-       [delete/dialog {:show @show
-                       :onHide #(reset! show false)}]])))
+      (when (auth/allowed?
+             [auth/admin-scopes?])
+        [:<>
+         [:> Button
+          {:onClick #(reset! show true)}
+          "Edit"]
+         [edit/dialog {:show @show
+                       :onHide #(reset! show false)}]]))))
+
+(defn delete-button []
+  (let [show (reagent/atom false)]
+    (fn []
+      (when (auth/allowed?
+             [modifieable?])
+        [:<>
+         [:> Button
+          {:variant "danger"
+           :className "ml-3"
+           :onClick #(reset! show true)}
+          "Delete"]
+         [delete/dialog {:show @show
+                         :onHide #(reset! show false)}]]))))
 
 (defn header []
   (let [data  @inventory-field/inventory-field-data*]
@@ -91,14 +100,16 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-change clean-and-fetch}]
+    {:did-change inventory-field/clean-and-fetch}]
    (if-not @inventory-field/data*
      [:div.my-5
-      [wait-component " Loading Room Data ..."]]
+      [wait-component " Loading Data ..."]]
      [:article.room
+      (js/console.debug @inventory-field/data*)
+      (js/console.debug @inventory-field/inventory-field-data*)
       [header]
       [:section
        [info-table]
-       [edit-building-button]
-       [delete-building-button]
+       [edit-button]
+       [delete-button]
        [inventory-field/debug-component]]])])

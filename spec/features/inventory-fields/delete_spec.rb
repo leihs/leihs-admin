@@ -13,7 +13,9 @@ feature 'Manage inventory-fields', type: :feature do
       sign_in_as @admin
 
       visit '/admin/'
-      click_on 'Inventory-Fields'
+      within find("aside nav", match: :first) do
+        click_on "Fields"
+      end
     end
 
     scenario 'is able to delete an inventory-field' do
@@ -26,7 +28,9 @@ feature 'Manage inventory-fields', type: :feature do
       @field_path = current_path
 
       click_on 'Delete' # delete page
-      click_on 'Delete' # submit / confirm
+      within '.modal' do
+        click_on 'Delete' # submit / confirm
+      end
 
       wait_until { current_path ==  "/admin/inventory-fields/" }
 
@@ -49,6 +53,7 @@ feature 'Manage inventory-fields', type: :feature do
         click_on @field.id
         @field_path = current_path
 
+        binding.pry
         expect(page).not_to have_content /delete/i
 
       end

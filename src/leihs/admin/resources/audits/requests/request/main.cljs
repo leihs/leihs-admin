@@ -1,7 +1,7 @@
 (ns leihs.admin.resources.audits.requests.request.main
   (:refer-clojure :exclude [str keyword])
   (:require
-   [cljs.core.async :as async :refer [go]]
+   [cljs.core.async :as async :refer [go <!]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.paths :as paths :refer [path]]
@@ -22,6 +22,7 @@
 (def requester-id* (reagent/atom nil))
 
 (defn fetch-changes-index [& _]
+  (js/console.debug "fetch-changes-index")
   (reset! changes-index* {})
   (let [url (path :audited-changes {} {:request-id @request-id*})
         chan (async/chan)
@@ -123,12 +124,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn page []
-  [routing/hidden-state-component
-   {:did-mount (fn [& _]
-                 (reset! requester-id* nil)
-                 (reset! changes-index* {})
-                 (fetch-changes-index))}]
   [:article.audited-request
+   [routing/hidden-state-component
+    {:did-mount (fn [& _]
+                  (reset! requester-id* nil)
+                  (reset! changes-index* {})
+                  (fetch-changes-index))}]
    [:header.my-5
     [:h1 audits/icon-request " Audited-Request "]]
    [:section

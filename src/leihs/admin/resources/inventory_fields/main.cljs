@@ -204,6 +204,7 @@
     [routing/hidden-state-component
      {:did-change fetch-inventory-fields
       :did-mount fetch-inventory-fields-groups}]
+    (js/console.debug @data*)
     [filter-component]
     [table-component
      [id-th-component

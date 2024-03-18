@@ -139,7 +139,8 @@
 
 (defn table-component [changes hds tds]
   [table/container
-   {:actions [table/toolbar]
+   {:className "audited-changes"
+    :actions [table/toolbar]
     :header
     [thead-component hds]
     :body
