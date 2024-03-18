@@ -117,7 +117,8 @@
 
 (defn core-table-component [hds tds buildings]
   (if-let [buildings (seq buildings)]
-    [table/container {:actions [table/toolbar [add-building-button]]
+    [table/container {:className "buildings"
+                      :actions [table/toolbar [add-building-button]]
                       :header [buildings-thead-component hds]
                       :body
                       (doall (for [building buildings]

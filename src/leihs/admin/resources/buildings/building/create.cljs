@@ -29,7 +29,7 @@
              :show show}
    [:> Modal.Header {:closeButton true
                      :onHide onHide}
-    [:> Modal.Title "Edit Building"]]
+    [:> Modal.Title "Add Building"]]
    [:> Modal.Body
     [building-core/building-form create]]
    [:> Modal.Footer

@@ -16,7 +16,8 @@
   (let [data @building/data*]
     (fn []
       [table/container
-       {:borders false
+       {:className "building"
+        :borders false
         :header [:tr [:th "Property"] [:th.w-75 "Value"]]
         :body
         [:<>

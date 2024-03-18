@@ -39,17 +39,19 @@
      [:div.alert.alert-info "This is a general building which is used for unknown locations of items."])
    [:> Form {:id "building-form"
              :on-submit (fn [e] (.preventDefault e) (action))}
-    [:> Form.Group
+    [:> Form.Group {:control-id "name"}
      [:> Form.Label "Name"]
-     [:> Form.Control
-      {:type "text"
+     [:input.form-control
+      {:id "name"
+       :type "text"
        :required true
        :value (or (:name @data*) "")
        :onChange (fn [e] (swap! data* assoc :name (-> e .-target .-value)))}]]
-    [:> Form.Group
+    [:> Form.Group {:control-id "code"}
      [:> Form.Label "Code"]
-     [:> Form.Control
-      {:type "text"
+     [:input.form-control
+      {:id "code"
+       :type "text"
        :value (or (:code @data*) "")
        :onChange (fn [e] (swap! data* assoc :code (-> e .-target .-value)))}]]]])
 
