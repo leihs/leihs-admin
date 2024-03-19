@@ -45,10 +45,12 @@
            [:tr
             [:td (:locale lang)]
             [:td [:span (:name lang)]]
-            [:td [:> Form.Check {:disabled true
+            [:td [:> Form.Check {:id (str (:locale lang) "-active")
+                                 :disabled true
                                  :type "switch"
                                  :checked (:active lang)}]]
-            [:td [:> Form.Check {:disabled true
+            [:td [:> Form.Check {:id (str (:locale lang) "-default")
+                                 :disabled true
                                  :type "switch"
                                  :checked (:default lang)}]]]))}])))
 
