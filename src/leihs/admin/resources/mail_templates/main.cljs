@@ -127,7 +127,8 @@
 
 (defn core-table-component [hds tds mail-templates]
   (if-let [mail-templates (seq mail-templates)]
-    [table/container {:actions [table/toolbar]
+    [table/container {:className "mail-templates"
+                      :actions [table/toolbar]
                       :header [mail-templates-thead-component hds]
                       :body (doall (for [mail-template mail-templates]
                                      ^{:key (:id mail-template)}
@@ -163,7 +164,7 @@
 (defn page []
   [:article.mail-templates
    [:header.my-5
-    [:h1 [icons/mail-template] " Mail-Templates"]]
+    [:h1 [icons/mail-template] " Mail Templates"]]
    [:section
     [routing/hidden-state-component
      {:did-change fetch-mail-templates

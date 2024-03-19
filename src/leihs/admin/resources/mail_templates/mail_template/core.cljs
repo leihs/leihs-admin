@@ -42,11 +42,11 @@
 (defn form [action]
   [:> Form {:id "mail-template-form"
             :on-submit (fn [e] (.preventDefault e) (action))}
-   [:> Form.Group
+   [:> Form.Group {:control-id "body"}
     [:> Form.Label "Mail Body"]
-    [:> Form.Control
-     {:rows 30
-      :as "textarea"
+    [:textarea.form-control
+     {:id "body"
+      :rows 30
       :required true
       :value (or (:body @data*) "")
       :onChange (fn [e] (swap! data* assoc :body (-> e .-target .-value)))}]]])

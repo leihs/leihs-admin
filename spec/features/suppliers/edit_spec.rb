@@ -55,7 +55,7 @@ feature 'Manage suppliers', type: :feature do
       input_values = all("input").map(&:value).join(" ")
       expect(page.text + input_values).to have_content name
       expect(page.text + input_values).to have_content note
-      within find(".nav-component nav", match: :first) do
+      within find("aside nav", match: :first) do
         click_on "Suppliers"
       end
       wait_until { current_path ==  "/admin/suppliers/" }

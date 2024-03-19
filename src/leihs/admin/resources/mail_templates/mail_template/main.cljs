@@ -47,7 +47,8 @@
   (let [data @mail-template-core/data*]
     (fn []
       [table/container
-       {:borders false
+       {:className "mail-template"
+        :borders false
         :header [:tr [:th "Property"] [:th.w-75 "Value"]]
         :body
         [:<>
