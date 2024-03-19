@@ -24,7 +24,8 @@
   (let [data @room/data*]
     (fn []
       [table/container
-       {:borders false
+       {:className "room"
+        :borders false
         :header [:tr [:th "Property"] [:th.w-75 "Value"]]
         :body
         [:<>
@@ -33,7 +34,7 @@
           [:td.name (:name data)]]
          [:tr.description
           [:td "Description" [:small " (description)"]]
-          [:td.description (:description data)]]
+          [:td.description {:style {:white-space "break-spaces"}} (:description data)]]
          [:tr.building
           [:td "Building" [:small " (building)"]]
           [:td.building (get-building-name (:building_id data))]]]}])))

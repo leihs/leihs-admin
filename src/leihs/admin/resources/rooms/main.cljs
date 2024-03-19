@@ -127,7 +127,8 @@
 (defn core-table-component [hds tds rooms]
   (if-let [rooms (seq rooms)]
     [table/container
-     {:actions [table/toolbar [add-room-button]]
+     {:className "rooms"
+      :actions [table/toolbar [add-room-button]]
       :header [rooms-thead-component hds]
       :body
       (doall (for [room rooms]

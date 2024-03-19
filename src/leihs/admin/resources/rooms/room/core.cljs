@@ -44,23 +44,24 @@
 (defn room-form [action]
   [:> Form {:id "room-form"
             :on-submit (fn [e] (.preventDefault e) (action))}
-   [:> Form.Group
+   [:> Form.Group {:control-id "name"}
     [:> Form.Label "Name"]
-    [:> Form.Control
-     {:type "text"
+    [:input.form-control
+     {:id "name"
+      :type "text"
       :required true
       :placeholder "Enter Name"
       :value (or (:name @data*) "")
       :onChange (fn [e] (swap! data* assoc :name (-> e .-target .-value)))}]]
-   [:> Form.Group
+   [:> Form.Group {:control-id "description"}
     [:> Form.Label "Description"]
-    [:> Form.Control
-     {:as "textarea"
+    [:textarea.form-control
+     {:id "description"
       :placeholder "Enter description"
       :rows 10
       :value (or (:description @data*) "")
       :onChange (fn [e] (swap! data* assoc :description (-> e .-target .-value)))}]]
-   [:> Form.Group
+   [:> Form.Group {:control-id "building_id"}
     [:> Form.Label "Building"]
     [:> Form.Control
      {:required true
