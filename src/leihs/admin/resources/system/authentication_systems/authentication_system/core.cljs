@@ -101,7 +101,6 @@
     :label "Internal private key"]
 
    [form-components/input-component data* [:internal_public_key]
-    :disabled true
     :element :textarea
     :rows 5
     :label "Internal public key"]
