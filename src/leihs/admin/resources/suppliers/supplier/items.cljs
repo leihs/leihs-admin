@@ -68,7 +68,8 @@
      :else [:<>
             [:h1.my-3 "Items"]
             [table/container
-             {:borders false
+             {:className "items"
+              :borders false
               :header [:tr [:th "Inventory-Pool"] [:th "Inventory-Code"] [:th "Model-Name"]]
               :body
               (for [row @data*]

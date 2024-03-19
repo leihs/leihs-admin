@@ -43,19 +43,20 @@
 (defn form [action]
   [:> Form {:id "supplier-form"
             :on-submit (fn [e] (.preventDefault e) (action))}
-   [:> Form.Group
+   [:> Form.Group {:id "name"}
     [:> Form.Label "Name"]
-    [:> Form.Control
+    [:input.form-control
      {:type "text"
+      :id "name"
       :required true
       :placeholder "Enter Name"
       :value (or (:name @data*) "")
       :onChange (fn [e] (swap! data* assoc :name (-> e .-target .-value)))}]]
-   [:> Form.Group
+   [:> Form.Group {:id "note"}
     [:> Form.Label "Note"]
-    [:> Form.Control
-     {:as "textarea"
-      :placeholder "Enter Note"
+    [:textarea.form-control
+     {:placeholder "Enter Note"
+      :id "note"
       :rows 10
       :value (or (:note @data*) "")
       :onChange (fn [e] (swap! data* assoc :note (-> e .-target .-value)))}]]])

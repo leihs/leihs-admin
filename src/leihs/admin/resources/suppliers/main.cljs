@@ -114,7 +114,6 @@
   (if-let [suppliers (seq suppliers)]
     [table/container
      {:className "suppliers"
-      :actions [table/toolbar [add-supplier-button]]
       :header [suppliers-thead-component hds]
       :body (doall (for [supplier suppliers]
                      ^{:key (:id supplier)}
@@ -158,9 +157,11 @@
      {:did-change fetch-suppliers
       :did-mount fetch-inventory-pools}]
     [filter-component]
+    [table/toolbar [add-supplier-button]]
     [table-component
      [name-th-component
       items-count-th-component]
      [name-td-component
       items-count-td-component]]
+    [table/toolbar [add-supplier-button]]
     [debug-component]]])
