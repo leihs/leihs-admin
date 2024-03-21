@@ -9,6 +9,7 @@
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.user.front :as current-user]
+   [react-bootstrap :as react-bootstrap :refer [Form]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def data* user-data*)
@@ -101,14 +102,29 @@
    [:h3 "Account Settings "]
    [:div.form-row
     [:div.col-md-3
-     [checkbox-component data* [:account_enabled]
-      :label "Enabled"
-      :hint [:span  "A disabled account prevents sign ins. "
-             "This is used if a user leaves the organization but the account can not be deleted. "]]]
+     [:> Form.Check
+      {:className "font-weight-bold"
+       :type "checkbox"
+       :id "account_enabled"
+       :label "Enabled"
+       :checked (if (boolean? (:account_enabled @data*))
+                  (:account_enabled @data*)
+                  true)
+       :on-change #(swap! data* assoc :account_enabled (-> % .-target .-checked presence))}]
+     [:div.pl-4.mb-1 [:small  "A disabled account prevents sign ins. "
+                      "This is used if a user leaves the organization but the account can not be deleted. "]]]
+
     [:div.col-md-3
-     [checkbox-component data* [:password_sign_in_enabled]
-      :label "Password sign-in"
-      :hint [:span "This is often disabled when leihs is connected to an external authentication system."]]]]
+     [:> Form.Check
+      {:className "font-weight-bold"
+       :type "checkbox"
+       :id "password_sign_in_enabled"
+       :label "Password sign-in"
+       :checked (if (boolean? (:password_sign_in_enabled @data*))
+                  (:password_sign_in_enabled @data*)
+                  true)
+       :on-change #(swap! data* assoc :password_sign_in_enabled (-> % .-target .-checked presence))}]
+     [:div.pl-4.mb-1 [:small  "This is often disabled when leihs is connected to an external authentication system."]]]]
 
    [:div.form-row
     [:div.col-md-3

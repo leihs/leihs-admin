@@ -10,6 +10,7 @@
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]))
 
 (defn post []
+  (js/console.debug @data*)
   (go (when-let [data (some->
                        {:chan (async/chan)
                         :url (path :users)
