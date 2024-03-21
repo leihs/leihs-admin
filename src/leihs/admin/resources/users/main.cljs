@@ -13,11 +13,13 @@
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.shared :as shared]
    [leihs.admin.resources.users.user.core :as user]
    [leihs.admin.resources.users.user.create :as create]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
+   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Alert]]
@@ -169,17 +171,19 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col user])])
 
-(defn add-user-button []
+(defn add-button []
   (let [show (reagent/atom false)]
     (reset! user/user-data* {})
     (fn []
-      [:<>
-       [:> Button
-        {:className "ml-3"
-         :onClick #(reset! show true)}
-        "Add User"]
-       [create/dialog {:show @show
-                       :onHide #(reset! show false)}]])))
+      (when (auth/allowed?
+             [auth/admin-scopes? pool-auth/some-lending-manager?])
+        [:<>
+         [:> Button
+          {:className "ml-3"
+           :onClick #(reset! show true)}
+          "Add User"]
+         [create/dialog {:show @show
+                         :onHide #(reset! show false)}]]))))
 
 (defn users-table
   [hds tds &
@@ -225,7 +229,7 @@
     [icons/users] " Users"]
    [:section
     [filter-component]
-    [table/toolbar  [add-user-button]]
+    [table/toolbar  [add-button]]
     [users-table
      [user-th-component
       org-th-component
@@ -239,5 +243,5 @@
       contracts-count-td-component
       pools-count-td-component
       groups-count-td-component]]
-    [table/toolbar  [add-user-button]]
+    [table/toolbar  [add-button]]
     [debug-component]]])

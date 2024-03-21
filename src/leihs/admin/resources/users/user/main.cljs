@@ -3,6 +3,7 @@
   (:require
    [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.user.core :as user-core :refer [clean-and-fetch user-data*
                                                                 user-id*]]
    [leihs.admin.resources.users.user.delete :as delete]
@@ -10,6 +11,7 @@
    [leihs.admin.resources.users.user.groups :as groups]
    [leihs.admin.resources.users.user.inventory-pools :as inventory-pools]
    [leihs.admin.resources.users.user.password-reset.main :as password-reset]
+   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup DropdownButton Dropdown Tabs Tab]]
@@ -27,35 +29,56 @@
 ;;     [breadcrumbs/edit-li]
 ;;     [breadcrumbs/user-my-li @user-id*]]])
 
+(defn some-lending-manager-user-unprotected? [current-user-state _]
+  (and (pool-auth/some-lending-manager? current-user-state _)
+       (boolean  @user-data*)
+       (-> @user-data* :admin_protected not)))
+
+(defn modifieable? [current-user-state _]
+  (cond
+    (auth/system-admin-scopes?
+     current-user-state _) true
+    (auth/admin-scopes?
+     current-user-state
+     _)  (cond (or (nil? @user-data*) (:is_system_admin @user-data*)) false
+               (or (nil? @user-data*) (:system_admin_protected @user-data*)) false
+               :else true)
+    :else (cond (or (nil? @user-data*) (:is_admin @user-data*)) false
+                (or (nil? user-data*) (:admin_protected @user-data*)) false
+                :else true)))
+
 (defn edit-user-button []
   (let [show (reagent/atom false)]
     (fn []
-      [:<>
-       [:> Button
-        {:onClick #(reset! show true)}
-        "Edit User"]
-       [edit/dialog {:show @show
-                     :onHide #(reset! show false)}]])))
+      (js/console.debug "modifieable?" modifieable?)
+      (when (auth/allowed?  [modifieable?])
+        [:<>
+         [:> Button
+          {:onClick #(reset! show true)}
+          "Edit User"]
+         [edit/dialog {:show @show
+                       :onHide #(reset! show false)}]]))))
 
 (defn reset-password-button []
   (let [show (reagent/atom false)]
     (fn []
-      [:<>
-       [:> DropdownButton {:as ButtonGroup :title "Reset Password"}
-        [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                          (password-reset/submit :valid_for 1))}
-         "Create Reset Link - 1 hour"]
-        [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                          (password-reset/submit))}
-         "Create Reset Link - 24 hours"]
-        [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                          (password-reset/submit :valid_for (* 3 24)))}
-         "Create Reset Link - 3 days"]
-        [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                          (password-reset/submit {:valid_for (* 7 24)}))}
-         "Create Reset Link - 7 days"]]
-       [password-reset/dialog  {:show @show
-                                :onHide #(reset! show false)}]])))
+      (when (auth/allowed? [modifieable?])
+        [:<>
+         [:> DropdownButton {:as ButtonGroup :title "Reset Password"}
+          [:> Dropdown.Item {:on-click #(do (reset! show true)
+                                            (password-reset/submit :valid_for 1))}
+           "Create Reset Link - 1 hour"]
+          [:> Dropdown.Item {:on-click #(do (reset! show true)
+                                            (password-reset/submit))}
+           "Create Reset Link - 24 hours"]
+          [:> Dropdown.Item {:on-click #(do (reset! show true)
+                                            (password-reset/submit :valid_for (* 3 24)))}
+           "Create Reset Link - 3 days"]
+          [:> Dropdown.Item {:on-click #(do (reset! show true)
+                                            (password-reset/submit {:valid_for (* 7 24)}))}
+           "Create Reset Link - 7 days"]]
+         [password-reset/dialog  {:show @show
+                                  :onHide #(reset! show false)}]]))))
 
 ;; NOTE: This is a workaround and should be fixed
 ;; currently the issue is that a user is selected by navigating to the user route
@@ -69,13 +92,14 @@
          (get @routing/state* :query-params) :user-uid)
     (reset! show* true)))
 
-(defn delete-user-button []
-  [:<>
-   [:> Button
-    {:className "ml-3"
-     :variant "danger"
-     :onClick #(reset! show* true)}
-    "Delete User"]])
+(defn delete-button []
+  (when (auth/allowed? [modifieable?])
+    [:<>
+     [:> Button
+      {:className "ml-3"
+       :variant "danger"
+       :onClick #(reset! show* true)}
+      "Delete User"]]))
 
 (defn delete-user-dialog []
   [delete/dialog {:show @show*
@@ -101,7 +125,7 @@
     [:> ButtonGroup {:className "mr-3"}
      [edit-user-button]
      [reset-password-button]]
-    [delete-user-button]]])
+    [delete-button]]])
 
 (defn extended-info []
   [:div.mt-3
