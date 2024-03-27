@@ -1,9 +1,6 @@
 (ns leihs.admin.routes
   (:refer-clojure :exclude [str keyword])
   (:require
-   [bidi.bidi :as bidi]
-   [bidi.ring :refer [make-handler]]
-   [compojure.core :as cpj]
    [leihs.admin.html :as html]
    [leihs.admin.paths :refer [path paths]]
    [leihs.admin.resources.audits.changes.change.main :as audited-change]
@@ -62,8 +59,7 @@
    [leihs.admin.resources.users.user.password-reset.main :as user-password-reset]
    [leihs.core.anti-csrf.back :as anti-csrf]
    [leihs.core.auth.core :as auth]
-   [leihs.core.constants :as constants]
-   [leihs.core.core :refer [keyword str presence]]
+   [leihs.core.core :refer [keyword presence]]
    [leihs.core.db :as db]
    [leihs.core.http-cache-buster2 :as cache-buster :refer [wrap-resource]]
    [leihs.core.json :as json]
@@ -75,17 +71,12 @@
    [leihs.core.routing.dispatch-content-type :as dispatch-content-type]
    [leihs.core.settings :as settings]
    [leihs.core.status :as status]
-   [logbug.catcher :as catcher]
-   [logbug.debug :as debug :refer [I>]]
-   [logbug.ring :refer [wrap-handler-with-logging]]
-   [logbug.thrown :as thrown]
    [ring.middleware.accept]
    [ring.middleware.content-type :refer [wrap-content-type]]
    [ring.middleware.cookies]
    [ring.middleware.json]
    [ring.middleware.params]
-   [ring.util.response :refer [redirect]]
-   [taoensso.timbre :refer [debug info warn error spy]]))
+   [ring.util.response :refer [redirect]]))
 
 (declare redirect-to-root-handler)
 
