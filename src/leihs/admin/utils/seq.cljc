@@ -1,7 +1,5 @@
 (ns leihs.admin.utils.seq
-  (:refer-clojure :exclude [str keyword])
-  (:require
-   [leihs.core.core :refer [keyword str presence]]))
+  (:refer-clojure :exclude [str keyword]))
 
 (defn with-index [offset xs]
   (map-indexed (fn [idx x]

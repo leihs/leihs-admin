@@ -4,7 +4,6 @@
    [hiccup.page :refer [html5 include-js]]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.state :refer [state*]]
-   [leihs.admin.utils.release-info :as release-info]
    [leihs.core.http-cache-buster2 :as cache-buster]
    [leihs.core.json :refer [to-json]]
    [leihs.core.remote-navbar.shared :refer [navbar-props]]
