@@ -5,10 +5,10 @@
   (:require
    [clojure.set]
    [compojure.core :as cpj]
+   [honey.sql.helpers :as sql]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.utils.seq :as seq]
    [leihs.core.routing.back :as routing :refer []]
-   [honey.sql.helpers :as sql]
    [logbug.debug :as debug]))
 
 (defn org-id-filter [query request]
