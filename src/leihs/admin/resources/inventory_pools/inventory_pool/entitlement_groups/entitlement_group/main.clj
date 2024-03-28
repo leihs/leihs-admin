@@ -1,6 +1,5 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.main
   (:refer-clojure :exclude [str keyword])
-  (:require [leihs.core.core :refer [keyword str presence]])
   (:require
    [clojure.java.jdbc :as jdbc]
    [clojure.set :as set]
@@ -12,7 +11,8 @@
    [leihs.admin.utils.jdbc :as utils.jdbc]
    [leihs.admin.utils.regex :as regex]
    [leihs.core.sql :as sql]
-   [logbug.debug :as debug]))
+   [logbug.debug :as debug]
+   [taoensso.timbre :refer [debug spy]]))
 
 (defn query [inventory-pool-id entitlement-group-id]
   (-> entitlement-groups/base-query
@@ -22,7 +22,7 @@
 
 (defn entitlement-group
   [{{inventory-pool-id :inventory-pool-id
-     entitlement-group-id :entitlement-group-id} :route-params
+     entitlement-group-id :entitlement-group-id :as route-params} :route-params
     tx :tx :as request}]
   (if-let [eg (->> (query inventory-pool-id entitlement-group-id)
                    sql/format

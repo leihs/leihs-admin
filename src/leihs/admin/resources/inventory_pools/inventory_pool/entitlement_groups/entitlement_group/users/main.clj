@@ -1,20 +1,15 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.users.main
   (:refer-clojure :exclude [str keyword])
   (:require
-   [clojure.java.jdbc :as jdbc]
-   [clojure.set :as set]
    [compojure.core :as cpj]
+   [honey.sql :refer [format] :rename {format sql-format}]
+   [honey.sql.helpers :as sql]
    [leihs.admin.common.membership.users.main :refer [extend-with-membership]]
-   [leihs.admin.common.roles.core :as roles]
    [leihs.admin.paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.shared :refer [normalized-inventory-pool-id!]]
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.utils.jdbc :as utils.jdbc]
-   [leihs.admin.utils.regex :as regex]
    [leihs.admin.utils.seq :as seq]
-   [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.sql :as sql]
-   [logbug.debug :as debug]))
+   [next.jdbc.sql :refer [delete! query] :rename {query jdbc-query, delete! jdbc-delete!}]))
 
 ;;; users ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -22,24 +17,24 @@
   [:exists
    (-> (sql/select true)
        (sql/from :entitlement_groups_users)
-       (sql/merge-where [:= :users.id :entitlement_groups_users.user_id])
-       (sql/merge-where [:= :entitlement_groups_users.entitlement_group_id entitlement-group-id]))])
+       (sql/where [:= :users.id :entitlement_groups_users.user_id])
+       (sql/where [:= :entitlement_groups_users.entitlement_group_id entitlement-group-id]))])
 
 (defn direct-member-expr [entitlement-group-id]
   [:exists
    (-> (sql/select true)
        (sql/from :entitlement_groups_direct_users)
-       (sql/merge-where [:= :users.id :entitlement_groups_direct_users.user_id])
-       (sql/merge-where [:= :entitlement_groups_direct_users.entitlement_group_id entitlement-group-id]))])
+       (sql/where [:= :users.id :entitlement_groups_direct_users.user_id])
+       (sql/where [:= :entitlement_groups_direct_users.entitlement_group_id entitlement-group-id]))])
 
 (defn group-member-expr [entitlement-group-id]
   [:exists
    (-> (sql/select true)
        (sql/from :entitlement_groups_groups)
-       (sql/merge-where [:= :entitlement_groups_groups.entitlement_group_id entitlement-group-id])
-       (sql/merge-join :groups [:= :entitlement_groups_groups.group_id :groups.id])
-       (sql/merge-join :groups_users [:= :groups_users.group_id :groups.id])
-       (sql/merge-where [:= :users.id :groups_users.user_id]))])
+       (sql/where [:= :entitlement_groups_groups.entitlement_group_id entitlement-group-id])
+       (sql/join :groups [:= :entitlement_groups_groups.group_id :groups.id])
+       (sql/join :groups_users [:= :groups_users.group_id :groups.id])
+       (sql/where [:= :users.id :groups_users.user_id]))])
 
 (defn users-query
   [{{entitlement-group-id :entitlement-group-id} :route-params
@@ -51,12 +46,15 @@
        (group-member-expr entitlement-group-id)
        request)))
 
-(defn users [{tx :tx :as request}]
+(def aquery (atom nil))
+
+(defn users [{tx :tx-next :as request}]
   (let [query (-> request users-query)
         offset (:offset query)]
+    (reset! aquery query)
     {:body
-     {:users (-> query sql/format
-                 (->> (jdbc/query tx)
+     {:users (-> query sql-format
+                 (->> (jdbc-query tx)
                       (seq/with-index offset)
                       seq/with-page-index))}}))
 
@@ -66,10 +64,10 @@
   [{{inventory-pool-id :inventory-pool-id
      entitlement-group-id :entitlement-group-id
      user-id :user-id} :route-params
-    tx :tx :as request}]
-  (if (= [1] (jdbc/delete! tx :entitlement_groups_direct_users
-                           ["entitlement_group_id = ? AND user_id = ?
-                            " entitlement-group-id user-id]))
+    tx :tx-next :as request}]
+  (if (= [1] (jdbc-delete! tx :entitlement_groups_direct_users
+                           ["entitlement_group_id = ? AND user_id = ?"
+                            entitlement-group-id user-id]))
     {:status 204}
     {:status 404 :body "Remove direct entitlement user failed without error."}))
 
@@ -79,7 +77,7 @@
   [{{inventory-pool-id :inventory-pool-id
      entitlement-group-id :entitlement-group-id
      user-id :user-id} :route-params
-    tx :tx :as request}]
+    tx :tx-next :as request}]
   (utils.jdbc/insert-or-update!
    tx :entitlement_groups_direct_users
    ["entitlement_group_id = ? AND user_id = ?  " entitlement-group-id user-id]
