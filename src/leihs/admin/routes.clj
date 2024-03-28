@@ -57,6 +57,7 @@
    [leihs.admin.resources.users.user.inventory-pools :as user-inventory-pools]
    [leihs.admin.resources.users.user.main :as user]
    [leihs.admin.resources.users.user.password-reset.main :as user-password-reset]
+   [leihs.admin.utils.uuid :as uuid]
    [leihs.core.anti-csrf.back :as anti-csrf]
    [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [keyword presence]]
@@ -277,6 +278,7 @@
   (routing/init paths resolve-table)
   (-> ; I> wrap-handler-with-logging
    routing/dispatch-to-handler
+   uuid/wrap-cast-id-params-to-uuid
    (auth/wrap resolve-table)
    wrap-dispatch-content-type
    ring-audits/wrap
