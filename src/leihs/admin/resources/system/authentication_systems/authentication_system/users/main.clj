@@ -13,6 +13,8 @@
    [leihs.core.core :refer [str]]
    [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [query delete! insert-multi!] :rename {query jdbc-query,
+                                                                delete! jdbc-delete!,
+                                                                insert-multi! jdbc-insert-multi!}]))
 
 (defn direct-member-expr [authentication-system-id]
   [:exists
