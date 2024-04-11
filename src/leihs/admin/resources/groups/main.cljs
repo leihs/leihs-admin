@@ -1,7 +1,4 @@
 (ns leihs.admin.resources.groups.main
-  (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
@@ -18,7 +15,7 @@
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Alert]]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-paramerters*
   (reaction (-> @routing/state* :query-params
@@ -59,13 +56,6 @@
    :query-params-key :including-user
    :input-options {:placeholder "email, login, or id"}])
 
-(defn form-org-filter []
-  [routing/delayed-query-params-input-component
-   :label "Org ID"
-   :query-params-key :org_id
-   :input-options
-   {:placeholder "org_id or true or false"}])
-
 (defn filter-component []
   [filter/container
    [:<>
@@ -103,15 +93,6 @@
 (defn org-id-td-component [group]
   [:td {:key :org-id}
    (:org_id group)])
-
-(defn protected-th-component []
-  [:th {:key :admin_protected} "Protected"])
-
-(defn protected-td-component [group]
-  [:td {:key :admin_protected}
-   (if (:admin_protected group)
-     "yes"
-     "no")])
 
 (defn users-count-th-component []
   [:th.text-right {:key :count_users} "# Users"])

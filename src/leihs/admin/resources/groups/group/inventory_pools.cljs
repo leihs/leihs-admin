@@ -1,36 +1,15 @@
 (ns leihs.admin.resources.groups.group.inventory-pools
-  (:refer-clojure :exclude [str keyword])
-  (:require
-   [cljs.core.async :as async :refer [<! go]]
-   [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
-   [leihs.admin.common.roles.core :as roles]
-   [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :as group.shared]
-   [leihs.admin.state :as state]
-   [leihs.core.core :refer [str]]
-   [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Alert]]
-   [reagent.core :as reagent]))
+  (:require [cljs.core.async :as async :refer [<! go]]
+            [clojure.string :refer [join]]
+            [leihs.admin.common.components.table :as table]
+            [leihs.admin.common.http-client.core :as http-client]
+            [leihs.admin.common.roles.core :as roles]
+            [leihs.admin.paths :as paths :refer [path]]
+            [leihs.core.routing.front :as routing]
+            [react-bootstrap :as react-bootstrap :refer [Alert]]
+            [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom nil))
-
-(defn prepare-inventory-pools-data [data]
-  (->> data
-       (reduce (fn [roles role]
-                 (-> roles
-                     (assoc-in [(:inventory_pool_id role) :name] (:inventory_pool_name role))
-                     (assoc-in [(:inventory_pool_id role) :id] (:inventory_pool_id role))
-                     (assoc-in [(:inventory_pool_id role) :key] (:inventory_pool_id role))))
-                    ; (assoc-in [(:inventory_pool_id role) :role (:role role)] role)
-
-               {})
-       (map (fn [[_ v]] v))
-       (sort-by :name)
-       (into [])))
-
-(defonce fetch-inventory-pools-roles-id* (reagent/atom nil))
 
 (defn fetch-inventory-pools-roles []
   (go (reset! data*
@@ -45,16 +24,6 @@
 (defn clean-and-fetch [& args]
   (reset! data* nil)
   (fetch-inventory-pools-roles))
-
-(defn inventory-pools-roles-debug-component []
-  [:div
-   (when (:debug @state/global-state*)
-     [:div.inventory-pools-roles-debug
-      [:hr]
-      [:div.inventory-pools-roles-data
-       [:h3 "@data*"]
-       [:pre (with-out-str (pprint @data*))]]])
-   [group.shared/debug-component]])
 
 (defn table-component []
   [:div
@@ -78,7 +47,7 @@
                             {:inventory-pool-id (:inventory_pool_id row)
                              :group-id (:group_id row)})}
             (->> row :role roles/expand-to-hierarchy
-                 (map str)
-                 (clojure.string/join ", "))]]])}]
+                 (map name)
+                 (join ", "))]]])}]
      [:> Alert {:variant "secondary" :className "mt-3"}
       "Not part of any Inventory Pool"])])
