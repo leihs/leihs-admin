@@ -1,22 +1,10 @@
 (ns leihs.admin.resources.users.user.edit-image
   (:refer-clojure :exclude [str keyword])
-  (:require
-   [accountant.core :as accountant]
-   [cljs.core.async :as async]
-   [cljs.core.async :refer [timeout]]
-   [cljs.pprint :refer [pprint]]
-   [clojure.contrib.inflect :refer [pluralize-noun]]
-   [leihs.admin.common.breadcrumbs :as breadcrumbs]
-   [leihs.admin.common.form-components :refer [input-component]]
-   [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
-   [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
-   [leihs.admin.resources.users.user.edit-image-resize :as image-resize]
-   [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
-   [leihs.core.core :refer [keyword str presence]]
-   [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent]))
+  (:require [leihs.admin.common.form-components :refer [input-component]]
+            [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
+            [leihs.admin.resources.users.user.edit-image-resize :as image-resize]
+            [leihs.core.core :refer [keyword presence str]]
+            [reagent.core :as reagent]))
 
 ;;; image ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

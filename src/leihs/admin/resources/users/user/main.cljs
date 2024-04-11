@@ -1,11 +1,8 @@
 (ns leihs.admin.resources.users.user.main
-  (:refer-clojure :exclude [str keyword])
   (:require
    [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.users.user.core :as user-core :refer [clean-and-fetch user-data*
-                                                                user-id*]]
+   [leihs.admin.resources.users.user.core :as user-core :refer [clean-and-fetch user-data*]]
    [leihs.admin.resources.users.user.delete :as delete]
    [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.resources.users.user.groups :as groups]
@@ -16,23 +13,6 @@
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup DropdownButton Dropdown Tabs Tab]]
    [reagent.core :as reagent]))
-
-;; (defn breadcrumbs []
-;;   [breadcrumbs/nav-component
-;;    @breadcrumbs/left*
-;;    [[audited-changes-breadcrumbs/changes-li
-;;      :query-params {:pkey (:id @user-data*)
-;;                     :table "users"}]
-;;     [breadcrumbs-common/email-li (:email @user-data*)]
-;;     [breadcrumbs/user-password-reset-li @user-id*]
-;;     [breadcrumbs/delete-li]
-;;     [breadcrumbs/edit-li]
-;;     [breadcrumbs/user-my-li @user-id*]]])
-
-(defn some-lending-manager-user-unprotected? [current-user-state _]
-  (and (pool-auth/some-lending-manager? current-user-state _)
-       (boolean  @user-data*)
-       (-> @user-data* :admin_protected not)))
 
 (defn modifieable? [current-user-state _]
   (cond

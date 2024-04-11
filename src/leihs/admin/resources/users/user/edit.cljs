@@ -1,5 +1,4 @@
 (ns leihs.admin.resources.users.user.edit
-  (:refer-clojure :exclude [str keyword])
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
