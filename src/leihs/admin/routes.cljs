@@ -47,7 +47,6 @@
    [leihs.admin.resources.rooms.main :as rooms]
    [leihs.admin.resources.rooms.room.main :as room]
    [leihs.admin.resources.settings.languages.main :as languages-settings]
-   [leihs.admin.resources.settings.main :as settings]
    [leihs.admin.resources.settings.misc.main :as misc-settings]
    [leihs.admin.resources.settings.smtp.main :as smtp-settings]
    [leihs.admin.resources.settings.syssec.main :as syssec-settings]
@@ -128,7 +127,6 @@
    ;; :room-delete #'room/delete-page
    ;; :room-edit #'room/edit-page
    :rooms #'rooms/page
-   :settings #'settings/page
    :smtp-settings #'smtp-settings/page
    :statistics #'statistics/page
    :supplier #'supplier/page
