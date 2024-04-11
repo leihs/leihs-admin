@@ -6,7 +6,6 @@
    [leihs.admin.paths :as paths :refer [paths]]
    [leihs.admin.resources.audits.changes.change.main :as audited-change]
    [leihs.admin.resources.audits.changes.main :as audited-changes]
-   [leihs.admin.resources.audits.main :as audits]
    [leihs.admin.resources.audits.requests.main :as audited-requests]
    [leihs.admin.resources.audits.requests.request.main :as audited-request]
    [leihs.admin.resources.buildings.building.main :as building]
@@ -72,7 +71,6 @@
    :audited-changes #'audited-changes/page
    :audited-request #'audited-request/page
    :audited-requests #'audited-requests/page
-   :audits #'audits/page
    :authentication-system #'authentication-system/page
    ;; :authentication-system-create #'authentication-system/create-page
    ;; :authentication-system-delete #'authentication-system/delete-page
