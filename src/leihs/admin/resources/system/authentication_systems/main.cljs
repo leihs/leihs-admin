@@ -1,7 +1,4 @@
 (ns leihs.admin.resources.system.authentication-systems.main
-  (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
@@ -13,10 +10,9 @@
    [leihs.admin.resources.system.authentication-systems.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.core.core :refer [str]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button]]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-paramerters*
   (reaction (-> @routing/state* :query-params
@@ -104,21 +100,6 @@
      [:div
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
-
-(defn main-page-content-component []
-  [:div
-   [routing/hidden-state-component
-    {:did-change fetch-authentication-systems}]
-   [filter-component]
-   [routing/pagination-component]
-   [authentication-systems-table-component]
-   [routing/pagination-component]
-   [debug-component]])
-
-;; (defn breadcrumbs []
-;;   (breadcrumbs/nav-component
-;;    @breadcrumbs/left*
-;;    [[breadcrumbs/create-li]]))
 
 (defn page []
   [:article.authentication-systems

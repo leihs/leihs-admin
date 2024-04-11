@@ -57,7 +57,6 @@
    [leihs.admin.resources.system.authentication-systems.authentication-system.main :as authentication-system]
    [leihs.admin.resources.system.authentication-systems.authentication-system.users.main :as authentication-system-users]
    [leihs.admin.resources.system.authentication-systems.main :as authentication-systems]
-   [leihs.admin.resources.system.main :as system]
    [leihs.admin.resources.users.choose-main :as users-choose]
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.resources.users.user.main :as user]
@@ -135,7 +134,6 @@
    ;; :supplier-edit #'supplier/edit-page
    :suppliers #'suppliers/page
    :syssec-settings #'syssec-settings/page
-   :system #'system/page
    :user #'user/page
    ;; :user-delete #'user-delete/page
    :user-password-reset #'user-password-reset/page
