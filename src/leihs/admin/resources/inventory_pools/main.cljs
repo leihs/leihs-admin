@@ -1,7 +1,4 @@
 (ns leihs.admin.resources.inventory-pools.main
-  (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
@@ -18,7 +15,7 @@
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button]]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-paramerters*
   (reaction (-> @routing/state* :query-params

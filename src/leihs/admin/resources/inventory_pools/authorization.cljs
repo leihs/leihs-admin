@@ -1,8 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.authorization
-  (:refer-clojure :exclude [str keyword])
   (:require
    [leihs.admin.common.roles.core :as roles :refer [expand-to-hierarchy]]
-   [leihs.core.core :refer [keyword str presence]]
    [leihs.core.user.front :as current-user]
    [taoensso.timbre]))
 
