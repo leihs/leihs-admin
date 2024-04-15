@@ -170,7 +170,7 @@
   [hds tds &
    {:keys [membership-filter? role-filter?]
     :or {membership-filter? false
-         role-filer? false}}]
+         role-filter? false}}]
   [:<>
    [routing/hidden-state-component
     {:did-change fetch-users}]

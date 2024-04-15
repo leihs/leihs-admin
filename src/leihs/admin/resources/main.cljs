@@ -1,5 +1,4 @@
-(ns leihs.admin.resources.main
-  (:refer-clojure :exclude [str keyword]))
+(ns leihs.admin.resources.main)
 
 (defn page []
   [:article.admin.my-5

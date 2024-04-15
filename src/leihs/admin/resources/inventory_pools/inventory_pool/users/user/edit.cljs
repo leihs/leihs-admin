@@ -1,5 +1,4 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.users.user.edit
-  (:refer-clojure :exclude [str keyword])
   (:require [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
             [leihs.admin.resources.inventory-pools.inventory-pool.users.user.breadcrumbs :as breadcrumbs]
             [leihs.admin.resources.users.user.core :as core]

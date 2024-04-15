@@ -1,5 +1,4 @@
 (ns leihs.admin.resources.breadcrumbs
-  (:refer-clojure :exclude [str keyword])
   (:require [leihs.admin.common.breadcrumbs :as breadcrumbs]
             [leihs.admin.common.icons :as icons]
             [leihs.core.auth.core :as auth]

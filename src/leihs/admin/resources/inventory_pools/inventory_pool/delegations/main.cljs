@@ -1,11 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.main
-  (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
-   [clojure.set :refer [rename-keys]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
@@ -20,7 +16,7 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Table]]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-paramerters*
   (reaction (-> @routing/state* :query-params
@@ -96,10 +92,6 @@
                    {:inventory-pool-id @inventory-pool/id*
                     :delegation-id id})}
    inner-component])
-
-(defn remove-component [delegation]
-  [:button.btn.btn-warning
-   [icons/delete] " Remove "])
 
 (defn name-td [id delegation]
   [:td.name.text-left

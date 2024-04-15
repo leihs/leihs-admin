@@ -1,5 +1,4 @@
 (ns leihs.admin.resources.inventory-pools.breadcrumbs
-  (:refer-clojure :exclude [str keyword])
   (:require [leihs.admin.common.icons :as icons]
             [leihs.admin.resources.breadcrumbs :as breadcrumbs]
             [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
