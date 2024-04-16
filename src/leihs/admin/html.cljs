@@ -1,7 +1,4 @@
 (ns leihs.admin.html
-  (:refer-clojure :exclude [str keyword])
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    ["/admin-ui" :as UI]
    ["react-bootstrap" :as BS]
@@ -12,7 +9,6 @@
    [leihs.admin.paths :refer [path]]
    [leihs.admin.sidebar :as sidebar]
    [leihs.admin.state :as state :refer [global-state*] :rename {global-state* state*}]
-   [leihs.core.core :refer [str]]
    [leihs.core.dom :as dom]
    [leihs.core.routing.front :as routing]
    [reagent.dom :as rdom]))
@@ -55,13 +51,6 @@
        [main]]
       [:> UI/Components.Layout.Footer
        [footer]]])])
-   ;; [:div.container-fluid
-   ;;  (if-let [page (:page @routing/state*)]
-   ;;    [page]
-   ;;    [:div.page
-   ;;     [:h1.text-danger
-   ;;      [:b "Error 404 - There is no handler for the current path defined."]]])]
-   ;; [state/debug-component]])
 
 (defn mount []
   (when-let [app (.getElementById js/document "app")]
