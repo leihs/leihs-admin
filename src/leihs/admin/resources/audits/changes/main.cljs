@@ -90,7 +90,7 @@
      :query-params-key :txid
      :input-options {:placeholder "transaction id"}]
     [filter/delayed-query-params-input-component
-     :label "Primarky key"
+     :label "Primary key"
      :query-params-key :pkey]
     [table-filter-component]
     [tg-op-filter-component]

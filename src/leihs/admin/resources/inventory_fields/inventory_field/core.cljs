@@ -396,8 +396,6 @@
     :values [["" "Item+License"]
              ["item" "Item"]
              ["license" "License"]]]
-   ;; [select-type-component (when isEditing?
-   ;;                          {:disabled? true})]
    [select-type-component]])
 
 ;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -1,5 +1,5 @@
 (ns leihs.admin.common.components.filter
-  (:refer-clojure :exclude [str keyword])
+  (:refer-clojure :exclude [str])
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :refer [<! go timeout]]

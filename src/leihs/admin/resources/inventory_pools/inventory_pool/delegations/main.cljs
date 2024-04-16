@@ -18,13 +18,13 @@
    [react-bootstrap :as react-bootstrap :refer [Button Table]]
    [reagent.core :as reagent :refer [reaction]]))
 
-(def current-query-paramerters*
+(def current-query-parameters*
   (reaction (-> @routing/state* :query-params
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
 
-(def current-query-paramerters-normalized*
+(def current-query-parameters-normalized*
   (reaction (merge default-query-params
-                   @current-query-paramerters*)))
+                   @current-query-parameters*)))
 
 (def data* (reagent/atom {}))
 
@@ -193,8 +193,8 @@
 
          [delegations-thead]
          [:tbody
-          (let [page (:page @current-query-paramerters-normalized*)
-                per-page (:per-page @current-query-paramerters-normalized*)]
+          (let [page (:page @current-query-parameters-normalized*)
+                per-page (:per-page @current-query-parameters-normalized*)]
             (for [[k delegation] (map-indexed vector delegations)]
               ^{:key k} [delegation-row delegation]))]]
         [:div.alert.alert-warning.text-center "No (more) delegations found."]))))

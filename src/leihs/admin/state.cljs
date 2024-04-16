@@ -1,13 +1,11 @@
 (ns leihs.admin.state
-  (:require-macros
-   [reagent.ratom :as ratom :refer [reaction]])
   (:require
    [clojure.pprint :refer [pprint]]
    [leihs.core.auth.core :as authorization]
    [leihs.core.dom :as dom]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (defonce global-state* (reagent/atom {:debug false
                                       :users-query-params {}

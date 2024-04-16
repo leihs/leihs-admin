@@ -16,14 +16,14 @@
    [react-bootstrap :as react-bootstrap :refer [Alert Button]]
    [reagent.core :as reagent :refer [reaction]]))
 
-(def current-query-paramerters*
+(def current-query-parameters*
   (reaction (-> @routing/state* :query-params
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
 
 (def current-url* (reaction (:route @routing/state*)))
 
-(def current-query-paramerters-normalized*
-  (reaction (shared/normalized-query-parameters @current-query-paramerters*)))
+(def current-query-parameters-normalized*
+  (reaction (shared/normalized-query-parameters @current-query-parameters*)))
 
 (def data* (reagent/atom {}))
 
@@ -182,8 +182,8 @@
      [:hr]
      [:h2 "Page Debug"]
      [:div
-      [:h3 "@current-query-paramerters-normalized*"]
-      [:pre (with-out-str (pprint @current-query-paramerters-normalized*))]]
+      [:h3 "@current-query-parameters-normalized*"]
+      [:pre (with-out-str (pprint @current-query-parameters-normalized*))]]
      [:div
       [:h3 "@current-url*"]
       [:pre (with-out-str (pprint @current-url*))]]

@@ -3,6 +3,7 @@
 
 (def paths
   (branch "/audited"
+          (leaf "" :audits)
           (branch "/changes"
                   (leaf "/" :audited-changes)
                   (branch "/"

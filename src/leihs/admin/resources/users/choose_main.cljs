@@ -2,8 +2,8 @@
   (:refer-clojure :exclude [keyword])
   (:require
    [leihs.admin.common.components.table :as table]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.users.breadcrumbs :as breadcrumbs]
    [leihs.admin.resources.users.main :as users-main]
    [leihs.core.core :refer [keyword presence]]
    [leihs.core.routing.front :as routing]))
@@ -41,11 +41,9 @@
 
 (defn page []
   [:div
-   [breadcrumbs/nav-component
-    (conj @breadcrumbs/left* [breadcrumbs/users-choose-li]) []]
+   [:h1.my-5
+    [icons/users] " Choose user"]
    [users-main/filter-component]
-   [routing/pagination-component]
    [table/toolbar]
    [table]
-   [table/toolbar]
-   [routing/pagination-component]])
+   [table/toolbar]])

@@ -144,13 +144,11 @@
   [:div.audited-requests-main
    [routing/hidden-state-component
     {:did-change fetch}]
-   ;; [routing/pagination-component]
    (if-not (contains? @requests* @routing/current-url*)
      [wait-component]
      (if-let [requests (-> @requests* (get  @routing/current-url* {}) seq)]
        [table-component requests]
        [:div.alert.alert-warning.text-center "No (more) audited-requests found."]))])
-   ;; [routing/pagination-component]])
 
 (defn debug-component []
   (when @state/debug?*

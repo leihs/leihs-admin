@@ -1,5 +1,4 @@
 (ns leihs.admin.common.icons
-  (:refer-clojure :exclude [next])
   (:require
    ["@fortawesome/free-brands-svg-icons" :as brands]
    ["@fortawesome/free-solid-svg-icons" :as solids]

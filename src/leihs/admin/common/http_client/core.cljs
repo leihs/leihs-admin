@@ -1,5 +1,5 @@
 (ns leihs.admin.common.http-client.core
-  (:refer-clojure :exclude [str keyword send-off])
+  (:refer-clojure :exclude [str])
   (:require [cljs-http.client :as http-client]
             [cljs-uuid-utils.core :as uuid]
             [cljs.core.async :as async :refer [timeout go go-loop <! >!]]

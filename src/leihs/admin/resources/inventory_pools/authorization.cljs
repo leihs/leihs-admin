@@ -4,9 +4,11 @@
    [leihs.core.user.front :as current-user]
    [taoensso.timbre]))
 
-(defn some-lending-manager? [current-user-state routing-state]
+(defn some-lending-manager?
+  "True if user is lending manager (or higher) in at least one pool"
+  [current-user-state routing-state]
   (if (some
-       (fn [ac] (some #(= :lending_manager)
+       (fn [ac] (some #(= % :lending_manager)
                       (-> ac :role roles/expand-to-hierarchy)))
        (:access-rights current-user-state))
     true

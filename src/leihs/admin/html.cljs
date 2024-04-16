@@ -17,7 +17,6 @@
   [:div
    [:> BS/Navbar {:bg :dark :variant :dark}
     [:div.container-fluid
-     ;; [:> BS/Navbar.Brand {} "leihs Admin"]
      [:> BS/Navbar.Text {}
       [:a {:href constants/REPOSITORY_URL}
        [icons/github] " leihs/admin "]

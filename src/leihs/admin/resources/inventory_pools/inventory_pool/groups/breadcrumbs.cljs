@@ -8,8 +8,6 @@
 
 (def inventory-pool-id* breadcrumbs-parent/inventory-pool-id*)
 
-;(def users-li breadcrumbs-parent/users-li)
-
 (defonce left*
   (reaction
    (conj @breadcrumbs-parent/left*
