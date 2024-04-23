@@ -3,6 +3,7 @@
    [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
@@ -215,10 +216,8 @@
    [routing/hidden-state-component
     {:did-change fetch-delegations}
     {:did-mount (check-user-chosen)}]
-
-   [:h1.my-5
-    [inventory-pool/name-component]]
-   [tabs]
+   [inventory-pool/header]
+   [inventory-pool/tabs]
    [filter-section]
    [table/toolbar
     [add-button]]

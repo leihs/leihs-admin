@@ -44,9 +44,11 @@ feature 'Manage inventory-pool users ', type: :feature do
         end
       end
 
-
       # check on users page
-      click_on "Back" 
+      within(".breadcrumb") do
+        click_on(@pool.name)
+      end
+
       # test filtering by role:
       select 'inventory_manager', from: 'Role'
       wait_until { all("table tbody tr").count == 1 }
@@ -72,7 +74,10 @@ feature 'Manage inventory-pool users ', type: :feature do
       end
 
       #check on users page
-      click_on "Back" 
+      within(".breadcrumb") do
+        click_on(@pool.name)
+      end
+
       select 'any', from: 'Role'
       fill_in 'Search', with: @users.first.email
       wait_until { all("table tbody tr").count == 1 }

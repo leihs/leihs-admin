@@ -1,9 +1,10 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.core
   (:require
-   [cljs.core.async :as async :refer [go <!]]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [clojure.string :refer [join]]
    [leihs.admin.common.components :as components]
+   [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
@@ -130,7 +131,8 @@
 
 (defn header []
   [:header.my-5
-   [:h1.mt-3 [name-component]]])
+   [back/button]
+   [:h1 [name-component]]])
 
 (defn name-link-component []
   [:span

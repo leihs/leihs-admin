@@ -2,6 +2,7 @@
   (:require
    [cljs.core.async :refer [<! go]]
    [leihs.admin.common.components.filter :as filter]
+   [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
    [leihs.admin.common.roles.core :as roles]
@@ -67,14 +68,15 @@
 
 (defn header []
   [:header.my-5
-   [:h1.mt-5 [inventory-pool/name-component]]])
+   [back/button]
+   [:h1 [inventory-pool/name-component]]])
 
 (defn page []
   [:article.inventory-pool-groups
    [routing/hidden-state-component
     {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
-   [header]
-   [nav/tabs]
+   [inventory-pool/header]
+   [inventory-pool/tabs]
    [routing/hidden-state-component
     {:did-change groups/fetch-groups}]
    [filter-section]

@@ -2,6 +2,7 @@
   (:require
    [clojure.core :as core]
    [clojure.string :refer [join]]
+   [leihs.admin.common.components.navigation.back :as back]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -75,11 +76,10 @@
     {:did-mount inventory-pool/clean-and-fetch}]
    (if-not @inventory-pool/data*
      [:div.my-5
-      [wait-component " Loading Data ..."]]
-     [:article.inventory-pool.my-5
-      [:h1.my-5
-       [inventory-pool/name-component]]
-      [nav/tabs (join ["/admin/inventory-pools/" @inventory-pool/id*])]
+      [wait-component]]
+     [:article.inventory-pool
+      [inventory-pool/header]
+      [inventory-pool/tabs (join ["/admin/inventory-pools/" @inventory-pool/id*])]
       [inventory-pool-info-table]
       [edit-inventory-pool]
       [delete-inventory-pool]
