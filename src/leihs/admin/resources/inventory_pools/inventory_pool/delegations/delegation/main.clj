@@ -87,7 +87,7 @@
       sql-format))
 
 (defn delegation-for-pool
-  [{tx :tx-next
+  [{tx :tx
     {delegation-id :delegation-id
      inventory-pool-id :inventory-pool-id} :route-params}]
   (if-let [delegation (->> delegation-id
@@ -108,7 +108,7 @@
       (throw (ex-info "Delegation not found" {:status 404}))))
 
 (defn can-delete? [delegation-id]
-  (jdbc/with-transaction+options [tx (db/get-ds-next) {:read-only? true, :rollback-only true}]
+  (jdbc/with-transaction+options [tx (db/get-ds) {:read-only? true, :rollback-only true}]
     (try (jdbc-delete! tx :users ["id = ?" delegation-id])
          true
          (catch Throwable _ false))))
@@ -134,7 +134,7 @@
 ;;; update delegation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn patch-delegation
-  ([{tx :tx-next {delegation-id :delegation-id} :route-params
+  ([{tx :tx {delegation-id :delegation-id} :route-params
      {protected :pool_protected name :name uid :responsible_user_id} :body}]
    (if-let [ruid (-> uid  (responsible-user/find-by-unique-property tx) :id)]
      (let [update-count (::jdbc/update-count
@@ -152,7 +152,7 @@
 
 (defn add-delegation
   ([{{inventory-pool-id :inventory-pool-id delegation-id :delegation-id} :route-params
-     tx :tx-next :as request}]
+     tx :tx :as request}]
    (let [delegation (delegation! tx delegation-id)]
      (if (:pool_protected delegation)
        (throw (ex-info "Delegation is protected " {:status 403}))
