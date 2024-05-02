@@ -108,10 +108,13 @@
       (throw (ex-info "Delegation not found" {:status 404}))))
 
 (defn can-delete? [delegation-id]
-  (jdbc/with-transaction+options [tx (db/get-ds) {:read-only? true, :rollback-only true}]
-    (try (jdbc-delete! tx :users ["id = ?" delegation-id])
-         true
-         (catch Throwable _ false))))
+  ; https://github.com/seancorfield/next-jdbc/blob/develop/doc/transactions.md#nesting-transactions
+  (binding [next.jdbc.transaction/*nested-tx* :ignore]
+    (jdbc/with-transaction+options [tx (db/get-ds) {:read-only? true
+                                                    :rollback-only true}]
+      (try (jdbc-delete! tx :users ["id = ?" delegation-id])
+           true
+           (catch Throwable _ false)))))
 
 (defn delete-delegation [{tx :tx
                           {inventory-pool-id :inventory-pool-id
@@ -126,8 +129,8 @@
                       sql-format
                       (->> (jdbc-query tx))
                       first)
-          (when (can-delete? delegation-id)
-            (jdbc-delete! tx :users ["id = ?" delegation-id])))
+          (when true #_(can-delete? delegation-id)
+                (jdbc-delete! tx :users ["id = ?" delegation-id])))
         {:status 204})
     {:status 404 :body "Removing delegation failed without error."}))
 
