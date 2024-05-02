@@ -1,57 +1,23 @@
-'./spec/features/breadcrumbs/smoke.rb[1:1:1:1]':
-  name: 'Check basic Breadcrumbs for all routes'
-  environment_variables:
-    FEATURE_NAME: 'Breadcrumbs are visible'
-    FEATURE: './spec/features/breadcrumbs/smoke.rb[1:1:1:1]'
-
-'./spec/features/breadcrumbs/inventory_pools.rb[1:1:1:1]':
-  name: 'Test Breadcrum Navigation in Inventory Pools 01'
-  environment_variables:
-    FEATURE_NAME: 'Breadcrumbs: navigates to a user and back via breadcrumbs '
-    FEATURE: './spec/features/breadcrumbs/inventory_pools.rb[1:1:1:1]'
-
-'./spec/features/breadcrumbs/inventory_pools.rb[1:1:1:2]':
-  name: 'Test Breadcrum Navigation in Inventory Pools 02'
-  environment_variables:
-    FEATURE_NAME: 'Breadcrumbs: navigates to a group and back via breadcrumbs '
-    FEATURE: './spec/features/breadcrumbs/inventory_pools.rb[1:1:1:2]'
-
-'./spec/features/breadcrumbs/inventory_pools.rb[1:1:1:3]':
-  name: 'Test Breadcrum Navigation in Inventory Pools 03'
-  environment_variables:
-    FEATURE_NAME: 'Breadcrumbs: navigates to a delegation and back via breadcrumbs '
-    FEATURE: './spec/features/breadcrumbs/inventory_pools.rb[1:1:1:3]'
-
-'./spec/features/breadcrumbs/inventory_pools.rb[1:1:1:4]':
-  name: 'Test Breadcrum Navigation in Inventory Pools 04'
-  environment_variables:
-    FEATURE_NAME: 'Breadcrumbs: navigates to a entitlement-group and back via breadcrumbs '
-    FEATURE: './spec/features/breadcrumbs/inventory_pools.rb[1:1:1:4]'
-
 './spec/features/audits/core_spec.rb[1:1:1:1]':
   name: 'Audits as an system admin after I edited a user 01'
   environment_variables:
     FEATURE_NAME: 'Audits as an system admin after I edited a user 01'
     FEATURE: './spec/features/audits/core_spec.rb[1:1:1:1]'
-
 './spec/features/audits/core_spec.rb[1:1:1:2]':
   name: 'Audits as an system admin after I edited a user 02'
   environment_variables:
     FEATURE_NAME: 'Audits as an system admin after I edited a user 02'
     FEATURE: './spec/features/audits/core_spec.rb[1:1:1:2]'
-
 './spec/features/buildings/create_spec.rb[1:1:1]':
   name: 'Manage Buildings an admin via the UI 01'
   environment_variables:
     FEATURE_NAME: 'Manage Buildings an admin via the UI 01'
     FEATURE: './spec/features/buildings/create_spec.rb[1:1:1]'
-
 './spec/features/buildings/delete_spec.rb[1:1:1]':
   name: 'Manage Buildings  an admin 01'
   environment_variables:
     FEATURE_NAME: 'Manage Buildings  an admin 01'
     FEATURE: './spec/features/buildings/delete_spec.rb[1:1:1]'
-
 './spec/features/buildings/edit_spec.rb[1:1:1]':
   name: 'Manage buildings an admin via the UI 01'
   environment_variables:
