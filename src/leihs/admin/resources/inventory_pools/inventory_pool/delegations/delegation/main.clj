@@ -129,8 +129,8 @@
                       sql-format
                       (->> (jdbc-query tx))
                       first)
-          (when true #_(can-delete? delegation-id)
-                (jdbc-delete! tx :users ["id = ?" delegation-id])))
+          (when (can-delete? delegation-id)
+            (jdbc-delete! tx :users ["id = ?" delegation-id])))
         {:status 204})
     {:status 404 :body "Removing delegation failed without error."}))
 
