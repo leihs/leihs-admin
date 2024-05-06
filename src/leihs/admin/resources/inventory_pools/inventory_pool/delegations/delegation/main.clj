@@ -6,12 +6,13 @@
    [leihs.admin.paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.queries :as queries]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.responsible-user :as responsible-user]
-   [leihs.core.db :as db]
+   [logbug.debug :as debug]
    [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [delete! insert! query update!] :rename {query jdbc-query,
                                                                   insert! jdbc-insert!,
                                                                   update! jdbc-update!,
-                                                                  delete! jdbc-delete!}]))
+                                                                  delete! jdbc-delete!}]
+   [taoensso.timbre :as timbre :refer [debug info warn]]))
 
 ;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -107,14 +108,14 @@
            (jdbc-query tx) first)
       (throw (ex-info "Delegation not found" {:status 404}))))
 
-(defn can-delete? [delegation-id]
-  ; https://github.com/seancorfield/next-jdbc/blob/develop/doc/transactions.md#nesting-transactions
-  (binding [next.jdbc.transaction/*nested-tx* :ignore]
-    (jdbc/with-transaction+options [tx (db/get-ds) {:read-only? true
-                                                    :rollback-only true}]
-      (try (jdbc-delete! tx :users ["id = ?" delegation-id])
-           true
-           (catch Throwable _ false)))))
+(defn can-delete-tx? [delegation-id tx]
+  (let [sp (.setSavepoint (:connectable tx))]
+    (try (jdbc-delete! tx :users ["id = ?" delegation-id])
+         (.rollback (:connectable tx) sp)
+         true
+         (catch Throwable _
+           (.rollback (:connectable tx) sp)
+           false))))
 
 (defn delete-delegation [{tx :tx
                           {inventory-pool-id :inventory-pool-id
@@ -129,7 +130,7 @@
                       sql-format
                       (->> (jdbc-query tx))
                       first)
-          (when (can-delete? delegation-id)
+          (when (can-delete-tx? delegation-id tx)
             (jdbc-delete! tx :users ["id = ?" delegation-id])))
         {:status 204})
     {:status 404 :body "Removing delegation failed without error."}))
@@ -187,5 +188,4 @@
 ;(debug/wrap-with-log-debug #'data-url-img->buffered-image)
 ;(debug/wrap-with-log-debug #'buffered-image->data-url-img)
 ;(debug/wrap-with-log-debug #'resized-img)
-
 ;(debug/debug-ns *ns*)
