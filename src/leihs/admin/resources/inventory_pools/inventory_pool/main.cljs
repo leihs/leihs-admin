@@ -58,7 +58,13 @@
       [:<>
        [:tr.active
         [property-td "Active" "is_active"]
-        [:td.active (core/str (:is_active @inventory-pool/data*))]]
+        [:td.active
+         [:div.custom-control.custom-switch
+          [:input.custom-control-input {:id "active-switch"
+                                        :type "checkbox",
+                                        :disabled true,
+                                        :checked (:is_active @inventory-pool/data*)}]
+          [:label.custom-control-label {:for "active-switch"}]]]]
        [:tr.name
         [property-td "Name" "name"]
         [:td.name
@@ -75,8 +81,10 @@
         [property-td "Description" "description"
          "Visible for customers in the borrow app"]
         [:td.description
-         {:style {:white-space "break-spaces"}}
-         (:description @inventory-pool/data*)]]
+         [:div {:style {:white-space "break-spaces",
+                        :overflow-y "auto"
+                        :height "200px"}}
+          (:description @inventory-pool/data*)]]]
        [:tr.default-contract-note
         [property-td "Default Contract Note" "default_contract_note"]
         [:td.default-contract-note
