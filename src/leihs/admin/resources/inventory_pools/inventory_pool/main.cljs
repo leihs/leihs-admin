@@ -42,6 +42,12 @@
          [delete/dialog {:show @show
                          :onHide #(reset! show false)}]]))))
 
+(defn property-td
+  ([label col-name] (property-td label col-name nil))
+  ([label col-name hint]
+   [:td [:strong label] [:small.text-monospace (str " (" col-name ")")]
+    (when hint [:small.form-text hint])]))
+
 (defn inventory-pool-info-table []
   (if-not @inventory-pool/data*
     [wait-component]
@@ -51,23 +57,66 @@
       :body
       [:<>
        [:tr.active
-        [:td "Active" [:small " (is_active)"]]
-        [:td.active (core/str  (:is_active @inventory-pool/data*))]]
-       [:tr.shortname
-        [:td "Short Name" [:small " (shortname)"]]
-        [:td.shortname (:shortname @inventory-pool/data*)]]
+        [property-td "Active" "is_active"]
+        [:td.active (core/str (:is_active @inventory-pool/data*))]]
        [:tr.name
-        [:td "Name" [:small " (name)"]]
+        [property-td "Name" "name"]
         [:td.name
          (:name @inventory-pool/data*)]]
+       [:tr.shortname
+        [property-td "Short Name" "shortname"
+         "Prefix for auto-generated inventory codes"]
+        [:td.shortname (:shortname @inventory-pool/data*)]]
        [:tr.email
-        [:td "Email" [:small " (email)"]]
+        [property-td "Email" "email"
+         "from_address for emails send in the name of this pool"]
         [:td.email (:email @inventory-pool/data*)]]
        [:tr.description
-        [:td "Description" [:small " (description)"]]
+        [property-td "Description" "description"
+         "Visible for customers in the borrow app"]
         [:td.description
          {:style {:white-space "break-spaces"}}
-         (:description @inventory-pool/data*)]]]}]))
+         (:description @inventory-pool/data*)]]
+       [:tr.default-contract-note
+        [property-td "Default Contract Note" "default_contract_note"]
+        [:td.default-contract-note
+         {:style {:white-space "break-spaces"}}
+         (:default_contract_note @inventory-pool/data*)]]
+       [:tr.print-contracts
+        [property-td "Print Contracts" "print_contracts"
+         "Whether to open print dialog automatically upon hand over"]
+        [:td.default-contract-note
+         [:div.custom-control.custom-switch
+          [:input.custom-control-input {:id "print-contracts-switch"
+                                        :type "checkbox",
+                                        :disabled true,
+                                        :checked (:print_contracts @inventory-pool/data*)}]
+          [:label.custom-control-label {:for "print-contracts-switch"}]]]]
+       [:tr.automatic-suspension
+        [property-td "Automatic Suspension" "automatic_suspension"
+         "Users who don't bring back the items on the required date are suspended from next day on."]
+        [:td.automatic-suspension
+         [:div.custom-control.custom-switch
+          [:input.custom-control-input {:id "automatic-suspension-switch"
+                                        :type "checkbox",
+                                        :disabled true,
+                                        :checked (:automatic_suspension @inventory-pool/data*)}]
+          [:label.custom-control-label {:for "automatic-suspension-switch"}]]]]
+       [:tr.automatic-suspension-reason
+        [property-td "Automatic Suspension Reason" "automatic_suspension_reason"]
+        [:td.automatic-suspension-reason
+         {:style {:white-space "break-spaces"}}
+         (:automatic_suspension_reason @inventory-pool/data*)]]
+       [:tr.required-purpose
+        [property-td "Hand Over Purpose" "required_purpose"
+         "Whether the specification of hand over purpose is required."]
+        [:td.required-purpose
+         [:div.custom-control.custom-switch
+          [:input.custom-control-input {:id "required-purpose"
+                                        :type "checkbox",
+                                        :disabled true,
+                                        :checked (:required_purpose @inventory-pool/data*)}]
+          [:label.custom-control-label {:for "required-purpose"}]]]]]}]))
 
 (defn page []
   [:<>

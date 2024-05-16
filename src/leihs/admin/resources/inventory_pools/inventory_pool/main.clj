@@ -10,13 +10,17 @@
              update! jdbc-update!
              insert! jdbc-insert!}]))
 
-(def fields
-  #{:description
-    :id
-    :is_active
-    :email
-    :name
-    :shortname})
+(def fields #{:id
+              :name
+              :description
+              :default_contract_note
+              :shortname
+              :email
+              :print_contracts
+              :automatic_suspension
+              :automatic_suspension_reason
+              :required_purpose
+              :is_active})
 
 (defn inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
