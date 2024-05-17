@@ -1,8 +1,11 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.main
   (:refer-clojure :exclude [str keyword])
   (:require
+   [bidi.bidi :refer [match-route]]
+   [clojure.core.match :refer [match]]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
+   [leihs.admin.paths :refer [paths]]
    [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [delete! insert! query update!]
     :rename {query jdbc-query,
@@ -27,6 +30,15 @@
   {:body (-> (apply sql/select fields)
              (sql/from :inventory-pools)
              (sql/where [:= :id inventory-pool-id])
+             sql-format
+             (->> (jdbc-query tx))
+             first)})
+
+(defn inventory-pool-workdays
+  [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
+  {:body (-> (sql/select :*)
+             (sql/from :workdays)
+             (sql/where [:= :inventory_pool_id inventory-pool-id])
              sql-format
              (->> (jdbc-query tx))
              first)})
@@ -56,9 +68,10 @@
     {:status 204}
     {:status 404 :body "Delete inventory-pool failed without error."}))
 
-(def routes
-  (fn [request]
-    (case (:request-method request)
-      :get (inventory-pool request)
-      :delete (delete-inventory-pool request)
-      :patch (patch-inventory-pool request))))
+(defn routes [request]
+  (let [handler-key (->> request :uri (match-route paths) :handler)]
+    (match [(:request-method request) handler-key]
+      [:get :inventory-pool] (inventory-pool request)
+      [:get :inventory-pool-workdays] (inventory-pool-workdays request)
+      [:delete :inventory-pool] (delete-inventory-pool request)
+      [:patch :inventory-pool] (patch-inventory-pool request))))

@@ -182,6 +182,10 @@
           :inventory-pool-user {:handler inventory-pool-user/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-suspension {:handler inventory-pool-user-suspension/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-users {:handler inventory-pool-users/users :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
+          :inventory-pool-workdays {:handler inventory-pool/routes
+                                    :authorizers [auth/admin-scopes?
+                                                  pool-auth/pool-inventory-manager?
+                                                  pool-auth/pool-lending-manager-and-http-safe?]}
           :inventory-pools {:handler inventory-pools/routes
                             :authorizers [auth/admin-scopes?
                                           pool-auth/some-lending-manager-and-http-safe?]}
