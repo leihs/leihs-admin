@@ -8,10 +8,12 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as workdays]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
+   [leihs.core.user.front :as current-user]
    [leihs.core.user.shared :refer [short-id]]
    [react-bootstrap :as react-bootstrap]
    [reagent.core :as reagent :refer [reaction]]))
@@ -45,7 +47,10 @@
      [:hr]
      [:div.inventory-pool-data
       [:h3 "@data*"]
-      [:pre (with-out-str (pprint @data*))]]]))
+      [:pre (with-out-str (pprint @data*))]]
+     [:div.inventory-pool-workdays-data
+      [:h3 "@workdays/data*"]
+      [:pre (with-out-str (pprint @workdays/data*))]]]))
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -56,6 +61,7 @@
     [:div.inventory-pool.mt-3
      [:div.mb-3
       [form-components/switch-component data* [:is_active]
+       :disabled (not @current-user/admin?*)
        :label "Active"]]
      [:div
       [form-components/input-component data* [:name]
@@ -88,7 +94,9 @@
      [form-components/input-component data* [:automatic_suspension_reason]
       :label "Automatic Suspension Reason"
       :element :textarea
-      :rows 5]]))
+      :rows 5]
+     [form-components/switch-component data* [:required_purpose]
+      :label "Hand Over Purpose"]]))
 
 ;; shared tabs for main view
 (defn tabs [active]
