@@ -52,7 +52,7 @@
 (defn inventory-pool []
   (if-not @inventory-pool/data*
     [wait-component]
-    [:<>
+    [:div
      [table/container
       {:borders false
        :header [:tr [:th "Property"] [:th.w-75 "Value"]]

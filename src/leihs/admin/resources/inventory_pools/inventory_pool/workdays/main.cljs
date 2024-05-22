@@ -13,16 +13,15 @@
     {:did-mount core/clean-and-fetch}]
    (if-not @core/data*
      [wait-component]
-     [:<>
+     [:div
       [table/container
        {:borders false
         :header [:tr [:th "Day"] [:th "Open/Closed"] [:th "Max. Allowed Visits"]]
         :body (doall (for [day (keys core/DAYS)]
                        [:tr {:key day}
                         [:td (capitalize (name day))]
-                        (let [open? (@core/data* day)]
-                          [:td.badge {:class (if open? "badge-success" "badge-secondary")}
-                           (if open? "Open" "Closed")])
-                        [:td ((core/DAYS day) (@core/data* :max_visits))]]))}]
+                        [:td (if (@core/data* day) "Open" "Closed")]
+                        [:td (or ((core/DAYS day) (@core/data* :max_visits))
+                                 "unlimited")]]))}]
       [edit/button]])])
 
