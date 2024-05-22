@@ -34,7 +34,7 @@
              (->> (jdbc-query tx))
              first)})
 
-(defn inventory-pool-workdays
+(defn workdays
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
   {:body (-> (sql/select :*)
              (sql/from :workdays)
@@ -72,6 +72,7 @@
   (let [handler-key (->> request :uri (match-route paths) :handler)]
     (match [(:request-method request) handler-key]
       [:get :inventory-pool] (inventory-pool request)
-      [:get :inventory-pool-workdays] (inventory-pool-workdays request)
+      [:get :inventory-pool-workdays] (workdays request)
+      [:patch :inventory-pool-workdays] (patch-workdays request)
       [:delete :inventory-pool] (delete-inventory-pool request)
       [:patch :inventory-pool] (patch-inventory-pool request))))
