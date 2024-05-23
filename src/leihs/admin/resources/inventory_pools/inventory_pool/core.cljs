@@ -8,9 +8,12 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as workdays]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.front.debug :refer [spy]]
+   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
@@ -81,22 +84,26 @@
       :label "Description"
       :element :textarea
       :rows 10]
-     [form-components/input-component data* [:default_contract_note]
-      :label "Default Contract Note"
-      :element :textarea
-      :rows 5]
-     [:div.mb-3
-      [form-components/switch-component data* [:print_contracts]
-       :label "Print Contracts"]]
-     [:div.mb-3
-      [form-components/switch-component data* [:automatic_suspension]
-       :label "Automatic Suspension"]]
-     [form-components/input-component data* [:automatic_suspension_reason]
-      :label "Automatic Suspension Reason"
-      :element :textarea
-      :rows 5]
-     [form-components/switch-component data* [:required_purpose]
-      :label "Hand Over Purpose"]]))
+     (when (and is-editing
+                (auth/allowed? [pool-auth/pool-inventory-manager?
+                                auth/admin-scopes?]))
+       [:<>
+        [form-components/input-component data* [:default_contract_note]
+         :label "Default Contract Note"
+         :element :textarea
+         :rows 5]
+        [:div.mb-3
+         [form-components/switch-component data* [:print_contracts]
+          :label "Print Contracts"]]
+        [:div.mb-3
+         [form-components/switch-component data* [:automatic_suspension]
+          :label "Automatic Suspension"]]
+        [form-components/input-component data* [:automatic_suspension_reason]
+         :label "Automatic Suspension Reason"
+         :element :textarea
+         :rows 5]
+        [form-components/switch-component data* [:required_purpose]
+         :label "Hand Over Purpose"]])]))
 
 ;; shared tabs for main view
 (defn tabs [active]

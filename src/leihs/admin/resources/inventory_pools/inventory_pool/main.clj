@@ -34,15 +34,6 @@
              (->> (jdbc-query tx))
              first)})
 
-(defn workdays
-  [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
-  {:body (-> (sql/select :*)
-             (sql/from :workdays)
-             (sql/where [:= :inventory_pool_id inventory-pool-id])
-             sql-format
-             (->> (jdbc-query tx))
-             first)})
-
 (defn create-inventory-pool [{tx :tx data :body :as request}]
   (if-let [inventory-pool (jdbc-insert! tx :inventory_pools
                                         (select-keys data fields))]
@@ -68,11 +59,9 @@
     {:status 204}
     {:status 404 :body "Delete inventory-pool failed without error."}))
 
-(defn routes [request]
-  (let [handler-key (->> request :uri (match-route paths) :handler)]
-    (match [(:request-method request) handler-key]
-      [:get :inventory-pool] (inventory-pool request)
-      [:get :inventory-pool-workdays] (workdays request)
-      [:patch :inventory-pool-workdays] (patch-workdays request)
-      [:delete :inventory-pool] (delete-inventory-pool request)
-      [:patch :inventory-pool] (patch-inventory-pool request))))
+(def routes
+  (fn [request]
+    (case (:request-method request)
+      :get (inventory-pool request)
+      :delete (delete-inventory-pool request)
+      :patch (patch-inventory-pool request))))

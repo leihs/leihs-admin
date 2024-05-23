@@ -33,6 +33,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.main :as inventory-pool-user]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.roles.main :as inventory-pool-user-roles]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.suspension.main :as inventory-pool-user-suspension]
+   [leihs.admin.resources.inventory-pools.inventory-pool.workdays.main :as inventory-pool-workdays]
    [leihs.admin.resources.inventory-pools.main :as inventory-pools]
    [leihs.admin.resources.mail-templates.mail-template.main :as mail-template]
    [leihs.admin.resources.mail-templates.main :as mail-templates]
@@ -182,7 +183,7 @@
           :inventory-pool-user {:handler inventory-pool-user/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-suspension {:handler inventory-pool-user-suspension/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-users {:handler inventory-pool-users/users :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
-          :inventory-pool-workdays {:handler inventory-pool/routes
+          :inventory-pool-workdays {:handler inventory-pool-workdays/routes
                                     :authorizers [auth/admin-scopes?
                                                   pool-auth/pool-inventory-manager?
                                                   pool-auth/pool-lending-manager-and-http-safe?]}

@@ -10,24 +10,26 @@
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.core :refer [presence]]
    [leihs.core.auth.core :as auth]
    [leihs.core.constants :as constants]
-   [react-bootstrap :as BS :refer [Button Modal]]
+   [leihs.core.front.debug :refer [spy]]
+   [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom nil))
 
 (defn patch []
-  (let [route (path :inventory-pool-workdays
-                    {:inventory-pool-id (:inventory_pool_id @data*)})]
+  (let [workdays-route (path :inventory-pool-workdays
+                             {:inventory-pool-id (:inventory_pool_id @data*)})]
     (go (when (some->
-               {:url route
+               {:url workdays-route
                 :method :patch
                 :json-params @data*
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (accountant/navigate! route)))))
+          (core/clean-and-fetch)))))
 
 (defn opened-closed-comp [day]
   (let [switch-id (str (name day) "-switch")]
@@ -41,32 +43,45 @@
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
 
-(defn form []
+(defn max-visits-comp [day]
+  [:div.input-group
+   [:input.form-control
+    {:type "number"
+     :min 1
+     :value ((core/DAYS day) (:max_visits @data*))
+     :placeholder "unlimited"
+     :on-change #(swap! data*
+                        assoc-in
+                        [:max_visits (core/DAYS day)]
+                        (-> % .-target .-value presence))}]])
+
+(defn form [on-hide]
   (if-not @data*
     [wait-component]
-    [table/container
-     {:borders false
-      :header [:tr [:th "Day"] [:th "Open/Closed"] [:th "Max. Allowed Visits"]]
-      :body (doall (for [day (keys core/DAYS)]
-                     [:tr {:key (name day)}
-                      [:td (capitalize (name day))]
-                      [:td [opened-closed-comp day data*]]
-                      [:td ((core/DAYS day) (:max_visits @data*))]]))}]))
+    [:> Form {:id "workdays-form"
+              :on-submit (fn [e] (.preventDefault e) (on-hide) (patch))}
+     [table/container
+      {:borders false
+       :header [:tr [:th "Day"] [:th "Open/Closed"] [:th "Max. Allowed Visits"]]
+       :body (doall (for [day (keys core/DAYS)]
+                      [:tr {:key (name day)}
+                       [:td (capitalize (name day))]
+                       [:td [opened-closed-comp day]]
+                       [:td [max-visits-comp day]]]))}]]))
 
 (defn dialog [& {:keys [show onHide] :or {show false}}]
-  (fn [& {:keys [show onHide] :or {show false}}]
-    [:> Modal {:size "lg"
-               :centered true
-               :show show}
-     [:> Modal.Header {:closeButton true
-                       :onHide onHide}
-      [:> Modal.Title "Edit Workdays"]]
-     [:> Modal.Body [form]]
-     [:> Modal.Footer
-      [:> Button {:variant "secondary" :onClick onHide}
-       "Cancel"]
-      [:> Button {:onClick #(do (patch) (onHide))}
-       "Save"]]]))
+  [:> Modal {:size "lg"
+             :centered true
+             :show #_true show}
+   [:> Modal.Header {:closeButton true
+                     :onHide onHide}
+    [:> Modal.Title "Edit Workdays"]]
+   [:> Modal.Body [form onHide]]
+   [:> Modal.Footer
+    [:> Button {:variant "secondary" :onClick onHide}
+     "Cancel"]
+    [:> Button {:type "submit" :form "workdays-form"}
+     "Save"]]])
 
 (defn button []
   (when (auth/allowed? [pool-auth/pool-inventory-manager?
