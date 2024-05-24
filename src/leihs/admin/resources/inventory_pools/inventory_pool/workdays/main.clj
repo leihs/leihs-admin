@@ -20,7 +20,7 @@
 
 (defn get-workdays
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
-  {:body (-> (sql/select :*)
+  {:body (-> (apply sql/select fields)
              (sql/from :workdays)
              (sql/where [:= :inventory_pool_id inventory-pool-id])
              sql-format
@@ -30,7 +30,6 @@
 (defn patch-workdays
   [{{inventory-pool-id :inventory-pool-id} :route-params
     tx :tx data :body}]
-  (debug data)
   (jdbc-update! tx :workdays
                 (select-keys data fields)
                 ["inventory_pool_id = ?" inventory-pool-id])
