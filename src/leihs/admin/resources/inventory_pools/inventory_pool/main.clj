@@ -28,10 +28,11 @@
 
 (def create-fields (set/union base-fields #{:is_active}))
 (def patch-fields (set/union base-fields extra-fields))
+(def get-fields (set/union create-fields extra-fields))
 
 (defn inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
-  {:body (-> (apply sql/select fields)
+  {:body (-> (apply sql/select get-fields)
              (sql/from :inventory-pools)
              (sql/where [:= :id inventory-pool-id])
              sql-format
