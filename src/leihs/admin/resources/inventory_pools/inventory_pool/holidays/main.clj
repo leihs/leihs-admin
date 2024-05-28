@@ -29,7 +29,7 @@
                             (update :start_date str)
                             (update :end_date str)))))})
 
-(defn filter-holidays 
+(defn filter-holidays
   [inventory-pool-id data]
   (filter #(and (= (:inventory_pool_id %) inventory-pool-id)
                 (or (and (:id %) (:delete %))

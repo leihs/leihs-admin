@@ -10,9 +10,9 @@
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.core.core :refer [presence]]
    [leihs.core.auth.core :as auth]
    [leihs.core.constants :as constants]
+   [leihs.core.core :refer [presence]]
    [leihs.core.front.debug :refer [spy]]
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent]))

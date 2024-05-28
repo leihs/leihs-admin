@@ -13,8 +13,8 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
-   [leihs.core.core :refer [presence]]
    [leihs.core.constants :as constants]
+   [leihs.core.core :refer [presence]]
    [leihs.core.front.debug :refer [spy]]
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent]))
