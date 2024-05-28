@@ -1,4 +1,4 @@
-(ns leihs.admin.resources.inventory-pools.inventory-pool.workdays.main 
+(ns leihs.admin.resources.inventory-pools.inventory-pool.workdays.main
   (:require
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
@@ -6,15 +6,15 @@
                                                   update! jdbc-update!}]
    [taoensso.timbre :refer [error warn info debug spy]]))
 
-(def fields #{:id                      
-              :inventory_pool_id       
-              :monday                  
-              :tuesday                 
-              :wednesday               
-              :thursday                
-              :friday                  
-              :saturday                
-              :sunday                  
+(def fields #{:id
+              :inventory_pool_id
+              :monday
+              :tuesday
+              :wednesday
+              :thursday
+              :friday
+              :saturday
+              :sunday
               :reservation_advance_days
               :max_visits})
 
