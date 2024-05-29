@@ -182,6 +182,10 @@
                                     :authorizers [auth/admin-scopes?
                                                   pool-auth/pool-inventory-manager?
                                                   pool-auth/pool-lending-manager-and-http-safe?]}
+          ; :inventory-pool-opening-times {:handler inventory-pool-workdays/routes
+          ;                                :authorizers [auth/admin-scopes?
+          ;                                              pool-auth/pool-inventory-manager?
+          ;                                              pool-auth/pool-lending-manager-and-http-safe?]}
           :inventory-pool-user-direct-roles {:handler inventory-pool-user-direct-roles/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-groups-roles {:handler inventory-pool-user-groups-roles/groups-roles :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-roles {:handler inventory-pool-user-roles/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}

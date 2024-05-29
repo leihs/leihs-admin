@@ -7,9 +7,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delete :as delete]
    [leihs.admin.resources.inventory-pools.inventory-pool.edit :as edit]
-   [leihs.admin.resources.inventory-pools.inventory-pool.holidays.main :as holidays]
    [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
-   [leihs.admin.resources.inventory-pools.inventory-pool.workdays.main :as workdays]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
@@ -143,6 +141,4 @@
        [inventory-pool/name-component]]
       [nav/tabs (join ["/admin/inventory-pools/" @inventory-pool/id*])]
       [inventory-pool]
-      [workdays/component]
-      [holidays/component]
       [inventory-pool/debug-component]])])

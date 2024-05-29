@@ -19,6 +19,7 @@
 (defn home [] (FontAwesomeIcon #js{:icon solids/faHome :className ""}))
 (defn inventory-pool [] (FontAwesomeIcon #js{:icon solids/faCube :className ""}))
 (defn inventory-pools [] (FontAwesomeIcon #js{:icon solids/faCubes :className ""}))
+(defn opening-times [] (FontAwesomeIcon #js{:icon solids/faDoorOpen :className ""}))
 (defn mail-template [] (FontAwesomeIcon #js{:icon solids/faEnvelope :className ""}))
 (defn rooms [] (FontAwesomeIcon #js{:icon solids/faPersonShelter :className ""}))
 (defn save [] (FontAwesomeIcon #js{:icon solids/faSave :className ""}))
