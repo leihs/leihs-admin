@@ -33,7 +33,7 @@ feature 'Manage inventory-pools', type: :feature do
         expect(page).to have_selector('input#shortname[disabled]')
         # fill_in 'shortname', with: shortname
         fill_in 'email', with: email
-        uncheck 'is_active'
+        click_on_toggle 'is_active'
         click_on 'Save'
         wait_until { all(".modal").empty? }
         wait_until { current_path == @inventory_pool_path }

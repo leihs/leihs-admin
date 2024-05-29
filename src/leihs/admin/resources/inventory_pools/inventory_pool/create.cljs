@@ -21,7 +21,7 @@
   (go (when-let [id (some->
                      {:url (path :inventory-pools)
                       :method :post
-                      :json-params @edit/data*
+                      :json-params @data*
                       :chan (async/chan)}
                      http-client/request :chan <!
                      http-client/filter-success!
