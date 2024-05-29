@@ -50,10 +50,7 @@
      [:hr]
      [:div.inventory-pool-data
       [:h3 "@data*"]
-      [:pre (with-out-str (pprint @data*))]]
-     [:div.inventory-pool-workdays-data
-      [:h3 "@workdays/data*"]
-      [:pre (with-out-str (pprint @workdays/data*))]]]))
+      [:pre (with-out-str (pprint @data*))]]]))
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
