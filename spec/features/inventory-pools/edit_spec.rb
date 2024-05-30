@@ -31,6 +31,13 @@ feature 'Manage inventory-pools', type: :feature do
         fill_in 'description', with: description
 
         expect(page).to have_selector('input#shortname[disabled]')
+
+        expect(page).not_to have_selector('textarea#default_contract_note')
+        expect(page).not_to have_selector('input#print_contracts')
+        expect(page).not_to have_selector('input#automatic_suspension')
+        expect(page).not_to have_selector('input#automatic_suspension_reason')
+        expect(page).not_to have_selector('input#required_purpose')
+
         # fill_in 'shortname', with: shortname
         fill_in 'email', with: email
         click_on_toggle 'is_active'
