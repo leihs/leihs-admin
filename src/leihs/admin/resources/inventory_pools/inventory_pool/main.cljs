@@ -91,6 +91,10 @@
            [:td.automatic-suspension-reason
             {:style {:white-space "break-spaces"}}
             (:automatic_suspension_reason @core/data*)]])
+        [:tr.reservation-advance-days
+         [property-td "Reservation Advance Days" "reservation_advance_days"
+          "Min. number of days between current date and hand over"]
+         [:td.reservation-advance-days (:reservation_advance_days @core/data*)]]
         [:tr.required-purpose
          [property-td "Hand Over Purpose" "required_purpose"
           "Whether the specification of hand over purpose is required."]

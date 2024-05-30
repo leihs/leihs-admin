@@ -14,35 +14,46 @@
              update! jdbc-update!
              insert! jdbc-insert!}]))
 
-(def base-fields #{:id
-                   :name
-                   :shortname
-                   :email
-                   :description})
+(def base-fields #{:inventory_pools.id
+                   :inventory_pools.name
+                   :inventory_pools.shortname
+                   :inventory_pools.email
+                   :inventory_pools.description})
 
-(def extra-fields #{:default_contract_note
-                    :print_contracts
-                    :automatic_suspension
-                    :automatic_suspension_reason
-                    :required_purpose})
+(def extra-fields #{:inventory_pools.default_contract_note
+                    :inventory_pools.print_contracts
+                    :inventory_pools.automatic_suspension
+                    :inventory_pools.automatic_suspension_reason
+                    :inventory_pools.required_purpose})
 
-(def create-fields (set/union base-fields #{:is_active}))
+(def create-fields (set/union base-fields #{:inventory_pools.is_active}))
 (def patch-fields (set/union base-fields extra-fields))
-(def get-fields (set/union create-fields extra-fields))
+(def get-fields (set/union create-fields
+                           extra-fields
+                           #{:workdays.reservation_advance_days}))
 
-(defn inventory-pool
+(defn inventory-pool [tx id]
+  (-> (apply sql/select get-fields)
+      (sql/from :inventory-pools)
+      (sql/where [:= :inventory_pools.id id])
+      (sql/join :workdays [:= :workdays.inventory_pool_id :inventory_pools.id])
+      sql-format
+      (->> (jdbc-query tx))
+      first))
+
+(defn get-inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
-  {:body (-> (apply sql/select get-fields)
-             (sql/from :inventory-pools)
-             (sql/where [:= :id inventory-pool-id])
-             sql-format
-             (->> (jdbc-query tx))
-             first)})
+  {:body (inventory-pool tx inventory-pool-id)})
 
 (defn create-inventory-pool [{tx :tx data :body :as request}]
-  (if-let [inventory-pool (jdbc-insert! tx :inventory_pools
-                                        (select-keys data create-fields))]
-    {:status 201, :body inventory-pool}
+  (if-let [id (->> (select-keys data create-fields)
+                   (jdbc-insert! tx :inventory_pools)
+                   :id)]
+    (do (when-let [rad (:reservation_advance_days data)]
+          (jdbc-update! tx :inventory_pools
+                        {:reservation_advance_days rad}
+                        ["inventory_pool_id = ?" id]))
+        {:status 201, :body (inventory-pool tx id)})
     {:status 422
      :body "No inventory-pool has been created."}))
 
@@ -67,6 +78,6 @@
 (def routes
   (fn [request]
     (case (:request-method request)
-      :get (inventory-pool request)
+      :get (get-inventory-pool request)
       :delete (delete-inventory-pool request)
       :patch (patch-inventory-pool request))))
