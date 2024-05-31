@@ -15,6 +15,7 @@
    (if-not @core/data*
      [wait-component]
      [:div
+      [:h3 "Holidays"]
       [table/container
        {:borders false
         :header [:tr [:th "Name"] [:th "From"] [:th "To"]]

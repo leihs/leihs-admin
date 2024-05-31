@@ -31,14 +31,14 @@
                http-client/filter-success!)
           (core/clean-and-fetch)))))
 
-(defn opened-closed-comp [day]
+(defn opened-closed-comp [data* day & {:keys [disabled] :or {disabled false}}]
   (let [switch-id (str (name day) "-switch")]
     [:div.custom-control.custom-switch
      [:input.custom-control-input
       {:id switch-id
-       :name (name day)
        :type :checkbox
        :checked (day @data*)
+       :disabled disabled
        :on-change #(swap! data* update day not)
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
@@ -66,7 +66,7 @@
        :body (doall (for [day (keys core/DAYS)]
                       [:tr {:key (name day)}
                        [:td (capitalize (name day))]
-                       [:td [opened-closed-comp day]]
+                       [:td [opened-closed-comp data* day]]
                        [:td [max-visits-comp day]]]))}]]))
 
 (defn dialog [& {:keys [show onHide] :or {show false}}]

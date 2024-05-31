@@ -15,13 +15,14 @@
    (if-not @core/data*
      [wait-component]
      [:div
+      [:h3 "Workdays"]
       [table/container
        {:borders false
         :header [:tr [:th "Day"] [:th "Opened"] [:th "Max. Allowed Visits"]]
         :body (doall (for [day (keys core/DAYS)]
                        [:tr {:key day}
                         [:td (capitalize (name day))]
-                        [:td (str (day @core/data*))]
+                        [:td [edit/opened-closed-comp core/data* day :disabled true]]
                         [:td (or ((core/DAYS day) (@core/data* :max_visits))
                                  "unlimited")]]))}]
       [edit/button]])])

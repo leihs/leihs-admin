@@ -15,7 +15,6 @@
               :friday
               :saturday
               :sunday
-              :reservation_advance_days
               :max_visits})
 
 (defn get-workdays
