@@ -10,6 +10,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
+   [leihs.core.front.debug :refer [spy]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button]]
    [reagent.core :as reagent]))
@@ -100,7 +101,12 @@
                                          :type "checkbox",
                                          :disabled true,
                                          :checked (:required_purpose @core/data*)}]
-           [:label.custom-control-label {:for "required-purpose"}]]]]]}]
+           [:label.custom-control-label {:for "required-purpose"}]]]]
+        [:tr.reservation-advance-days
+         [property-td "Reservation Advance Days" "reservation_advance_days"
+          "Minimum number of days required between reservation's created date and the expected hand over date."]
+         [:td.reservation-advance-days
+          (:reservation_advance_days @core/data*)]]]}]
      [edit/button]
      [delete/button]]))
 

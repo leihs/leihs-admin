@@ -55,26 +55,29 @@
       :label "Description"
       :element :textarea
       :rows 10]
-     (when (and is-editing
-                (auth/allowed? [pool-auth/pool-inventory-manager?
-                                auth/admin-scopes?]))
-       [:<>
-        [form-components/input-component data* [:default_contract_note]
-         :label "Default Contract Note"
-         :element :textarea
-         :rows 5]
-        [:div.mb-3
-         [form-components/switch-component data* [:print_contracts]
-          :label "Print Contracts"]]
-        [:div.mb-3
-         [form-components/switch-component data* [:automatic_suspension]
-          :label "Automatic Suspension"]]
-        [form-components/input-component data* [:automatic_suspension_reason]
-         :label "Automatic Suspension Reason"
-         :element :textarea
-         :rows 5]
-        [form-components/switch-component data* [:required_purpose]
-         :label "Hand Over Purpose"]])]))
+     [form-components/input-component data* [:default_contract_note]
+      :label "Default Contract Note"
+      :element :textarea
+      :rows 5]
+     [:div.mb-3
+      [form-components/switch-component data* [:print_contracts]
+       :label "Print Contracts"]]
+     [:div.mb-3
+      [form-components/switch-component data* [:automatic_suspension]
+       :label "Automatic Suspension"]]
+     (when (:automatic_suspension @data*)
+       [form-components/input-component data* [:automatic_suspension_reason]
+        :label "Automatic Suspension Reason"
+        :element :textarea
+        :rows 5])
+     [:div.mb-3
+      [form-components/switch-component data* [:required_purpose]
+       :label "Hand Over Purpose"]]
+     [:div.mb-3
+      [form-components/input-component data* [:reservation_advance_days]
+       :label "Reservation Advance Days"
+       :type :number
+       :min 0]]]))
 
 (defn dialog [& {:keys [show onHide] :or {show false}}]
   [:> Modal {:size "lg"

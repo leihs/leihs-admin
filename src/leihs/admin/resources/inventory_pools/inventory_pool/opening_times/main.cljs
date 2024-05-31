@@ -28,10 +28,6 @@
 
 (defn page []
   [:article.inventory-pool-opening-times
-   [routing/hidden-state-component
-    {:did-mount (fn [_]
-                  (js/console.log "opening times")
-                  #_(inventory-pool/clean-and-fetch users/fetch-users))}]
    [:header.my-5
     [:h1.mt-3 [inventory-pool/name-component]]]
    [nav/tabs]

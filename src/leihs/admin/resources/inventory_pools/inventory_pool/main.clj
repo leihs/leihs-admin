@@ -24,7 +24,8 @@
                     :print_contracts
                     :automatic_suspension
                     :automatic_suspension_reason
-                    :required_purpose})
+                    :required_purpose
+                    :reservation_advance_days})
 
 (def create-fields (set/union base-fields #{:is_active}))
 (def patch-fields (set/union base-fields extra-fields))
