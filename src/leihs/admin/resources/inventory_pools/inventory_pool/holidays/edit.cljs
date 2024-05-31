@@ -60,13 +60,13 @@
                                                         :new true
                                                         :id (str (random-uuid))))
                                           (reset! new-holiday nil))}
-          [:div.form-group.mb-2.mr-2
-           [:input.form-control {:type "text" :placeholder "Name"
-                                 :value (:name @new-holiday)
-                                 :required true
-                                 :on-change #(swap! new-holiday
-                                                    assoc :name
-                                                    (-> % .-target .-value))}]]
+          [:div.form-group.mb-2.mr-2.w-50
+           [:input.form-control.w-100 {:type "text" :placeholder "Name"
+                                       :value (:name @new-holiday)
+                                       :required true
+                                       :on-change #(swap! new-holiday
+                                                          assoc :name
+                                                          (-> % .-target .-value))}]]
           [:div.form-group.mb-2.mr-2
            [:input.form-control {:type "date" :placeholder "From"
                                  :value (:start_date @new-holiday)
@@ -105,7 +105,7 @@
             (swap! data*
                    (fn [d]
                      (s/transform specter-path #(dissoc % :delete) d))))
-          :className "btn-secondary"}
+          :variant "outline-secondary" :size "sm"}
          "Restore"]
         [:> Button
          {:onClick
@@ -115,7 +115,7 @@
                      (if (:new holiday)
                        (s/setval specter-path s/NONE d)
                        (s/transform specter-path #(assoc % :delete true) d)))))
-          :className "btn-danger"}
+          :variant "outline-danger" :size "sm"}
          "Delete"]))]])
 
 (defn form [on-hide]
