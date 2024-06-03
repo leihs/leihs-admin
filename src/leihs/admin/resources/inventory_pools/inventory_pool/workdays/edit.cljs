@@ -21,25 +21,26 @@
 
 (defn patch []
   (let [workdays-route (path :inventory-pool-workdays
-                             {:inventory-pool-id (:inventory_pool_id @data*)})]
+                             {:inventory-pool-id (:inventory_pool_id @core/data*)})]
     (go (when (some->
                {:url workdays-route
                 :method :patch
-                :json-params @data*
+                :json-params @core/data*
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
           (core/clean-and-fetch)))))
 
-(defn opened-closed-comp [data* day & {:keys [disabled] :or {disabled false}}]
+(defn opened-closed-comp [day & {:keys [disabled]}]
   (let [switch-id (str (name day) "-switch")]
     [:div.custom-control.custom-switch
      [:input.custom-control-input
       {:id switch-id
        :type :checkbox
-       :checked (day @data*)
-       :disabled disabled
-       :on-change #(swap! data* update day not)
+       :checked (day @core/data*)
+       :on-change #(do
+                     (swap! core/data* update day not)
+                     (js/console.debug "data*:" @core/data* day disabled))
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
 
@@ -66,7 +67,7 @@
        :body (doall (for [day (keys core/DAYS)]
                       [:tr {:key (name day)}
                        [:td (capitalize (name day))]
-                       [:td [opened-closed-comp data* day]]
+                       [:td [opened-closed-comp day {:disabled false}]]
                        [:td [max-visits-comp day]]]))}]]))
 
 (defn dialog [& {:keys [show onHide] :or {show false}}]
@@ -78,7 +79,8 @@
     [:> Modal.Title "Edit Workdays"]]
    [:> Modal.Body [form onHide]]
    [:> Modal.Footer
-    [:> Button {:variant "secondary" :onClick onHide}
+    [:> Button {:variant "secondary"
+                :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit" :form "workdays-form"}
      "Save"]]])
