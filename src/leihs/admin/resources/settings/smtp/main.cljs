@@ -73,8 +73,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change smtp-core/clean-and-fetch}]
+
    (if-not @smtp-core/data*
-     [wait-component]
+     [:div {:className "mt-5"}
+      [wait-component]]
      [:article.settings-page.smtp
       [:header.my-5
        [:h1 [icons/paper-plane] " SMTP Settings"]]

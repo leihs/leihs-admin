@@ -42,6 +42,6 @@
 
 ; the following should be moved to common.components
 
-(defn wait-component [text]
+(defn wait-component [text {:keys [class-name]}]
   [:h3.text-center.wait-component
-   [icons/waiting] text])
+   [icons/waiting {:class-name class-name}] text])

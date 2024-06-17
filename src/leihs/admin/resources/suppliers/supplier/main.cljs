@@ -60,6 +60,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-change clean-and-fetch}]
+
    (if-not @supplier-core/data*
      [:div.my-5
       [wait-component " Loading Room Data ..."]]

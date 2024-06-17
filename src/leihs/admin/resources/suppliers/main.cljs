@@ -30,6 +30,7 @@
 (defonce inventory-pools-data* (reagent/atom nil))
 
 (defn fetch-suppliers []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 (defn fetch-inventory-pools []
@@ -120,10 +121,8 @@
      "No (more) suppliers found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* (:route @routing/state*))
-    [wait-component]
-    [core-table-component hds tds
-     (-> @data* (get (:route @routing/state*) {}) :suppliers)]))
+  [core-table-component hds tds
+   (-> @data* (get (:route @routing/state*) {}) :suppliers)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -146,19 +145,24 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.suppliers
-   [:header.my-5
-    [:h1 [icons/suppliers] " Suppliers"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-suppliers
-      :did-mount fetch-inventory-pools}]
-    [filter-component]
-    [table/toolbar [add-supplier-button]]
-    [table-component
-     [name-th-component
-      items-count-th-component]
-     [name-td-component
-      items-count-td-component]]
-    [table/toolbar [add-supplier-button]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-suppliers
+     :did-mount fetch-inventory-pools}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.suppliers
+      [:header.my-5
+       [:h1 [icons/suppliers] " Suppliers"]]
+      [:section
+       [filter-component]
+       [table/toolbar [add-supplier-button]]
+       [table-component
+        [name-th-component
+         items-count-th-component]
+        [name-td-component
+         items-count-td-component]]
+       [table/toolbar [add-supplier-button]]
+       [debug-component]]])])

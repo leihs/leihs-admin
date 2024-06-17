@@ -86,8 +86,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change misc-core/clean-and-fetch}]
+
    (if-not @misc-core/data*
-     [wait-component]
+     [:div {:className "mt-5"}
+      [wait-component]]
      [:article.settings-page
       [:header.my-5
        [:h1 [icons/list-icon] " Miscellaneous Settings"]]

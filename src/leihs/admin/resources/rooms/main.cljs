@@ -30,6 +30,7 @@
 (def data* (reagent/atom {}))
 
 (defn clean-and-fetch []
+  (reset! data* nil)
   (go (reset! buildings-data*
               (some->
                {:chan (async/chan)
@@ -142,10 +143,8 @@
      "No (more) rooms found."]))
 
 (defn table-component [hds tds]
-  (if (empty? @data*)
-    [wait-component]
-    [core-table-component hds tds
-     (-> @data* (get (:route @routing/state*) {}) :rooms)]))
+  [core-table-component hds tds
+   (-> @data* (get (:route @routing/state*) {}) :rooms)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -168,20 +167,25 @@
       [:pre (with-out-str (pprint @buildings-data*))]]]))
 
 (defn page []
-  [:article.rooms
-   [:header.my-5
-    [:h1 [icons/rooms] " Rooms"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change clean-and-fetch}]
-    [filter-component]
-    [table-component
-     [name-th-component
-      description-th-component
-      building-link-th-component
-      items-count-th-component]
-     [name-td-component
-      description-td-component
-      building-link-td-component
-      items-count-td-component]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change clean-and-fetch}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.rooms
+      [:header.my-5
+       [:h1 [icons/rooms] " Rooms"]]
+      [:section
+       [filter-component]
+       [table-component
+        [name-th-component
+         description-th-component
+         building-link-th-component
+         items-count-th-component]
+        [name-td-component
+         description-td-component
+         building-link-td-component
+         items-count-td-component]]
+       [debug-component]]])])

@@ -30,6 +30,7 @@
 (defonce inventory-fields-groups-data* (reagent/atom nil))
 
 (defn fetch-inventory-fields []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 (defn fetch-inventory-fields-groups []
@@ -195,25 +196,30 @@
       [:pre (with-out-str (pprint @inventory-fields-groups-data*))]]]))
 
 (defn page []
-  [:article.inventory-fields
-   [:header.my-5
-    [:h1 [icons/table-list] " Inventory-Fields"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-inventory-fields
-      :did-mount fetch-inventory-fields-groups}]
-    [filter-component]
-    [table-component
-     [id-th-component
-      target-type-th-component
-      dynamic-th-component
-      active-th-component
-      label-th-component
-      group-th-component]
-     [id-td-component
-      target-type-td-component
-      dynamic-td-component
-      active-td-component
-      label-td-component
-      group-td-component]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-inventory-fields
+     :did-mount fetch-inventory-fields-groups}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.inventory-fields
+      [:header.my-5
+       [:h1 [icons/table-list] " Inventory-Fields"]]
+      [:section
+       [filter-component]
+       [table-component
+        [id-th-component
+         target-type-th-component
+         dynamic-th-component
+         active-th-component
+         label-th-component
+         group-th-component]
+        [id-td-component
+         target-type-td-component
+         dynamic-td-component
+         active-td-component
+         label-td-component
+         group-td-component]]
+       [debug-component]]])])

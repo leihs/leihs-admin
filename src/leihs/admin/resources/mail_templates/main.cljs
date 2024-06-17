@@ -29,6 +29,7 @@
 (defonce languages-data* (reagent/atom nil))
 
 (defn fetch-mail-templates []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 (defn fetch-languages []
@@ -130,10 +131,8 @@
     [:div.alert.alert-info.text-center "No (more) mail-templates found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* (:route @routing/state*))
-    [wait-component]
-    [core-table-component hds tds
-     (-> @data* (get (:route @routing/state*) {}) :mail-templates)]))
+  [core-table-component hds tds
+   (-> @data* (get (:route @routing/state*) {}) :mail-templates)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -156,19 +155,24 @@
       [:pre (with-out-str (pprint @languages-data*))]]]))
 
 (defn page []
-  [:article.mail-templates
-   [:header.my-5
-    [:h1 [icons/mail-template] " Mail Templates"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-mail-templates
-      :did-mount fetch-languages}]
-    [:> Alert {:variant "info"
-               :className "text-center"}
-     "These are intial mail templates which are copied for a new inventory pool when it gets created. "
-     "They can then be further edited inside a particular inventory pool."]
-    [filter-component]
-    [table-component
-     [name-th-component type-th-component language-locale-th-component]
-     [name-td-component type-td-component language-locale-td-component]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-mail-templates
+     :did-mount fetch-languages}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.mail-templates
+      [:header.my-5
+       [:h1 [icons/mail-template] " Mail Templates"]]
+      [:section
+       [:> Alert {:variant "info"
+                  :className "text-center"}
+        "These are intial mail templates which are copied for a new inventory pool when it gets created. "
+        "They can then be further edited inside a particular inventory pool."]
+       [filter-component]
+       [table-component
+        [name-th-component type-th-component language-locale-th-component]
+        [name-td-component type-td-component language-locale-td-component]]
+       [debug-component]]])])

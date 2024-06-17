@@ -60,9 +60,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change mail-template-core/clean-and-fetch}]
+
    (if-not @mail-template-core/data*
      [:div.my-5
-      [wait-component " Loading Mail Template Data ..."]]
+      [wait-component]]
      [:article.mail-template
       [header]
       [:section.mb-5

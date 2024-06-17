@@ -95,35 +95,37 @@
        [:h1.mt-3 name]])))
 
 (defn page []
-  (if (empty? @data*)
-    [:div.mt-5
-     [wait-component]
-     [routing/hidden-state-component
-      {:did-mount clean-and-fetch
-       :did-change clean-and-fetch}]]
-    [:article.group
-     [header]
+  [:<>
+   [routing/hidden-state-component
+    {:did-mount clean-and-fetch
+     :did-change clean-and-fetch}]
 
-     [:section
-      [properties-table]
-      [edit-button]
-      [delete-button]]
+   (if (empty? @data*)
+     [:div.mt-5
+      [wait-component]]
+     [:article.group
+      [header]
 
-     [:section
-      [:> Nav {:variant "tabs" :className "mt-5"
-               :defaultActiveKey "users"}
-       [:> Nav.Item
-        [:> Nav.Link {:active true} "Inventory Pools"]]
+      [:section
+       [properties-table]
+       [edit-button]
+       [delete-button]]
 
-       (when (auth/allowed?
-              [auth/admin-scopes?
-               pool-auth/some-lending-manager?])
-         [:> Nav.Item
-          [:> Nav.Link
-           {:href (-> (:path @routing/state*)
-                      (clojure.core/str "/users/"))}
-           "Users"]])]
+      [:section
+       [:> Nav {:variant "tabs" :className "mt-5"
+                :defaultActiveKey "users"}
+        [:> Nav.Item
+         [:> Nav.Link {:active true} "Inventory Pools"]]
 
-      [:div
-       [inventory-pools/table-component]]
-      [debug-component]]]))
+        (when (auth/allowed?
+               [auth/admin-scopes?
+                pool-auth/some-lending-manager?])
+          [:> Nav.Item
+           [:> Nav.Link
+            {:href (-> (:path @routing/state*)
+                       (clojure.core/str "/users/"))}
+            "Users"]])]
+
+       [:div
+        [inventory-pools/table-component]]
+       [debug-component]]])])

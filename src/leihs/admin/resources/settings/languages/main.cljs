@@ -55,8 +55,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change languages-core/clean-and-fetch}]
+
    (if-not @languages-core/data*
-     [wait-component]
+     [:div {:className "mt-5"}
+      [wait-component]]
      [:article.settings-page.smtp
       [:header.my-5
        [:h1 [icons/language] " Languages Settings"]]

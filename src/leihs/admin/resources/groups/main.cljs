@@ -29,6 +29,7 @@
 (def data* (reagent/atom {}))
 
 (defn fetch-groups []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -163,22 +164,27 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.groups.my-5
-   [:h1.my-5
-    [icons/groups] " Groups"]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-groups}]
-    [filter-component]
-    [table/toolbar [add-group-button]]
-    [table-component
-     [name-th-component
-      org-th-component
-      org-id-th-component
-      users-count-th-component]
-     [name-td-component
-      org-td-component
-      org-id-td-component
-      users-count-td-component]]
-    [table/toolbar [add-group-button]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-groups}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.groups.my-5
+      [:h1.my-5
+       [icons/groups] " Groups"]
+      [:section
+       [filter-component]
+       [table/toolbar [add-group-button]]
+       [table-component
+        [name-th-component
+         org-th-component
+         org-id-th-component
+         users-count-th-component]
+        [name-td-component
+         org-td-component
+         org-id-td-component
+         users-count-td-component]]
+       [table/toolbar [add-group-button]]
+       [debug-component]]])])

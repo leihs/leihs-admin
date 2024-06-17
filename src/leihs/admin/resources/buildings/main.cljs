@@ -27,6 +27,7 @@
 (def data* (reagent/atom {}))
 
 (defn fetch-buildings []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -140,20 +141,25 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.buildings
-   [:header.my-5
-    [:h1 [icons/building] " Buildings"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-buildings}]
-    [filter-component]
-    [table-component
-     [name-th-component
-      code-th-component
-      rooms-count-th-component
-      items-count-th-component]
-     [name-td-component
-      code-td-component
-      rooms-count-td-component
-      items-count-td-component]]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-buildings}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.buildings
+      [:header.my-5
+       [:h1 [icons/building] " Buildings"]]
+      [:section
+       [filter-component]
+       [table-component
+        [name-th-component
+         code-th-component
+         rooms-count-th-component
+         items-count-th-component]
+        [name-td-component
+         code-td-component
+         rooms-count-td-component
+         items-count-td-component]]
+       [debug-component]]])])

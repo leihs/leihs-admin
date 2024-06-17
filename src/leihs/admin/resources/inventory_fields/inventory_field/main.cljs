@@ -93,9 +93,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change inventory-field/clean-and-fetch}]
+
    (if-not @inventory-field/data*
      [:div.my-5
-      [wait-component " Loading Data ..."]]
+      [wait-component]]
      [:article.room
       [header]
       [:section

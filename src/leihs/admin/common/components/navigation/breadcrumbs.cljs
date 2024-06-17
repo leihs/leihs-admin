@@ -149,7 +149,6 @@
    - If no match is found after checking all vectors, it returns nil.
    
    This function can be used to find the key in a map that corresponds to a string matching a certain pattern."
-
   [handler resolvers]
   (reduce (fn [acc [resolver matcher]]
             (or acc

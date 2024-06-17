@@ -71,9 +71,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change clean-and-fetch}]
+
    (if-not @room/data*
      [:div.my-5
-      [wait-component " Loading Room Data ..."]]
+      [wait-component]]
      [:article.room
       [header]
       [:section

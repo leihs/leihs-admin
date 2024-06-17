@@ -210,7 +210,7 @@
     [icons/users] " Users"]
    [:section
     [filter-component]
-    [table/toolbar  [add-button]]
+    [table/toolbar [add-button]]
     [users-table
      [user-th-component
       org-th-component

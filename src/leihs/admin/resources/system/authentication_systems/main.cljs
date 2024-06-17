@@ -1,5 +1,6 @@
 (ns leihs.admin.resources.system.authentication-systems.main
   (:require
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
@@ -23,9 +24,10 @@
 (def current-query-parameters-normalized*
   (reaction (shared/normalized-query-parameters @current-query-parameters*)))
 
-(def data* (reagent/atom {}))
+(def data* (reagent/atom nil))
 
 (defn fetch-authentication-systems []
+  (reset! data* nil)
   (http-client/route-cached-fetch data*))
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,15 +76,13 @@
    [:td (link-to-authentication-system authentication-system (:name authentication-system))]])
 
 (defn authentication-systems-table-component []
-  (if-not (contains? @data* @current-route*)
-    [wait-component]
-    (if-let [authentication-systems (-> @data* (get  @current-route* {}) :authentication-systems seq)]
-      [table/container  {:borders true
-                         :actions [table/toolbar [add-button]]
-                         :header [authentication-systems-thead-component]
-                         :body (doall (for [authentication-system authentication-systems]
-                                        (authentication-system-row-component authentication-system)))}]
-      [:div.alert.alert-info.text-center "No (more) authentication-systems found."])))
+  (if-let [authentication-systems (-> @data* (get  @current-route* {}) :authentication-systems seq)]
+    [table/container  {:borders true
+                       :actions [table/toolbar [add-button]]
+                       :header [authentication-systems-thead-component]
+                       :body (doall (for [authentication-system authentication-systems]
+                                      (authentication-system-row-component authentication-system)))}]
+    [:div.alert.alert-info.text-center "No (more) authentication-systems found."]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -102,12 +102,17 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.authentication-systems
-   [:header.my-5
-    [:h1 [icons/key-icon] " Authentication Systems"]]
-   [:section
-    [routing/hidden-state-component
-     {:did-change fetch-authentication-systems}]
-    [filter-component]
-    [authentication-systems-table-component]
-    [debug-component]]])
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-authentication-systems}]
+
+   (if-not @data*
+     [:div {:className "mt-5"}
+      [wait-component]]
+     [:article.authentication-systems
+      [:header.my-5
+       [:h1 [icons/key-icon] " Authentication Systems"]]
+      [:section
+       [filter-component]
+       [authentication-systems-table-component]
+       [debug-component]]])])

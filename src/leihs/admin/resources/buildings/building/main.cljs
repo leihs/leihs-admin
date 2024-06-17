@@ -60,9 +60,10 @@
   [:<>
    [routing/hidden-state-component
     {:did-change clean-and-fetch}]
+
    (if-not @building/data*
      [:div.my-5
-      [wait-component " Loading Room Data ..."]]
+      [wait-component]]
      [:article.building
       [header]
       [building-info-table]
