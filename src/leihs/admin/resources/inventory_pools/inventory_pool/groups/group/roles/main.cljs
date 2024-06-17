@@ -39,12 +39,12 @@
   (reset! changed?* false)
   (reset! data* nil)
   (fetch-inventory-pool-group-roles)
-  (group/clean-and-fetch)
+  (group/fetch-group)
   (inventory-pool/clean-and-fetch))
 
 (defn header-component []
   [:h1 "Roles for the group "
-   [group/group-name-component]
+   (:name @group/data*)
    " in the inventory-pool "
    [inventory-pool/name-link-component]])
 

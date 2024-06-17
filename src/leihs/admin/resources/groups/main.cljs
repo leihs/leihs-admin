@@ -29,7 +29,6 @@
 (def data* (reagent/atom {}))
 
 (defn fetch-groups []
-  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -141,10 +140,8 @@
      "No (more) groups found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* (:route @routing/state*))
-    [wait-component]
-    [core-table-component hds tds
-     (-> @data* (get (:route @routing/state*) {}) :groups)]))
+  [core-table-component hds tds
+   (-> @data* (get (:route @routing/state*) {}) :groups)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -164,27 +161,28 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:<>
+  [:article.groups.my-5
    [routing/hidden-state-component
-    {:did-change fetch-groups}]
+    {:did-change fetch-groups
+     :will-unmount #(reset! data* nil)}]
 
-   (if-not @data*
-     [:div {:className "mt-5"}
-      [wait-component]]
-     [:article.groups.my-5
-      [:h1.my-5
-       [icons/groups] " Groups"]
-      [:section
-       [filter-component]
-       [table/toolbar [add-group-button]]
-       [table-component
-        [name-th-component
-         org-th-component
-         org-id-th-component
-         users-count-th-component]
-        [name-td-component
-         org-td-component
-         org-id-td-component
-         users-count-td-component]]
-       [table/toolbar [add-group-button]]
-       [debug-component]]])])
+   [:header
+    [:h1.my-5
+     [icons/groups] " Groups"]]
+
+   [:section
+    [filter-component]
+    [table/toolbar [add-group-button]]
+    (if-not (contains? @data* (:route @routing/state*))
+      [wait-component]
+      [table-component
+       [name-th-component
+        org-th-component
+        org-id-th-component
+        users-count-th-component]
+       [name-td-component
+        org-td-component
+        org-id-td-component
+        users-count-td-component]])
+    [table/toolbar [add-group-button]]
+    [debug-component]]])

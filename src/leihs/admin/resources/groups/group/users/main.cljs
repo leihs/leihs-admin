@@ -136,6 +136,7 @@
      [:div.alert.alert-warning
       "This group is " [:strong "protected"] ". "
       "Memebership can be inspected but not changed!"])
+
    [filter-component]
    [table/toolbar]
    [table-component]
@@ -145,13 +146,9 @@
 
 (defn page []
   [:article.group.my-5
-   [routing/hidden-state-component
-    {:did-mount group-core/clean-and-fetch}]
    [group/header]
    [:section
-    [group/properties-table]
-    [group/edit-button]
-    [group/delete-button]]
+    [group/properties-table]]
 
    [:section
     [:> Nav {:variant "tabs" :className "mt-5"

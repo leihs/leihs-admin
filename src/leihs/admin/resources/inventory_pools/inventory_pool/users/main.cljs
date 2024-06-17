@@ -14,6 +14,7 @@
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.resources.users.user.core :as user2]
    [leihs.admin.state :as state]
+   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
@@ -160,28 +161,42 @@
       [:pre (with-out-str (pprint @current-query-params*))]]]))
 
 (defn table-section []
-  [users/users-table
-   [user-th-component
-    roles-th-component
-    direct-roles-th-component
-    groups-roles-th-component
-    suspension-th-component]
-   [user-td-component
-    roles-td-component
-    direct-roles-td-component
-    groups-roles-td-component
-    suspension-td-component]
-   :role-filter? true])
+  [:<>
+   [table/toolbar]
+   [users/users-table
+    [user-th-component
+     roles-th-component
+     direct-roles-th-component
+     groups-roles-th-component
+     suspension-th-component]
+    [user-td-component
+     roles-td-component
+     direct-roles-td-component
+     groups-roles-td-component
+     suspension-td-component]
+    :role-filter? true]
+   [table/toolbar]])
 
 (defn page []
   [:article.inventory-pool-users
    [routing/hidden-state-component
-    {:did-mount (fn [_] (inventory-pool/clean-and-fetch users/fetch-users))}]
-   [inventory-pool/header]
+    {:did-change #(do
+                    (inventory-pool/fetch)
+                    (users/fetch-users))
+     :will-unmount #(do
+                      (reset! users/data* nil))}]
+
+   (if-not @inventory-pool/data*
+     [:div.my-5
+      [wait-component]]
+     [inventory-pool/header])
+
    [inventory-pool/tabs]
    [filter-section]
-   [table/toolbar]
-   [table-section]
-   [table/toolbar]
+
+   (if-not @inventory-pool/data*
+     [wait-component]
+     [table-section])
+
    [debug-component]
    [users/debug-component]])

@@ -96,13 +96,16 @@
             (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
-  (if-not (contains? @data* @current-route*)
-    [wait-component]
-    (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
-      [table/container {:className "inventory-pools"
-                        :header (table-head hds)
-                        :body (table-body inventory-pools tds)}]
-      [:div.alert.alert-info.text-center "No (more) inventory-pools found."])))
+  [:<>
+   [table/toolbar [create/button]]
+   (if-not (contains? @data* @current-route*)
+     [wait-component]
+     (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
+       [table/container {:className "inventory-pools"
+                         :header (table-head hds)
+                         :body (table-body inventory-pools tds)}]
+       [:div.alert.alert-info.text-center "No (more) inventory-pools found."]))
+   [table/toolbar [create/button]]])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -123,14 +126,13 @@
 
 (defn page []
   [:article.inventory-pools
-   [:h1.my-5 [icons/warehouse] " Inventory Pools"]
+   [routing/hidden-state-component
+    {:did-change #(http/route-cached-fetch data*)
+     :will-unmount #(reset! data* nil)}]
+
+   [:header.my5
+    [:h1.my-5 [icons/warehouse] " Inventory Pools"]]
    [:section
-    [routing/hidden-state-component
-     {:did-change #(http/route-cached-fetch data*)}]
     [filter-section]
-    [table/toolbar
-     [create/button]]
     [inventory-pools-table]
-    [table/toolbar
-     [create/button]]
     [debug-component]]])

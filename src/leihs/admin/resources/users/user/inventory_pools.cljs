@@ -18,17 +18,16 @@
 (defonce data* (reagent/atom nil))
 
 (defn fetch-inventory-pools []
-  (go (reset!
-       data*
-       (some->
-        {:chan (async/chan)
-         :url (path :user-inventory-pools
-                    (-> @routing/state* :route-params))}
-        http-client/request :chan <!
-        http-client/filter-success!
-        :body :user-inventory-pools))))
+  (go (reset! data*
+              (some->
+               {:chan (async/chan)
+                :url (path :user-inventory-pools
+                           (-> @routing/state* :route-params))}
+               http-client/request :chan <!
+               http-client/filter-success!
+               :body :user-inventory-pools))))
 
-(defn clean-and-fetch-inventory-pools [& args]
+(defn clean-and-fetch-inventory-pools []
   (reset! data* nil)
   (fetch-inventory-pools))
 
@@ -87,9 +86,11 @@
                           :or {chrome true}}]
   [:div.user-inventory-pools
    [routing/hidden-state-component
-    {:did-mount clean-and-fetch-inventory-pools
-     :did-change clean-and-fetch-inventory-pools}]
-   (if (and @data* @user-data*)
+    {:did-change clean-and-fetch-inventory-pools
+     :will-unmout #(reset! data* nil)}]
+
+   (if-not (or @data* @user-data*)
+     [wait-component]
      [table/container
       {:borders chrome
        :header [:tr
@@ -102,6 +103,5 @@
                 [user-in-pool-td-component row]
                 [roles-td-component row]
                 [reservations-td-component row]
-                [contracts-td-component row]])}]
-     [wait-component])
+                [contracts-td-component row]])}])
    [debug-component]])

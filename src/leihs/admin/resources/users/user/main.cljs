@@ -114,14 +114,21 @@
          [reset-password-button]]
         [delete-button]]])))
 
-(defn header []
-  (let [name (str (:firstname @user-data*)
-                  " "
-                  (:lastname @user-data*))]
+(defn user-name []
+  (let [data @user-data*]
     (fn []
-      [:header.my-5
-       [breadcrumbs/main]
-       [:h1.mt-3 name]])))
+      [:<>
+       (js/console.debug data)
+       [:h1.mt-3 (str (:firstname data)
+                      " "
+                      (:lastname data))]])))
+
+(defn header []
+  [:header.my-5
+   [breadcrumbs/main]
+   (if-not @user-data*
+     [wait-component]
+     [user-name])])
 
 (defn own-user-admin-scopes? [user-state _routing-state]
   (and (= (-> user-state :id)
@@ -129,29 +136,31 @@
        (auth/admin-scopes? user-state _routing-state)))
 
 (defn page []
-  [:<>
-   [routing/hidden-state-component
-    {:did-mount #(do
-                   (clean-and-fetch)
-                   (check-user-chosen))}]
+  [:article.users
+   [:<>
+    [routing/hidden-state-component
+     {:did-mount #(do
+                    (clean-and-fetch)
+                    (check-user-chosen))
+      :will-unmount #(reset! user-data* nil)}]
 
-   (if (empty? @user-data*)
-     [:div.mt-5
-      [wait-component]]
+    [header]
 
-     [:article.users
-      [header]
-      [basic-properties]
-      [:> Tabs {:className "mt-5"
-                :defaultActiveKey "inventory-pools"
-                :transition false}
-       [:> Tab {:eventKey "inventory-pools" :title "Inventory Pools"}
-        [inventory-pools/table-component {:chrome false}]]
-       [:> Tab {:eventKey "groups" :title "Groups"}
-        [groups/table-component]]
-       (when (auth/allowed?
-              [auth/system-admin-scopes? own-user-admin-scopes?])
-         [:> Tab {:eventKey "api-tokens" :title "API Tokens"}
-          [api-tokens/table-component]])]
-      [delete-user-dialog]
-      [user-core/debug-component]])])
+    (if-not @user-data*
+      [:div.mt-5
+       [wait-component]]
+      [basic-properties])]
+
+   [:> Tabs {:className "mt-5"
+             :defaultActiveKey "inventory-pools"
+             :transition false}
+    [:> Tab {:eventKey "inventory-pools" :title "Inventory Pools"}
+     [inventory-pools/table-component {:chrome false}]]
+    [:> Tab {:eventKey "groups" :title "Groups"}
+     [groups/table-component]]
+    (when (auth/allowed?
+           [auth/system-admin-scopes? own-user-admin-scopes?])
+      [:> Tab {:eventKey "api-tokens" :title "API Tokens"}
+       [api-tokens/table-component]])]
+   [delete-user-dialog]
+   [user-core/debug-component]])

@@ -9,6 +9,7 @@
    [leihs.admin.resources.groups.main :as groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.state :as state]
+   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
 
 ;### roles ####################################################################
@@ -68,16 +69,22 @@
 (defn page []
   [:article.inventory-pool-groups
    [routing/hidden-state-component
-    {:did-mount (fn [_] (inventory-pool/clean-and-fetch))}]
+    {:did-change #(do
+                    (groups/fetch-groups)
+                    (inventory-pool/fetch))
+     :will-unmount #(reset! groups/data* nil)}]
+
    [inventory-pool/header]
    [inventory-pool/tabs]
-   [routing/hidden-state-component
-    {:did-change groups/fetch-groups}]
+
    [filter-section]
    [table/toolbar]
-   [groups/table-component
-    [groups/name-th-component groups/users-count-th-component roles-th-component]
-    [groups/name-td-component groups/users-count-td-component roles-td-component]]
+   (if-not (contains? @groups/data* (:route @routing/state*))
+     [wait-component]
+     [groups/table-component
+      [groups/name-th-component groups/users-count-th-component roles-th-component]
+      [groups/name-td-component groups/users-count-td-component roles-td-component]])
    [table/toolbar]
+
    [debug-component]
    [groups/debug-component]])

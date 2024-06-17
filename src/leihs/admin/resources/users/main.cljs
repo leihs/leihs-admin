@@ -30,6 +30,7 @@
 (def data* (reagent/atom {}))
 
 (defn fetch-users []
+  (reset! data* nil)
   (http/route-cached-fetch data*))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -173,7 +174,9 @@
          role-filter? false}}]
   [:<>
    [routing/hidden-state-component
-    {:did-change fetch-users}]
+    {:did-mount fetch-users
+     :will-unmount #(reset! data* nil)}]
+
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]

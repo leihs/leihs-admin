@@ -4,7 +4,7 @@
    [cljs.core.async :as async :refer [go <!]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :refer [data* group-id* clean-and-fetch]]
+   [leihs.admin.resources.groups.group.core :refer [data* group-id* fetch-group]]
    [leihs.admin.resources.groups.group.edit-core :as edit-core]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]))
 
@@ -16,7 +16,7 @@
               :json-params @data*}
              http-client/request :chan <!
              http-client/filter-success!)
-        (clean-and-fetch))))
+        (fetch-group))))
 
 (defn dialog [& {:keys [show onHide]
                  :or {show false}}]

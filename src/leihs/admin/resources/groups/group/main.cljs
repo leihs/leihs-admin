@@ -3,7 +3,7 @@
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :refer [clean-and-fetch data*
+   [leihs.admin.resources.groups.group.core :refer [fetch-group data*
                                                     debug-component]]
    [leihs.admin.resources.groups.group.delete :as delete]
    [leihs.admin.resources.groups.group.edit :as edit]
@@ -56,76 +56,83 @@
          [delete/dialog  {:show @show
                           :onHide #(reset! show false)}]]))))
 
-(defn properties-table []
+(defn table-rows []
   (let [data @data*]
     (fn []
+      [:<>
+       [:tr.name
+        [:td "Name" [:small " (name)"]]
+        [:td (:name data)]]
+       [:tr.description
+        [:td "Description" [:small " (description)"]]
+        [:td {:style {:white-space "break-spaces"}} (:description data)]]
+       [:tr.admin_protected
+        [:td "Admin Protected" [:small " (admin_protected"]]
+        [:td (if (:admin_protected data) "yes " "no")]]
+       [:tr.system_admin_protected
+        [:td "System-admin Protected" [:small " (system_admin_protected)"]]
+        [:td (if (:system_admin_protected data) "yes " "no")]]
+       [:tr.organization
+        [:td "Organization" [:small " (organization)"]]
+        [:td (:organization data)]]
+       [:tr.org_id
+        [:td "Org ID" [:small " (org_id)"]]
+        [:td (:org_id data)]]
+       [:tr.user_counts
+        [:td "Number of Users" [:small " (users_count)"]]
+        [:td (:users_count data)]]])))
+
+(defn properties-table []
+  [:<>
+   [routing/hidden-state-component
+    {:did-change fetch-group}]
+
+   (if-not @data*
+     [wait-component]
+     [:<>
       [table/container
        {:className "properties"
         :borders false
         :header [:tr [:th "Property"] [:th.w-75 "Value"]]
-        :body
-        [:<>
-         [:tr.name
-          [:td "Name" [:small " (name)"]]
-          [:td (:name data)]]
-         [:tr.description
-          [:td "Description" [:small " (description)"]]
-          [:td {:style {:white-space "break-spaces"}} (:description data)]]
-         [:tr.admin_protected
-          [:td "Admin Protected" [:small " (admin_protected"]]
-          [:td (if (:admin_protected data) "yes " "no")]]
-         [:tr.system_admin_protected
-          [:td "System-admin Protected" [:small " (system_admin_protected)"]]
-          [:td (if (:system_admin_protected data) "yes " "no")]]
-         [:tr.organization
-          [:td "Organization" [:small " (organization)"]]
-          [:td (:organization data)]]
-         [:tr.org_id
-          [:td "Org ID" [:small " (org_id)"]]
-          [:td (:org_id data)]]
-         [:tr.user_counts
-          [:td "Number of Users" [:small " (users_count)"]]
-          [:td (:users_count data)]]]}])))
+        :body [table-rows]}]
 
-(defn header []
+      [edit-button]
+      [delete-button]])])
+
+(defn group-name []
   (let [name (:name @data*)]
     (fn []
-      [:header.my-5
-       [breadcrumbs/main]
-       [:h1.mt-3 name]])))
+      [:h1.mt-3 name])))
+
+(defn header []
+  [:header.my-5
+   [breadcrumbs/main]
+   (if-not @data*
+     [wait-component]
+     [group-name])])
 
 (defn page []
-  [:<>
-   [routing/hidden-state-component
-    {:did-mount clean-and-fetch
-     :did-change clean-and-fetch}]
+  [:article.group
+   [header]
 
-   (if (empty? @data*)
-     [:div.mt-5
-      [wait-component]]
-     [:article.group
-      [header]
+   [:section
+    [properties-table]]
 
-      [:section
-       [properties-table]
-       [edit-button]
-       [delete-button]]
+   [:section
+    [:> Nav {:variant "tabs" :className "mt-5"
+             :defaultActiveKey "users"}
+     [:> Nav.Item
+      [:> Nav.Link {:active true} "Inventory Pools"]]
 
-      [:section
-       [:> Nav {:variant "tabs" :className "mt-5"
-                :defaultActiveKey "users"}
-        [:> Nav.Item
-         [:> Nav.Link {:active true} "Inventory Pools"]]
+     (when (auth/allowed?
+            [auth/admin-scopes?
+             pool-auth/some-lending-manager?])
+       [:> Nav.Item
+        [:> Nav.Link
+         {:href (-> (:path @routing/state*)
+                    (clojure.core/str "/users/"))}
+         "Users"]])]
 
-        (when (auth/allowed?
-               [auth/admin-scopes?
-                pool-auth/some-lending-manager?])
-          [:> Nav.Item
-           [:> Nav.Link
-            {:href (-> (:path @routing/state*)
-                       (clojure.core/str "/users/"))}
-            "Users"]])]
-
-       [:div
-        [inventory-pools/table-component]]
-       [debug-component]]])])
+    [:div
+     [inventory-pools/table-component]]
+    [debug-component]]])

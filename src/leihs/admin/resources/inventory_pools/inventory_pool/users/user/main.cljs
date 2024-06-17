@@ -151,31 +151,32 @@
        [:h6 "In Pool " [inventory-pool/name-component]]])))
 
 (defn page []
-  [:<>
+  [:article.user-roles
    [routing/hidden-state-component
     {:did-mount #(do
                    (clean-and-fetch)
                    (user-roles/clean-and-fetch))
      :will-unmount #(reset! user-data* nil)}]
 
-   (if (empty? @user-data*)
-     [:div.mt-5
-      [wait-component]]
-     [:article.user-roles
-      [header]
-      [overview-component]
-      [:div.row
-       [:div.col-md-6
-        [:hr] [roles-component]]
-       [:div.col-md-6
-        [:hr] [suspension-component]]]
-      [:div.row
-       [:div.col-md-6
-        [:hr] [groups]]
-       [:div.col-md-6
-        [:hr]
-        [:h2 "Extended User Info"]
-        (when-let [ext-info (-> @user-data* :extended_info presence)]
-          [:pre (.stringify js/JSON (.parse js/JSON ext-info) nil 2)])]]
+   [:<>
+    (if-not @user-data*
+      [:div.mt-5
+       [wait-component]]
+      [:<>
+       [header]
+       [overview-component]
+       [:div.row
+        [:div.col-md-6
+         [:hr] [roles-component]]
+        [:div.col-md-6
+         [:hr] [suspension-component]]]
+       [:div.row
+        [:div.col-md-6
+         [:hr] [groups]]
+        [:div.col-md-6
+         [:hr]
+         [:h2 "Extended User Info"]
+         (when-let [ext-info (-> @user-data* :extended_info presence)]
+           [:pre (.stringify js/JSON (.parse js/JSON ext-info) nil 2)])]]])
 
-      [debug-component]])])
+    [debug-component]]])

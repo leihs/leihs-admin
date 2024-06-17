@@ -15,33 +15,17 @@
 
 (def route* (reaction (path :group (:route-params @routing/state*))))
 
-(defonce fetch-id* (atom nil))
-
 (defn fetch-group []
+  (reset! data* nil)
   (go (reset! data*
               (some-> {:chan (async/chan)
                        :url @route*}
                       http-client/request
                       :chan <! http-client/filter-success! :body))))
 
-;;; reload logic ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (defn clean-and-fetch [& args]
-;;   (reset! data* nil)
-;;   (fetch-group))
-
-(defn clean-and-fetch [& _]
+(defn clean-and-fetch []
   (reset! data* nil)
-  (let [fetch-id (reset! fetch-id* (rand-int (js/Math.pow 2 16)))]
-    (go (<! (timeout 50))
-        (when (= @fetch-id* fetch-id)
-          (reset! data*
-                  (-> {:chan (async/chan)
-                       :url @route*}
-                      http-client/request
-                      :chan <! http-client/filter-success! :body))))))
-
-(defn group-name-component []
-  [:<> (:name @data*)])
+  (fetch-group))
 
 (defn debug-component []
   (when (:debug @state/global-state*)

@@ -30,31 +30,26 @@
           more-query-params))))
 
 (defn table-component []
-  [users/users-table
-   [users/user-th-component
-    users-membership/member-user-th-component
-    users-membership/direct-member-user-th-component
-    users-membership/group-member-user-th-component]
-   [users/user-td-component
-    users-membership/member-user-td-component
-    (users-membership/create-direct-member-user-td-component
-     direct-member-path)
-    (users-membership/create-group-member-user-td-component
-     groups-path-fn)]])
+  [:<>
+   [table/toolbar]
+   [users/users-table
+    [users/user-th-component
+     users-membership/member-user-th-component
+     users-membership/direct-member-user-th-component
+     users-membership/group-member-user-th-component]
+    [users/user-td-component
+     users-membership/member-user-td-component
+     (users-membership/create-direct-member-user-td-component
+      direct-member-path)
+     (users-membership/create-group-member-user-td-component
+      groups-path-fn)]]
+   [table/toolbar]])
 
 (defn page []
-  [:<>
-   [routing/hidden-state-component
-    {:did-change auth-core/clean-and-fetch}]
-   (if-not @auth-core/data*
-     [:div.my-5
-      [wait-component " Loading Authentication System Data ..."]]
-     [:article.authentication-system.my-5
-      [auth-core/header]
-      [:section
-       [auth-core/tabs "users"]
-       [users-membership/filter-component]
-       [table/toolbar]
-       [table-component]
-       [table/toolbar]
-       [users/debug-component]]])])
+  [:article.authentication-system.my-5
+   [auth-core/header]
+   [:section
+    [auth-core/tabs "users"]
+    [users-membership/filter-component]
+    [table-component]
+    [users/debug-component]]])

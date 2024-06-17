@@ -106,6 +106,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-change fetch}]
+
    (let [inner (when @data*
                  [:<> (str (:name @data*))])]
      [:<> inner])])
@@ -113,7 +114,7 @@
 (defn header []
   [:header.my-5
    [breadcrumbs/main]
-   [:h1 [name-component]]])
+   [:h1 (:name @data*)]])
 
 (defn name-link-component []
   [:span
