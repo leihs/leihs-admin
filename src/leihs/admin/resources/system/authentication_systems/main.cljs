@@ -76,13 +76,15 @@
    [:td (link-to-authentication-system authentication-system (:name authentication-system))]])
 
 (defn authentication-systems-table-component []
-  (if-let [authentication-systems (-> @data* (get  @current-route* {}) :authentication-systems seq)]
-    [table/container  {:borders true
-                       :actions [table/toolbar [add-button]]
-                       :header [authentication-systems-thead-component]
-                       :body (doall (for [authentication-system authentication-systems]
-                                      (authentication-system-row-component authentication-system)))}]
-    [:div.alert.alert-info.text-center "No (more) authentication-systems found."]))
+  (if-not @data*
+    [wait-component]
+    (if-let [authentication-systems (-> @data* (get  @current-route* {}) :authentication-systems seq)]
+      [table/container  {:borders true
+                         :actions [table/toolbar [add-button]]
+                         :header [authentication-systems-thead-component]
+                         :body (doall (for [authentication-system authentication-systems]
+                                        (authentication-system-row-component authentication-system)))}]
+      [:div.alert.alert-info.text-center "No (more) authentication-systems found."])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -106,13 +108,10 @@
    [routing/hidden-state-component
     {:did-change fetch-authentication-systems}]
 
-   (if-not @data*
-     [:div {:className "mt-5"}
-      [wait-component]]
-     [:article.authentication-systems
-      [:header.my-5
-       [:h1 [icons/key-icon] " Authentication Systems"]]
-      [:section
-       [filter-component]
-       [authentication-systems-table-component]
-       [debug-component]]])])
+   [:article.authentication-systems
+    [:header.my-5
+     [:h1 [icons/key-icon] " Authentication Systems"]]
+    [:section
+     [filter-component]
+     [authentication-systems-table-component]
+     [debug-component]]]])

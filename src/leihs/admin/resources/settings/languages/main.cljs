@@ -28,7 +28,6 @@
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 (defn info-table []
-
   (let [data @languages-core/data*]
     (fn []
       [:<>
