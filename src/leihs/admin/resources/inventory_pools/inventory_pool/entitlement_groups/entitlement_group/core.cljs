@@ -29,14 +29,6 @@
                http-client/request :chan <!
                http-client/filter-success! :body))))
 
-(defn entitlement-group-name []
-  [:<>
-   [routing/hidden-state-component
-    {:did-change fetch}]
-   (let [inner (when @data*
-                 [:<> (str (:name @data*))])]
-     [:<> inner])])
-
 (defn tabs [active]
   [:> react-bootstrap/Nav {:className "mb-3"
                            :justify false
@@ -70,7 +62,6 @@
 
 (defn header []
   [:header.my-5
-   [breadcrumbs/main {:href (path :inventory-pool-entitlement-groups
-                                  {:inventory-pool-id @inventory-pool/id*})}]
-   [:h1.mt-3 [entitlement-group-name]]
-   [:h6 "Inventory Pool " [inventory-pool/name-component]]])
+   [breadcrumbs/main]
+   [:h1.mt-3 (:name @data*)]
+   [:h6 "Inventory Pool " (:name @inventory-pool/data*)]])

@@ -12,7 +12,7 @@
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
 
-(defonce data* (reagent/atom {}))
+(defonce data* (reagent/atom nil))
 (defonce current-route* (reaction (:route @routing/state*)))
 
 (defn fetch-entitlement-groups []
@@ -59,14 +59,12 @@
 
 (defn entitlement-groups-table []
   [:section.entitlement-entitlement-groups
-   (if-not (contains? @data* @current-route*)
-     [wait-component]
-     (if-let [entitlement-groups (-> @data* (get  @current-route* {}) :entitlement-groups seq)]
-       [table/container {:className "entitlement-groups"
-                         :header (entitlement-groups-thead)
-                         :body (doall (for [entitlement-group entitlement-groups]
-                                        (entitlement-group-row entitlement-group)))}]
-       [:div.alert.alert-info.text-center "No (more) entitlement-groups found."]))])
+   (if-let [entitlement-groups (-> @data* (get  @current-route* {}) :entitlement-groups seq)]
+     [table/container {:className "entitlement-groups"
+                       :header (entitlement-groups-thead)
+                       :body (doall (for [entitlement-group entitlement-groups]
+                                      (entitlement-group-row entitlement-group)))}]
+     [:div.alert.alert-info.text-center "No (more) entitlement-groups found."])])
 
 (defn debug-info []
   (when (:debug @state/global-state*)
@@ -88,11 +86,17 @@
 (defn page []
   [:article.inventory-pool-entitlement-groups
    [routing/hidden-state-component
-    {:did-change fetch-entitlement-groups}]
+    {:did-change fetch-entitlement-groups
+     :will-unmount #(reset! data* nil)}]
+
    [inventory-pool/header]
    [inventory-pool/tabs]
    [filter-section]
    [table/toolbar]
-   [entitlement-groups-table]
+
+   (if-not (contains? @data* @current-route*)
+     [wait-component]
+     [entitlement-groups-table])
+
    [table/toolbar]
    [debug-info]])

@@ -3,9 +3,11 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group :refer [header tabs]]
+   [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.core :as entitlement-group :refer [header
+                                                                                                                                 tabs]]
    [leihs.admin.resources.inventory-pools.inventory-pool.entitlement-groups.entitlement-group.users.main]
    [leihs.admin.state :as state]
+   [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button]]))
 
 (defn debug-component []
@@ -58,8 +60,13 @@
 
 (defn page []
   [:article.entitlement-group
-   [header]
-   [tabs]
+   [routing/hidden-state-component
+    {:did-change #(do
+                    (entitlement-group/fetch)
+                    (inventory-pool/fetch))}]
+
+   [entitlement-group/header]
+   [entitlement-group/tabs]
    (when (and @inventory-pool/id* @entitlement-group/id*)
      [:<>
       [overview-table]
