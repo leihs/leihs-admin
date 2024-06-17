@@ -28,9 +28,9 @@
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 (defn info-table []
-  (if-not @languages-core/data*
-    [wait-component]
-    (let [data @languages-core/data*]
+
+  (let [data @languages-core/data*]
+    (fn []
       [:<>
        [table/container
         {:header [:tr
@@ -58,5 +58,7 @@
     [:header.my-5
      [:h1 [icons/language] " Languages Settings"]]
     [:section
-     [info-table]
+     (if-not @languages-core/data*
+       [wait-component]
+       [info-table])
      [debug-component]]]])

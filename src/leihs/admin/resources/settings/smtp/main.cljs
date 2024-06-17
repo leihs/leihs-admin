@@ -22,9 +22,8 @@
                      :onHide #(reset! show false)}]])))
 
 (defn info-table []
-  (if-not @smtp-core/data*
-    [wait-component]
-    (let [data @smtp-core/data*]
+  (let [data @smtp-core/data*]
+    (fn []
       [:<>
        [table/container
         {:borders false
@@ -81,5 +80,7 @@
     [:header.my-5
      [:h1 [icons/paper-plane] " SMTP Settings"]]
     [:section
-     [info-table]
+     (if-not @smtp-core/data*
+       [wait-component]
+       [info-table])
      [debug-component]]]])

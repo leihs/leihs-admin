@@ -22,9 +22,8 @@
                      :onHide #(reset! show false)}]])))
 
 (defn info-table []
-  (if-not @misc-core/data*
-    [wait-component]
-    (let [data @misc-core/data*]
+  (let [data @misc-core/data*]
+    (fn []
       [:<>
        [table/container
         {:borders false
@@ -94,5 +93,7 @@
     [:header.my-5
      [:h1 [icons/list-icon] " Miscellaneous Settings"]]
     [:section
-     [info-table]
+     (if-not @misc-core/data*
+       [wait-component]
+       [info-table])
      [debug-component]]]])

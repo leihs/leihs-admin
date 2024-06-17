@@ -61,11 +61,11 @@
    [routing/hidden-state-component
     {:did-change syssec-core/clean-and-fetch}]
 
-   [:article.settings-page.smtp
+   [:article.settings-page.syssec
     [:header.my-5
-     [:h1 [icons/shield-halved] " System and Security Settings"
-      [:section
-       (if-not @syssec-core/data*
-         [wait-component]
-         [info-table])
-       [debug-component]]]]]])
+     [:h1 [icons/shield-halved] " System and Security Settings"]
+     [:section
+      (if-not @syssec-core/data*
+        [wait-component]
+        [info-table])
+      [debug-component]]]]])
