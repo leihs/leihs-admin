@@ -1,6 +1,7 @@
 (ns leihs.admin.resources.settings.languages.main
   (:require
    [cljs.pprint :refer [pprint]]
+   [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.resources.settings.languages.core :as languages-core]
@@ -8,7 +9,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button Form]]
+   [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]))
 
 (defn debug-component []
@@ -27,42 +28,35 @@
        [edit/dialog {:show @show
                      :onHide #(reset! show false)}]])))
 (defn info-table []
-  (let [data @languages-core/data*]
-    (fn []
-      [table/container
-       {:header [:tr
-                 [:th "Locale"]
-                 [:th "Name"]
-                 [:th "Active"]
-                 [:th "Default"]]
-        :body
-        (doall
-         (for [[locale lang] data]
-           ^{:key locale}
-           [:tr
-            [:td (:locale lang)]
-            [:td [:span (:name lang)]]
-            [:td [:> Form.Check {:id (str (:locale lang) "-active")
-                                 :disabled true
-                                 :type "switch"
-                                 :checked (:active lang)}]]
-            [:td [:> Form.Check {:id (str (:locale lang) "-default")
-                                 :disabled true
-                                 :type "switch"
-                                 :checked (:default lang)}]]]))}])))
+  (if-not @languages-core/data*
+    [wait-component]
+    (let [data @languages-core/data*]
+      [:<>
+       [table/container
+        {:header [:tr
+                  [:th "Locale"]
+                  [:th "Name"]
+                  [:th "Active"]
+                  [:th "Default"]]
+         :body
+         (doall
+          (for [[locale lang] data]
+            ^{:key locale}
+            [:tr
+             [:td (:locale lang)]
+             [:td [:span (:name lang)]]
+             [:td (toggle-component (:active lang))]
+             [:td (toggle-component (:default lang))]]))}]
+       [edit-button]])))
 
 (defn page []
   [:<>
    [routing/hidden-state-component
     {:did-change languages-core/clean-and-fetch}]
 
-   (if-not @languages-core/data*
-     [:div {:className "mt-5"}
-      [wait-component]]
-     [:article.settings-page.smtp
-      [:header.my-5
-       [:h1 [icons/language] " Languages Settings"]]
-      [:section
-       [info-table]
-       [edit-button]
-       [debug-component]]])])
+   [:article.settings-page.smtp
+    [:header.my-5
+     [:h1 [icons/language] " Languages Settings"]]
+    [:section
+     [info-table]
+     [debug-component]]]])
