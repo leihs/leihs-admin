@@ -86,17 +86,24 @@
 (defn page []
   [:article.inventory-pool-entitlement-groups
    [routing/hidden-state-component
-    {:did-change fetch-entitlement-groups
-     :will-unmount #(reset! data* nil)}]
+    {:did-mount #(do
+                   (inventory-pool/fetch)
+                   (fetch-entitlement-groups))
+     :will-unmount #(do
+                      (reset! inventory-pool/data* nil)
+                      (reset! data* nil))}]
 
-   [inventory-pool/header]
+   (if-not @inventory-pool/pool-name*
+     [wait-component]
+     [inventory-pool/header])
+
    [inventory-pool/tabs]
    [filter-section]
-   [table/toolbar]
 
+   [table/toolbar]
    (if-not (contains? @data* @current-route*)
      [wait-component]
      [entitlement-groups-table])
-
    [table/toolbar]
+
    [debug-info]])

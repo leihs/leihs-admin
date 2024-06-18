@@ -161,21 +161,18 @@
       [:pre (with-out-str (pprint @current-query-params*))]]]))
 
 (defn table-section []
-  [:<>
-   [table/toolbar]
-   [users/users-table
-    [user-th-component
-     roles-th-component
-     direct-roles-th-component
-     groups-roles-th-component
-     suspension-th-component]
-    [user-td-component
-     roles-td-component
-     direct-roles-td-component
-     groups-roles-td-component
-     suspension-td-component]
-    :role-filter? true]
-   [table/toolbar]])
+  [users/users-table
+   [user-th-component
+    roles-th-component
+    direct-roles-th-component
+    groups-roles-th-component
+    suspension-th-component]
+   [user-td-component
+    roles-td-component
+    direct-roles-td-component
+    groups-roles-td-component
+    suspension-td-component]
+   :role-filter? true])
 
 (defn page []
   [:article.inventory-pool-users
@@ -184,19 +181,21 @@
                     (inventory-pool/fetch)
                     (users/fetch-users))
      :will-unmount #(do
+                      (reset! inventory-pool/data* nil)
                       (reset! users/data* nil))}]
 
-   (if-not @inventory-pool/data*
-     [:div.my-5
-      [wait-component]]
+   (if-not @inventory-pool/pool-name*
+     [wait-component]
      [inventory-pool/header])
 
    [inventory-pool/tabs]
    [filter-section]
 
+   [table/toolbar]
    (if-not @inventory-pool/data*
      [wait-component]
      [table-section])
+   [table/toolbar]
 
    [debug-component]
    [users/debug-component]])

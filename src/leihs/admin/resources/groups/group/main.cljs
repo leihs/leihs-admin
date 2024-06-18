@@ -83,21 +83,14 @@
         [:td (:users_count data)]]])))
 
 (defn properties-table []
-  [:<>
-   [routing/hidden-state-component
-    {:did-change fetch-group}]
+  [table/container
+   {:className "properties"
+    :borders false
+    :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+    :body [table-rows]}]
 
-   (if-not @data*
-     [wait-component]
-     [:<>
-      [table/container
-       {:className "properties"
-        :borders false
-        :header [:tr [:th "Property"] [:th.w-75 "Value"]]
-        :body [table-rows]}]
-
-      [edit-button]
-      [delete-button]])])
+  [edit-button]
+  [delete-button])
 
 (defn group-name []
   (let [name (:name @data*)]
@@ -107,16 +100,19 @@
 (defn header []
   [:header.my-5
    [breadcrumbs/main]
-   (if-not @data*
-     [wait-component]
-     [group-name])])
+   [group-name]])
 
 (defn page []
   [:article.group
-   [header]
+   [routing/hidden-state-component
+    {:did-change fetch-group}]
 
-   [:section
-    [properties-table]]
+   (if-not @data*
+     [wait-component]
+     [:<>
+      [header]
+      [:section
+       [properties-table]]])
 
    [:section
     [:> Nav {:variant "tabs" :className "mt-5"

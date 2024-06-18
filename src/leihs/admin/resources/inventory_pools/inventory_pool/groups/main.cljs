@@ -72,7 +72,9 @@
     {:did-change #(do
                     (groups/fetch-groups)
                     (inventory-pool/fetch))
-     :will-unmount #(reset! groups/data* nil)}]
+     :will-unmount #(do
+                      (reset! groups/data* nil)
+                      (reset! inventory-pool/data* nil))}]
 
    [inventory-pool/header]
    [inventory-pool/tabs]

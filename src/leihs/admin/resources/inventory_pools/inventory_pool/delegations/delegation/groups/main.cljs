@@ -7,6 +7,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
    [leihs.admin.state :as state]
+   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
 
 (defn member-path
@@ -23,26 +24,28 @@
     [:div]))
 
 (defn table []
-  [:<>
-   [routing/hidden-state-component
-    {:did-change groups/fetch-groups}]
-   [groups/table-component
-    [groups/name-th-component
-     groups-membership/member-th-component]
-    [groups/name-td-component
-     (partial groups-membership/member-td-component member-path)]]])
-
-(defn main-section []
-  [:section
-   [groups-membership/filter-component]
-   [table/toolbar]
-   [table]
-   [table/toolbar]
-   [debug-component]
-   [groups/debug-component]])
+  [groups/table-component
+   [groups/name-th-component
+    groups-membership/member-th-component]
+   [groups/name-td-component
+    (partial groups-membership/member-td-component member-path)]])
 
 (defn page []
   [:article.inventory-pool-groups.my-5
+   [routing/hidden-state-component
+    {:did-mount #(groups/fetch-groups)
+     :will-unmount #(reset! groups/data* nil)}]
+
    [delegation/header]
    [delegation/tabs]
-   [main-section]])
+
+   [:section
+    [groups-membership/filter-component]
+    [table/toolbar]
+
+    (if-not @groups/data*
+      [wait-component]
+      [table])
+    [table/toolbar]
+    [debug-component]
+    [groups/debug-component]]])

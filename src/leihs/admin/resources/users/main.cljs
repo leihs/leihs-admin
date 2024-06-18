@@ -173,10 +173,10 @@
     :or {membership-filter? false
          role-filter? false}}]
   [:<>
-   [routing/hidden-state-component
-    {:did-mount fetch-users
-     :will-unmount #(reset! data* nil)}]
-
+   ;; [routing/hidden-state-component
+   ;;  {:did-mount fetch-users
+   ;;   :will-unmount #(reset! data* nil)}]
+   ;;
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
@@ -209,23 +209,31 @@
 
 (defn page []
   [:article.users.my-5
+   [routing/hidden-state-component
+    {:did-mount fetch-users
+     :will-unmount #(reset! data* nil)}]
+
    [:h1.my-5
     [icons/users] " Users"]
    [:section
     [filter-component]
+
     [table/toolbar [add-button]]
-    [users-table
-     [user-th-component
-      org-th-component
-      org-id-th-component
-      contracts-count-th-component
-      pools-count-th-component
-      groups-count-th-component]
-     [user-td-component
-      org-td-component
-      org-id-td-component
-      contracts-count-td-component
-      pools-count-td-component
-      groups-count-td-component]]
+    (if-not @data*
+      [wait-component]
+      [users-table
+       [user-th-component
+        org-th-component
+        org-id-th-component
+        contracts-count-th-component
+        pools-count-th-component
+        groups-count-th-component]
+       [user-td-component
+        org-td-component
+        org-id-td-component
+        contracts-count-td-component
+        pools-count-td-component
+        groups-count-td-component]])
     [table/toolbar  [add-button]]
+
     [debug-component]]])

@@ -6,9 +6,11 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as pool-users]
-   [leihs.admin.resources.users.main :as users]
+   [leihs.admin.resources.users.main :as users :refer [data* fetch-users]]
    [leihs.admin.state :as state]
-   [leihs.core.core :refer [presence]]))
+   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.core :refer [presence]]
+   [leihs.core.routing.front :as routing]))
 
 ;;; path helpers  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -52,13 +54,24 @@
 
 (defn page []
   [:article.delegation.my-5
+   [routing/hidden-state-component
+    {:did-change #(fetch-users)
+     :will-unmount #(reset! data* nil)}]
+
    [delegation/header]
    [delegation/tabs]
    [:section
     [users-membership/filter-component]
+    [debug-component]
+    [users/debug-component]
+    [delegation/debug-component]
+
     [table/toolbar]
-    [table]
+    (if-not @data*
+      [wait-component]
+      [table])
     [table/toolbar]
+
     [debug-component]
     [users/debug-component]
     [delegation/debug-component]]])

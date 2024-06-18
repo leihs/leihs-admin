@@ -32,8 +32,8 @@
 (defn main []
   (if-let [page (:page @routing/state*)]
     [:div.mx-5
-     [page]
-     [breadcrumbs/watcher]]
+     [page]]
+     ;; [breadcrumbs/watcher]]
     [:div.page
      [:h1.text-danger
       [:b "Error 404 - There is no handler for the current path defined."]]

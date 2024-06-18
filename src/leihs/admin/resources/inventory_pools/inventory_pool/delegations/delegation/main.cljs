@@ -59,7 +59,7 @@
 
 (defn delegation-info-section []
   [:section.delegation
-   (if-let [delegation (get @delegation/data* @delegation/id*)]
+   (let [delegation (get @delegation/data* @delegation/id*)]
      [:div
       [:> Table {:striped true :borderless true}
        [:thead
@@ -110,15 +110,24 @@
                               inner]]))))]]]
         [:tr.created
          [:td "Created "]
-         [:td.created (-> delegation :created_at humanize-datetime-component)]]]]]
-     [wait-component])
+         [:td.created (-> delegation :created_at humanize-datetime-component)]]]]])
    [edit-delegation]
    [edit-delegation-dialog]])
 
 (defn page []
   [:article.delegation.my-5
+   [routing/hidden-state-component
+    {:will-unmount #(do
+                      (reset! data* nil))}]
+                      ;; (reset! delegation/data* nil))}]
+
    [delegation/header]
    [delegation/tabs]
-   [delegation-info-section]
-   [suspension-section]
+
+   (if-not (or @delegation/data* @data*)
+     [wait-component]
+     [:<>
+      [delegation-info-section]
+      [suspension-section]])
+
    [delegation/debug-component]])

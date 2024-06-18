@@ -1,10 +1,10 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.workdays.core
   (:require
-   [cljs.core.async :as async :refer [go <! timeout]]
+   [cljs.core.async :as async :refer [<! go timeout]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent :refer [reaction]]))
+   [reagent.core :as reagent]))
 
 (defonce DAYS {:monday :1
                :tuesday :2

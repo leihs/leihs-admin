@@ -4,10 +4,11 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.core :as holidays-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.main :as holidays]
-   [leihs.admin.resources.inventory-pools.inventory-pool.nav :as nav]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as workdays-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.main :as workdays]
-   [leihs.admin.state :as state]))
+   [leihs.admin.state :as state]
+   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.routing.front :as routing]))
 
 (defn debug-component []
   (when (:debug @state/global-state*)
@@ -25,7 +26,14 @@
 
 (defn page []
   [:article.inventory-pool-opening-times
-   [inventory-pool/header]
+   [routing/hidden-state-component
+    {:did-mount inventory-pool/fetch
+     :will-unmount #(reset! inventory-pool/data* nil)}]
+
+   (if-not @inventory-pool/pool-name*
+     [wait-component]
+     [inventory-pool/header])
+
    [inventory-pool/tabs]
    [:article.m-0.mb-5.container
     [:div.row

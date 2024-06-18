@@ -213,15 +213,26 @@
 (defn page []
   [:article.delegations
    [routing/hidden-state-component
-    {:did-change fetch-delegations}
-    {:did-mount (check-user-chosen)}]
-   [inventory-pool/header]
+    {:did-mount #(do
+                   (inventory-pool/fetch)
+                   (fetch-delegations)
+                   (check-user-chosen))
+     :will-unmount #(do
+                      (reset! inventory-pool/data* nil)
+                      (reset! data* nil))}]
+
+   (if-not @inventory-pool/pool-name*
+     [wait-component]
+     [inventory-pool/header])
+
    [inventory-pool/tabs]
    [filter-section]
-   [table/toolbar
-    [add-button]]
-   [delegations-table]
-   [table/toolbar
-    [add-button]]
+
+   [table/toolbar [add-button]]
+   (if-not @data*
+     [wait-component]
+     [delegations-table])
+   [table/toolbar [add-button]]
+
    [create-delegation-dialog]
    [debug-component]])

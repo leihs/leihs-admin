@@ -126,9 +126,7 @@
 (defn header []
   [:header.my-5
    [breadcrumbs/main]
-   (if-not @user-data*
-     [wait-component]
-     [user-name])])
+   [user-name]])
 
 (defn own-user-admin-scopes? [user-state _routing-state]
   (and (= (-> user-state :id)
@@ -144,12 +142,12 @@
                     (check-user-chosen))
       :will-unmount #(reset! user-data* nil)}]
 
-    [header]
-
     (if-not @user-data*
       [:div.mt-5
        [wait-component]]
-      [basic-properties])]
+      [:<>
+       [header]
+       [basic-properties]])]
 
    [:> Tabs {:className "mt-5"
              :defaultActiveKey "inventory-pools"

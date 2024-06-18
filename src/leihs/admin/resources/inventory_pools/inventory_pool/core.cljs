@@ -21,6 +21,7 @@
   (reaction (or (-> @routing/state* :route-params :inventory-pool-id presence)
                 ":inventory-pool-id")))
 
+(defonce pool-name* (reagent/atom nil))
 (defonce data* (reagent/atom nil))
 
 ;;; fetch ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,7 +33,8 @@
                 :url (path :inventory-pool
                            (-> @routing/state* :route-params))}
                http-client/request :chan <!
-               http-client/filter-success! :body))))
+               http-client/filter-success! :body))
+      (reset! pool-name* (:name @data*))))
 
 (defn clean-and-fetch [& args]
   (reset! data* nil)
@@ -114,7 +116,7 @@
 (defn header []
   [:header.my-5
    [breadcrumbs/main]
-   [:h1 (:name @data*)]])
+   [:h1 @pool-name*]])
 
 (defn name-link-component []
   [:span

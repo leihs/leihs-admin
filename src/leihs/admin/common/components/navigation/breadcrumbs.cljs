@@ -112,18 +112,19 @@
       (= resolver :user)))
 
 (defn- get-name [next]
-  (when (:resolver next)
-    (go
-      (let [resolver (:resolver next)
-            res  (->
-                  {:chan (async/chan)
-                   :url (path resolver
-                              (-> @routing/state* :route-params))}
-                  http-client/request :chan <!
-                  http-client/filter-success! :body)]
-        (if (user? resolver)
-          (str (:firstname res) " " (:lastname res))
-          (str (:name res)))))))
+  (let [state @routing/state*]
+    (js/console.debug "hello")
+    (when (:resolver next)
+      (go
+        (let [resolver (:resolver next)
+              res  (->
+                    {:chan (async/chan)
+                     :url (path resolver (:route-params state))}
+                    http-client/request :chan <!
+                    http-client/filter-success! :body)]
+          (if (user? resolver)
+            (str (:firstname res) " " (:lastname res))
+            (str (:name res))))))))
 
 (def popstate? (atom false))
 

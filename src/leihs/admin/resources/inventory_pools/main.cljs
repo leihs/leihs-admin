@@ -7,6 +7,7 @@
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
@@ -127,8 +128,11 @@
 (defn page []
   [:article.inventory-pools
    [routing/hidden-state-component
-    {:did-change #(http/route-cached-fetch data*)
-     :will-unmount #(reset! data* nil)}]
+    {:did-mount #(do
+                   (http/route-cached-fetch data*)
+                   (reset! inventory-pool-core/pool-name* nil))
+     :will-unmount #(do
+                      (reset! data* nil))}]
 
    [:header.my5
     [:h1.my-5 [icons/warehouse] " Inventory Pools"]]
