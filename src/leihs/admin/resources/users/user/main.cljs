@@ -29,6 +29,10 @@
                 (or (nil? user-data*) (:admin_protected @user-data*)) false
                 :else true)))
 
+(defn onHide [show]
+  (clean-and-fetch)
+  (reset! show false))
+
 (defn edit-user-button []
   (let [show (reagent/atom false)]
     (fn []
@@ -38,7 +42,7 @@
           {:onClick #(reset! show true)}
           "Edit User"]
          [edit/dialog {:show @show
-                       :onHide #(reset! show false)}]]))))
+                       :onHide #(onHide show)}]]))))
 
 (defn reset-password-button []
   (let [show (reagent/atom false)]
@@ -88,7 +92,7 @@
 
 (defn delete-user-dialog []
   [delete/dialog {:show @show*
-                  :onHide #(reset! show* false)}])
+                  :onHide #(onHide show*)}])
 
 (defn basic-properties []
   (let [data @user-data*]

@@ -4,10 +4,9 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.core.auth.core :as auth]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :refer [Button Modal]]
-   [reagent.core :as reagent]))
+   [react-bootstrap :refer [Button Modal]]))
 
 (defn delete []
   (go (when (some->
@@ -16,9 +15,11 @@
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
+        (inventory-pool/clean-and-fetch)
         (accountant/navigate! (path :inventory-pools)))))
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(defn dialog [& {:keys [show onHide]
+                 :or {show false}}]
   [:> Modal {:size "sm"
              :centered true
              :show show}
@@ -34,17 +35,3 @@
                 :type "button"
                 :onClick delete}
      "Delete"]]])
-
-(defn button []
-  (when (auth/allowed? [auth/admin-scopes?])
-    (let [show (reagent/atom false)]
-      (fn []
-        [:<>
-         [:> Button
-          {:className "ml-3"
-           :variant "danger"
-           :onClick #(reset! show true)}
-          "Delete"]
-         [dialog {:show @show
-                  :onHide #(reset! show false)}]]))))
-
