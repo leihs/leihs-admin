@@ -7,12 +7,12 @@
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]))
 
 (defn put []
-  (go (when-let [data (some->
-                       {:chan (async/chan)
-                        :json-params @misc-core/data*
-                        :method :put}
-                       http-client/request :chan <!
-                       http-client/filter-success :body)]
+  (go (when (some->
+             {:chan (async/chan)
+              :json-params @misc-core/data*
+              :method :put}
+             http-client/request :chan <!
+             http-client/filter-success :body)
         (accountant/navigate! "/admin/settings/misc/"))))
 
 (defn dialog [& {:keys [show onHide]

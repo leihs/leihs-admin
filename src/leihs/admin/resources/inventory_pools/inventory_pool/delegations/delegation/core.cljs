@@ -1,6 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core
   (:require
-   [cljs.core.async :as async :refer [<! go]]
+   [cljs.core.async :as async :refer [<! go timeout]]
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components :as components :refer [link]]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
@@ -21,7 +21,8 @@
 (defonce delegation* (reaction (get @data* @id*)))
 
 (defn fetch-delegation []
-  (go (swap! data* assoc @id*
+  (go (<! (timeout 50))
+      (swap! data* assoc @id*
              (some-> {:url (path :inventory-pool-delegation
                                  (-> @routing/state* :route-params))
                       :chan (async/chan)}

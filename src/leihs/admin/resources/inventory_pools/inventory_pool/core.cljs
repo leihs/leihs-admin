@@ -1,6 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.core
   (:require
-   [cljs.core.async :as async :refer [<! go]]
+   [cljs.core.async :as async :refer [<! go timeout]]
    [cljs.pprint :refer [pprint]]
    [clojure.string :refer [join]]
    [leihs.admin.common.components :as components]
@@ -8,10 +8,8 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as workdays]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
-   [leihs.core.front.debug :refer [spy]]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.shared :refer [short-id]]
    [react-bootstrap :as react-bootstrap]
@@ -26,7 +24,8 @@
 ;;; fetch ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn fetch []
-  (go (reset! data*
+  (go (<! (timeout 10))
+      (reset! data*
               (some->
                {:chan (async/chan)
                 :url (path :inventory-pool
@@ -111,9 +110,11 @@
      [:<> inner])])
 
 (defn header []
-  [:header.my-5
-   [breadcrumbs/main]
-   [:h1 [name-component]]])
+  (let [name (:name @data*)]
+    (fn []
+      [:header.my-5
+       [breadcrumbs/main]
+       [:h1 name]])))
 
 (defn name-link-component []
   [:span

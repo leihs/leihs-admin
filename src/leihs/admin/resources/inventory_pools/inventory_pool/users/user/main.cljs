@@ -153,10 +153,9 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(do
-                   (clean-and-fetch)
-                   (user-roles/clean-and-fetch))
-     :will-unmount #(reset! user-data* nil)}]
+    {:did-change #(do
+                    (clean-and-fetch)
+                    (user-roles/clean-and-fetch))}]
 
    (if (empty? @user-data*)
      [:div.mt-5

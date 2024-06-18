@@ -35,7 +35,9 @@
   (let [data* (set-user-id-from-params)]
     (fn []
       [:> Form {:id id
-                :on-submit (fn [e] (.preventDefault e) (action @data*))}
+                :on-submit (fn [e]
+                             (.preventDefault e)
+                             (action @data*))}
        [form-components/input-component data* [:name]
         :label "Name"]
        [form-components/input-component data* [:responsible_user_id]
