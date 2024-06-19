@@ -2,8 +2,10 @@
   (:require
    [cljs.core.async :as async :refer [<! go timeout]]
    [cljs.pprint :refer [pprint]]
+   [clojure.set :refer [rename-keys]]
    [leihs.admin.common.components :as components :refer [link]]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
+   [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -11,7 +13,7 @@
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front]
    [leihs.core.user.shared :refer [short-id]]
-   [react-bootstrap :as react-bootstrap]
+   [react-bootstrap :as react-bootstrap :refer [Nav Form]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (defonce id* (reaction (or (-> @routing/state* :route-params :delegation-id)
@@ -19,6 +21,9 @@
 
 (defonce data* (reagent/atom nil))
 (defonce delegation* (reaction (get @data* @id*)))
+(defonce delegation-with-id* (reagent/atom {}))
+
+(def show* (reagent/atom false))
 
 (defn fetch-delegation []
   (go (<! (timeout 50))
@@ -29,10 +34,51 @@
                      http-client/request :chan <!
                      http-client/filter-success! :body))))
 
-;;; reload logic ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn fetch [_]
   (fetch-delegation))
+
+(defn set-user-id-from-params [& _]
+  (let [params (get @routing/state* :query-params)]
+    (reset! delegation-with-id* (merge @delegation*
+                                       (rename-keys params {:user-uid :responsible_user_id})))
+    (when (empty? @delegation-with-id*)
+      (reset! delegation-with-id* {:pool_protected true})))
+  delegation-with-id*)
+
+(defn responsible-user-choose-component []
+  [:div.input-group-append
+   [:a.btn.btn-primary
+    {:tab-index form-components/TAB-INDEX
+     :href (path :users-choose {}
+                 {:return-to (path (:handler-key @routing/state*)
+                                   (:route-params @routing/state*)
+                                   (:query-params @routing/state*)
+                                   @id*)})}
+
+    [:i.fas.fa-rotate-90.fa-hand-pointer.px-2]
+    " Choose responsible user "]])
+
+(defn delegation-form [& {:keys [id action]
+                          :or {id "delegation-form"}}]
+  (let [data* (set-user-id-from-params)]
+    (fn []
+      [:> Form {:id id
+                :on-submit (fn [e]
+                             (.preventDefault e)
+                             (action @data*))}
+       [form-components/input-component data* [:name]
+        :label "Name"]
+       [form-components/input-component data* [:responsible_user_id]
+        :label "Responsible user"
+        :append responsible-user-choose-component]
+       [:div
+        [form-components/checkbox-component data* [:pool_protected]
+         :label "Protected"
+         :hint [:span
+                "An " [:strong " unprotected "]
+                " data can be " [:strong "added"] " to any other pool and then be used and "
+                [:strong  " modified "] " from those pools in every way."
+                " You can unprotect a data temporarily to share it with a limited number of pools."]]]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -53,28 +99,28 @@
 ;; delegation components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn tabs [active]
-  [:> react-bootstrap/Nav {:className "mb-3"
-                           :justify false
-                           :variant "tabs"
-                           :defaultActiveKey active}
-   [:> react-bootstrap/Nav.Item
-    [:> react-bootstrap/Nav.Link
+  [:> Nav {:className "mb-3"
+           :justify false
+           :variant "tabs"
+           :defaultActiveKey active}
+   [:> Nav.Item
+    [:> Nav.Link
      (let [href (path :inventory-pool-delegation
                       {:inventory-pool-id @inventory-pool/id*
                        :delegation-id @id*})]
        {:active (= (:path @routing/state*) href)
         :href href})
      "Delegation"]]
-   [:> react-bootstrap/Nav.Item
-    [:> react-bootstrap/Nav.Link
+   [:> Nav.Item
+    [:> Nav.Link
      (let [href (path :inventory-pool-delegation-users
                       {:inventory-pool-id @inventory-pool/id*
                        :delegation-id @id*})]
        {:active (= (:path @routing/state*) href)
         :href href})
      "Users"]]
-   [:> react-bootstrap/Nav.Item
-    [:> react-bootstrap/Nav.Link
+   [:> Nav.Item
+    [:> Nav.Link
      (let [href (path :inventory-pool-delegation-groups
                       {:inventory-pool-id @inventory-pool/id*
                        :delegation-id @id*})]
@@ -85,7 +131,8 @@
 (defn delegation-name []
   [:<>
    [routing/hidden-state-component
-    {:did-change fetch}]
+    {:did-change fetch-delegation}]
+
    (let [inner (when-let [dname (some-> @data* (get @id*) :name)]
                  [:<> dname])]
      [:<> inner])])

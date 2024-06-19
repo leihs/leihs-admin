@@ -1,5 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.main
   (:require
+   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
@@ -7,8 +8,10 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.edit :as edit]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
+   [leihs.admin.utils.misc :as utils]
    [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
    [leihs.core.routing.front :as routing]
+   [leihs.core.url.query-params :as query-params]
    [leihs.core.user.front]
    [react-bootstrap :as react-bootstrap :refer [Button Table]]
    [reagent.core :as reagent]
@@ -37,25 +40,25 @@
 
 ;;; show ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def show* (reagent/atom false))
-
 (defn check-user-chosen []
   (when (contains?
          (get @routing/state* :query-params) :user-uid)
-    (reset! show* true)))
+    (reset! delegation/show* true)))
 
 (defn edit-delegation []
   [:<>
    [:> Button
     {:className ""
-     :onClick #(do
-                 (check-user-chosen)
-                 (reset! show* true))}
+     :on-click #(utils/append-query-param "dialog" "edit")}
+     ;; :onClick #(accountant/navigate! (path :inventory-pool-delegation
+     ;;                                       {:inventory-pool-id @inventory-pool/id*
+     ;;                                        :delegation-id @delegation/id*} {:dialog "edit"}))}
+
     "Edit"]])
 
 (defn edit-delegation-dialog []
-  [edit/dialog {:show @show*
-                :onHide #(reset! show* false)}])
+  [edit/dialog {:show @delegation/show*
+                :onHide #(reset! delegation/show* false)}])
 
 (defn delegation-info-section []
   [:section.delegation

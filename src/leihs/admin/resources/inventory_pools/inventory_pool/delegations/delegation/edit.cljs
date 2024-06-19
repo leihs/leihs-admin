@@ -6,9 +6,15 @@
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared :refer [set-user-id-from-params]]
+   [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
+   [reagent.core :as reagent :refer [reaction]]
    [taoensso.timbre]))
+
+(def open*
+  (reaction
+   (= (get (:query-params @routing/state*) :dialog)
+      "edit")))
 
 (defn patch [data]
   (let [route (path :inventory-pool-delegation
@@ -22,26 +28,24 @@
                http-client/request :chan <!
                http-client/filter-success!)
           (delegation/fetch-delegation)
-          (accountant/navigate! route)))))
+          (reset! delegation/show* false)))))
 
 (defn dialog [& {:keys [show onHide]
                  :or {show false}}]
   [:> Modal {:size "lg"
              :centered true
              :scrollable true
-             :show show}
+             :show @open*}
    [:> Modal.Header {:closeButton true
                      :onHide onHide}
     [:> Modal.Title "Edit Delegation"]]
    [:> Modal.Body
-    [shared/delegation-form {:action patch
-                             :id "add-delegation-form"}]]
+    [delegation/delegation-form {:action patch
+                                 :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "add-delegation-form"
-                :on-click #(do (js/console.debug "on click action" @@shared/user-delegation* @shared/data*)
-                               (patch @(set-user-id-from-params)))}
+                :form "add-delegation-form"}
      "Save"]]])

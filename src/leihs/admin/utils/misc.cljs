@@ -1,11 +1,14 @@
 (ns leihs.admin.utils.misc
-  (:require ["date-fns" :as date-fns]
-            [clojure.string :as clj-str]
-            [goog.string :as gstring]
-            [leihs.admin.common.icons :as icons]
-            [leihs.admin.state :as state]
-            [leihs.core.core :refer [presence]]
-            [leihs.core.digest]))
+  (:require
+   ["date-fns" :as date-fns]
+   [accountant.core :as accountant]
+   [clojure.string :as clj-str]
+   [goog.string :as gstring]
+   [leihs.admin.common.icons :as icons]
+   [leihs.admin.state :as state]
+   [leihs.core.core :refer [presence]]
+   [leihs.core.digest]
+   [leihs.core.routing.front :as routing]))
 
 ; TODO stuff in this namespace should be moved removed completely
 
@@ -45,3 +48,26 @@
 (defn wait-component [text]
   [:h3.text-center.wait-component
    [icons/waiting] text])
+
+(defn navigate-params [param-string]
+  (accountant/navigate!
+   (clojure.string/join [(:path @routing/state*)
+                         "?"
+                         param-string])))
+
+(defn use-params []
+  (let [url (new js/URL (:url @routing/state*))
+        params (new js/URLSearchParams (.. url -search))]
+    params))
+
+(defn append-query-param [name value]
+  (let [params (use-params)]
+    (navigate-params (.. params
+                         (toString
+                          (.. params (append name value)))))))
+
+
+
+
+
+

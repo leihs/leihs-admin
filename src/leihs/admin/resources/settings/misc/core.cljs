@@ -33,6 +33,7 @@
           [:input.form-control
            {:type "text"
             :id "logo_url"
+            :required true
             :value (or (:logo_url @data) "")
             :onChange #(swap! data assoc :logo_url (-> % .-target .-value))}]
           [:> Form.Text {:className "text-muted"}
