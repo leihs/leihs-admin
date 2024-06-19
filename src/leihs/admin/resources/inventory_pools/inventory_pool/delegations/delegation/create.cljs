@@ -6,8 +6,17 @@
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared :refer [set-user-id-from-params]]
+   [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
+   [reagent.core :as reagent :refer [reaction]]
    [taoensso.timbre]))
+
+(def open*
+  (reaction
+   (->> (:query-params @routing/state*)
+        :action
+        (= "add"))))
 
 (defn create [data]
   (go (when-let [id (some->
@@ -18,25 +27,26 @@
                       :json-params data}
                      http-client/request :chan <!
                      http-client/filter-success! :body :id)]
+        (search-params/delete-all-from-url)
         (accountant/navigate!
          (path :inventory-pool-delegation {:inventory-pool-id @inventory-pool/id*
                                            :delegation-id id})))))
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(defn dialog []
   [:> Modal {:size "lg"
              :centered true
              :scrollable true
-             :show show}
+             :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+                     :onHide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Add a new Delegation"]]
    [:> Modal.Body
     [shared/delegation-form {:action create
                              :id "add-delegation-form"}]]
    [:> Modal.Footer
-    [:> Button {:variant "secondary" :onClick onHide}
+    [:> Button {:variant "secondary"
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "add-delegation-form"
-                :on-click #(create @(set-user-id-from-params))}
+                :form "add-delegation-form"}
      "Add"]]])

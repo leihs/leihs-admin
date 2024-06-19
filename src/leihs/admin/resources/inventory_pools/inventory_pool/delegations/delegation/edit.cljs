@@ -1,11 +1,11 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.edit
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]
@@ -13,8 +13,9 @@
 
 (def open*
   (reaction
-   (= (get (:query-params @routing/state*) :dialog)
-      "edit")))
+   (->> (:query-params @routing/state*)
+        :action
+        (= "edit"))))
 
 (defn patch [data]
   (let [route (path :inventory-pool-delegation
@@ -27,24 +28,22 @@
                 :json-params  data}
                http-client/request :chan <!
                http-client/filter-success!)
-          (delegation/fetch-delegation)
-          (reset! delegation/show* false)))))
+          (search-params/delete-all-from-url)))))
 
-(defn dialog [& {:keys [show onHide]
-                 :or {show false}}]
+(defn dialog []
   [:> Modal {:size "lg"
              :centered true
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+                     :onHide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Edit Delegation"]]
    [:> Modal.Body
     [delegation/delegation-form {:action patch
                                  :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :onClick onHide}
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-delegation-form"}

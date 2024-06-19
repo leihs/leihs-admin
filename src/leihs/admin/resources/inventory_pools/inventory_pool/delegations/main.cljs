@@ -14,6 +14,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Table]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -50,28 +51,13 @@
 
 ;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; NOTE: This is a workaround and should be fixed
-;; currently the issue is that a user is selected by navigating to the user route
-;; on mount it is checked if user uid exists in query params
-;; if so the modal opens
-;; it would be nicer if the user selection would happen in the modal with a e.g. a combobox
-(def show* (reagent/atom false))
-
-(defn check-user-chosen []
-  (when (contains?
-         (get @routing/state* :query-params) :user-uid)
-    (reset! show* true)))
-
 (defn add-button []
   [:<>
    [:> Button
     {:className "ml-3"
-     :onClick #(reset! show* true)}
+     :on-click #(search-params/append-to-url
+                 "action" "add")}
     "Add Delegation"]])
-
-(defn create-delegation-dialog []
-  [create/dialog {:show @show*
-                  :onHide #(reset! show* false)}])
 
 (defn delegations-thead []
   [:thead
@@ -213,8 +199,8 @@
 (defn page []
   [:article.delegations
    [routing/hidden-state-component
-    {:did-change fetch-delegations}
-    {:did-mount (check-user-chosen)}]
+    {:did-change fetch-delegations}]
+
    [inventory-pool/header]
    [inventory-pool/tabs]
    [filter-section]
@@ -223,5 +209,5 @@
    [delegations-table]
    [table/toolbar
     [add-button]]
-   [create-delegation-dialog]
+   [create/dialog]
    [debug-component]])

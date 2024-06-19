@@ -8,7 +8,8 @@
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.digest]
-   [leihs.core.routing.front :as routing]))
+   [leihs.core.routing.front :as routing]
+   [reagent.core :as reagent]))
 
 ; TODO stuff in this namespace should be moved removed completely
 
@@ -49,23 +50,48 @@
   [:h3.text-center.wait-component
    [icons/waiting] text])
 
-(defn navigate-params [param-string]
-  (accountant/navigate!
-   (clojure.string/join [(:path @routing/state*)
-                         "?"
-                         param-string])))
+(def ^:private url* (reagent/atom nil))
+(def ^:private params* (reagent/atom nil))
 
-(defn use-params []
-  (let [url (new js/URL (:url @routing/state*))
-        params (new js/URLSearchParams (.. url -search))]
-    params))
+(defn set-params-in-url [url]
+  (accountant/navigate! (clojure.string/replace
+                         (.. url (toString))
+                         (.. url -origin)
+                         "")))
+  ;; (accountant/navigate!
+  ;;  (clojure.string/join [(:path @routing/state*)
+  ;;                        "?"
+  ;;                        param-string])))
+
+;; (defn use-url []
+;;   (reset! url* (new js/URL (:url @routing/state*))))
+;;
+;;
+;; (defn use-params []
+;;   (use-url)
+;;   (reset! params* (new js/URLSearchParams (.. @url* -search))))
+
+(defn use-search-params []
+  (let [url (new js/URL (:url @routing/state*))]
+    [url (new js/URLSearchParams (.. url -search))]))
 
 (defn append-query-param [name value]
-  (let [params (use-params)]
-    (navigate-params (.. params
-                         (toString
-                          (.. params (append name value)))))))
+  (let [[url params] (use-search-params)
+        search-params (.. params
+                          (toString
+                           (.. params (append name value))))]
 
+    (set! (.-search url) search-params)
+    (set-params-in-url url)))
+
+(defn delete-query-param [name]
+  (let [[url params] (use-search-params)
+        search-params (.. params
+                          (toString
+                           (.. params (delete name))))]
+
+    (set! (.-search url) search-params)
+    (set-params-in-url url)))
 
 
 
