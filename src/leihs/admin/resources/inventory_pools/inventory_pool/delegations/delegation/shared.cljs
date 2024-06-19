@@ -40,8 +40,7 @@
       [:> Form {:id id
                 :on-submit (fn [e]
                              (.preventDefault e)
-                             (js/console.debug "submit-action" @data*))}
-                             ;; (action @data*))}
+                             (action @data*))}
        [form-components/input-component data* [:name]
         :label "Name"]
        [form-components/input-component data* [:responsible_user_id]

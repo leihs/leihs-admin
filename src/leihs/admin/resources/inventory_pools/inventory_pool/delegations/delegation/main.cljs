@@ -1,17 +1,14 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.main
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.edit :as edit]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
-   [leihs.admin.utils.misc :as utils]
-   [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
+   [leihs.admin.utils.misc :as utils :refer [humanize-datetime-component wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
-   [leihs.core.url.query-params :as query-params]
    [leihs.core.user.front]
    [react-bootstrap :as react-bootstrap :refer [Button Table]]
    [reagent.core :as reagent]
@@ -38,27 +35,13 @@
           :update-handler
           #(go (reset! data* (<! (suspension-core/put-suspension< suspension-path %))))]])]]]])
 
-;;; show ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn check-user-chosen []
-  (when (contains?
-         (get @routing/state* :query-params) :user-uid)
-    (reset! delegation/show* true)))
-
-(defn edit-delegation []
+(defn edit-button []
   [:<>
    [:> Button
     {:className ""
-     :on-click #(utils/append-query-param "dialog" "edit")}
-     ;; :onClick #(accountant/navigate! (path :inventory-pool-delegation
-     ;;                                       {:inventory-pool-id @inventory-pool/id*
-     ;;                                        :delegation-id @delegation/id*} {:dialog "edit"}))}
-
+     :on-click #(search-params/append-to-url
+                 "action" "edit")}
     "Edit"]])
-
-(defn edit-delegation-dialog []
-  [edit/dialog {:show @delegation/show*
-                :onHide #(reset! delegation/show* false)}])
 
 (defn delegation-info-section []
   [:section.delegation
@@ -115,8 +98,7 @@
          [:td "Created "]
          [:td.created (-> delegation :created_at humanize-datetime-component)]]]]]
      [wait-component])
-   [edit-delegation]
-   [edit-delegation-dialog]])
+   [edit-button]])
 
 (defn page []
   [:article.delegation.my-5
@@ -124,4 +106,5 @@
    [delegation/tabs]
    [delegation-info-section]
    [suspension-section]
+   [edit/dialog]
    [delegation/debug-component]])
