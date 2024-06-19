@@ -41,5 +41,7 @@
                 :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "add-delegation-form"}
+                :form "add-delegation-form"
+                :on-click #(do (js/console.debug "on click action" @@shared/user-delegation* @shared/data*)
+                               (patch @(set-user-id-from-params)))}
      "Save"]]])

@@ -5,7 +5,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared]
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared :refer [set-user-id-from-params]]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [taoensso.timbre]))
 
@@ -37,5 +37,6 @@
     [:> Button {:variant "secondary" :onClick onHide}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "add-delegation-form"}
+                :form "add-delegation-form"
+                :on-click #(create @(set-user-id-from-params))}
      "Add"]]])
