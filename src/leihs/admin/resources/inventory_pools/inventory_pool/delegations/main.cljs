@@ -55,8 +55,7 @@
   [:<>
    [:> Button
     {:className "ml-3"
-     :on-click #(search-params/append-to-url
-                 "action" "add")}
+     :on-click #(search-params/append-to-url {:action "add"})}
     "Add Delegation"]])
 
 (defn delegations-thead []

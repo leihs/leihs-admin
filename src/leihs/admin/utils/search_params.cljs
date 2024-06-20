@@ -28,9 +28,9 @@
     (set! (.-search url) (.. params toString))
     url))
 
-(defn append-to-url [name value]
+(defn append-to-url [param-map]
   (set-params-in-url
-   (append {(keyword name) value})))
+   (append param-map)))
 
 (defn delete-from-url [name]
   (set-params-in-url

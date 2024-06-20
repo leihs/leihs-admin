@@ -8,10 +8,21 @@
    [leihs.core.front.debug :refer [spy]]
    [leihs.core.routing.front :as routing]))
 
+(defn table-body []
+  (let [data @core/data*]
+    (fn []
+      [:<>
+       (doall (for [holiday data]
+                [:tr {:key (:id holiday)}
+                 [:td (:name holiday)]
+                 [:td (:start_date holiday)]
+                 [:td (:end_date holiday)]]))])))
+
 (defn component []
   [:<>
    [routing/hidden-state-component
-    {:did-mount core/clean-and-fetch}]
+    {:did-change core/clean-and-fetch}]
+
    (if-not @core/data*
      [wait-component]
      [:div#holidays
@@ -19,9 +30,5 @@
       [table/container
        {:borders false
         :header [:tr [:th "Name"] [:th "From"] [:th "To"]]
-        :body (doall (for [holiday @core/data*]
-                       [:tr {:key (:id holiday)}
-                        [:td (:name holiday)]
-                        [:td (:start_date holiday)]
-                        [:td (:end_date holiday)]]))}]
+        :body [table-body]}]
       [edit/button]])])
