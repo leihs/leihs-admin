@@ -1,10 +1,9 @@
 (ns leihs.admin.resources.users.user.main
   (:require
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
-   [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.api-tokens.main :as api-tokens]
-   [leihs.admin.resources.users.user.core :as user-core :refer [clean-and-fetch user-data*
-                                                                user-id*]]
+   [leihs.admin.resources.users.user.core :as user-core :refer [clean-and-fetch
+                                                                user-data*]]
    [leihs.admin.resources.users.user.delete :as delete]
    [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.resources.users.user.groups :as groups]
@@ -13,7 +12,8 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup DropdownButton Dropdown Tabs Tab]]
+   [react-bootstrap :as react-bootstrap :refer [ButtonGroup Dropdown
+                                                DropdownButton Tab Tabs]]
    [reagent.core :as reagent]))
 
 (defn modifieable? [current-user-state _]
@@ -58,31 +58,6 @@
          [password-reset/dialog  {:show @show
                                   :onHide #(reset! show false)}]]))))
 
-;; NOTE: This is a workaround and should be fixed
-;; currently the issue is that a user is selected by navigating to the user route
-;; on mount it is checked if user uid exists in query params
-;; if so the modal opens
-;; it would be nicer if the user selection would happen in the modal with a e.g. a combobox
-(def show* (reagent/atom false))
-
-(defn check-user-chosen []
-  (when (contains?
-         (get @routing/state* :query-params) :user-uid)
-    (reset! show* true)))
-
-(defn delete-button []
-  (when (auth/allowed? [modifieable?])
-    [:<>
-     [:> Button
-      {:className "ml-3"
-       :variant "danger"
-       :onClick #(reset! show* true)}
-      "Delete User"]]))
-
-(defn delete-user-dialog []
-  [delete/dialog {:show @show*
-                  :onHide #(onHide show*)}])
-
 (defn basic-properties []
   (let [data @user-data*]
     (fn []
@@ -105,7 +80,7 @@
         [:> ButtonGroup {:className "mr-3"}
          [edit/button]
          [reset-password-button]]
-        [delete-button]]])))
+        [delete/button]]])))
 
 (defn header []
   (let [name (str (:firstname @user-data*)
@@ -124,9 +99,7 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-change #(do
-                    (clean-and-fetch)
-                    (check-user-chosen))
+    {:did-change #(clean-and-fetch)
      :will-unmount #(reset! user-data* nil)}]
 
    (if-not @user-data*
@@ -147,5 +120,4 @@
               [auth/system-admin-scopes? own-user-admin-scopes?])
          [:> Tab {:eventKey "api-tokens" :title "API Tokens"}
           [api-tokens/table-component]])]
-      [delete-user-dialog]
       [user-core/debug-component]])])

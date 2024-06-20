@@ -13,6 +13,7 @@
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.shared :as shared]
    [leihs.admin.resources.users.user.core :as user]
+   [leihs.admin.resources.users.user.core :as user-core]
    [leihs.admin.resources.users.user.create :as create]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
@@ -152,20 +153,6 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col user])])
 
-(defn add-button []
-  (let [show (reagent/atom false)]
-    (reset! user/user-data* {})
-    (fn []
-      (when (auth/allowed?
-             [auth/admin-scopes? pool-auth/some-lending-manager?])
-        [:<>
-         [:> Button
-          {:className "ml-3"
-           :onClick #(reset! show true)}
-          "Add User"]
-         [create/dialog {:show @show
-                         :onHide #(reset! show false)}]]))))
-
 (defn users-table
   [hds tds &
    {:keys [membership-filter? role-filter?]
@@ -206,11 +193,14 @@
 
 (defn page []
   [:article.users.my-5
+   [routing/hidden-state-component
+    {:did-change #(reset! user-core/user-data* nil)}]
+
    [:h1.my-5
     [icons/users] " Users"]
    [:section
     [filter-component]
-    [table/toolbar  [add-button]]
+    [table/toolbar [create/button]]
     [users-table
      [user-th-component
       org-th-component
@@ -224,5 +214,5 @@
       contracts-count-td-component
       pools-count-td-component
       groups-count-td-component]]
-    [table/toolbar  [add-button]]
+    [table/toolbar [create/button]]
     [debug-component]]])
