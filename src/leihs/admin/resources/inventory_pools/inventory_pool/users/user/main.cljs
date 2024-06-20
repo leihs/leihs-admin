@@ -4,7 +4,6 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.roles.components :as roles-ui]
-   [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.direct-roles.main :as direct-roles]
@@ -15,7 +14,6 @@
    [leihs.admin.resources.users.user.core :as user :refer [clean-and-fetch
                                                            user-data*]]
    [leihs.admin.resources.users.user.edit :as user-edit]
-   [leihs.admin.resources.users.user.main :as user-main :refer [check-user-chosen]]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.core :refer [presence]]

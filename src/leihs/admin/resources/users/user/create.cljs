@@ -4,9 +4,14 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
-   [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]))
+   [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.auth.core :as auth]
+   [leihs.core.routing.front :as routing]
+   [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
+   [reagent.core :refer [reaction]]))
 
 (defn post []
   (go (when-let [data (some->
@@ -18,26 +23,43 @@
                                                      (fn [s] (.parse js/JSON s))))}
                        http-client/request :chan <!
                        http-client/filter-success! :body)]
-        (reset! data* nil)
+        (search-params/delete-all-from-url)
         (accountant/navigate!
          (path :user {:user-id (:id data)})))))
 
-(defn dialog [& {:keys [show onHide]
-                 :or {show false}}]
+(def open*
+  (reaction
+   (->> (:query-params @routing/state*)
+        :action
+        (= "add"))))
+
+(defn dialog []
   [:> Modal {:size "xl"
              :centered true
              :scrollable true
-             :show show}
-   [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+             :show @open*}
+   [:> Modal.Header {:close-button true
+                     :on-hide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Add a new User"]]
    [:> Modal.Body
     [:> Form {:id "add-user-form"
               :on-submit (fn [e] (.preventDefault e) (post))}
      [edit/inner-form-component]]]
    [:> Modal.Footer
-    [:> Button {:variant "secondary" :onClick onHide}
+    [:> Button {:variant "secondary"
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-user-form"}
      "Add"]]])
+
+(defn button []
+  (when (auth/allowed?
+         [auth/admin-scopes? pool-auth/some-lending-manager?])
+    [:<>
+     [:> Button
+      {:className "ml-3"
+       :onClick #(search-params/append-to-url
+                  {:action "add"})}
+      "Add User"]
+     [dialog]]))
