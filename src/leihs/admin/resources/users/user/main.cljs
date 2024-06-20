@@ -33,17 +33,6 @@
   (clean-and-fetch)
   (reset! show false))
 
-(defn edit-user-button []
-  (let [show (reagent/atom false)]
-    (fn []
-      (when (auth/allowed? [modifieable?])
-        [:<>
-         [:> Button
-          {:onClick #(reset! show true)}
-          "Edit User"]
-         [edit/dialog {:show @show
-                       :onHide #(onHide show)}]]))))
-
 (defn reset-password-button []
   (let [show (reagent/atom false)]
     (fn []
@@ -114,7 +103,7 @@
          [user-core/account-properties-component data]]]
        [:div.mt-3
         [:> ButtonGroup {:className "mr-3"}
-         [edit-user-button]
+         [edit/button]
          [reset-password-button]]
         [delete-button]]])))
 

@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.main
   (:require
    [clojure.string :refer [join]]
-   [goog.string :as string]
    [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -9,11 +8,10 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.delete :as delete]
    [leihs.admin.resources.inventory-pools.inventory-pool.edit :as edit]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
-   [leihs.core.front.debug :refer [spy]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as BS :refer [Button]]
-   [reagent.core :as reagent]))
+   [react-bootstrap :as BS :refer [Button]]))
 
 ;;; components ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -22,36 +20,6 @@
   ([label col-name hint]
    [:td [:strong label] [:small.text-monospace (str " (" col-name ")")]
     (when hint [:small.form-text hint])]))
-
-(defn onHide [show]
-  (inventory-pool/clean-and-fetch)
-  (reset! show false))
-
-(defn delete-button []
-  (when (auth/allowed? [auth/admin-scopes?])
-    (let [show (reagent/atom false)]
-      (fn []
-        [:<>
-         [:> Button
-          {:className "ml-3"
-           :variant "danger"
-           :onClick #(reset! show true)}
-          "Delete"]
-         [delete/dialog {:show @show
-                         :onHide #(onHide show)}]]))))
-
-(defn edit-button []
-  (when (auth/allowed? [pool-auth/pool-inventory-manager?
-                        auth/admin-scopes?])
-    (let [show (reagent/atom false)]
-      (fn []
-        [:<>
-         [:> Button
-          {:className ""
-           :onClick #(reset! show true)}
-          "Edit"]
-         [edit/dialog {:show @show
-                       :onHide #(onHide show)}]]))))
 
 (defn inventory-pool []
   (let [data @inventory-pool/data*]
@@ -117,8 +85,8 @@
             "Minimum number of days required between reservation's created date and the expected hand over date."]
            [:td.reservation-advance-days
             (:reservation_advance_days data)]]]}]
-       [edit-button]
-       [delete-button]])))
+       [edit/button]
+       [delete/button]])))
 
 (defn page []
   [:<>

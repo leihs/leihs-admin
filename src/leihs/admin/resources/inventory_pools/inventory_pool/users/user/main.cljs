@@ -14,6 +14,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.suspension.main :as suspension]
    [leihs.admin.resources.users.user.core :as user :refer [clean-and-fetch
                                                            user-data*]]
+   [leihs.admin.resources.users.user.edit :as user-edit]
    [leihs.admin.resources.users.user.main :as user-main :refer [check-user-chosen]]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
@@ -138,7 +139,7 @@
          [:hr]
          [:h3 "Account Properties"]
          [user/account-properties-component data]]
-        [user-main/edit-user-button]]])))
+        [user-edit/button]]])))
 
 ;;; page ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

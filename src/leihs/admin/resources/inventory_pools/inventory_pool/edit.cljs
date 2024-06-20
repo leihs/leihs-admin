@@ -1,15 +1,18 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.edit
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async]
    [clojure.core.async :refer [<! go]]
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
-   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.auth.core :as auth]
+   [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
-   [react-bootstrap :refer [Button Modal]]))
+   [react-bootstrap :refer [Button Modal]]
+   [reagent.core :refer [reaction]]))
 
 (defn patch []
   (let [route (path :inventory-pool
@@ -21,8 +24,7 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (core/clean-and-fetch)
-          (accountant/navigate! route)))))
+          (search-params/delete-all-from-url)))))
 
 (defn form [& {:keys [is-editing]
                :or {is-editing false}}]
@@ -73,20 +75,34 @@
      :type :number
      :min 0]]])
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(def open*
+  (reaction
+   (->> (:query-params @routing/state*)
+        :action
+        (= "edit"))))
+
+(defn dialog []
   [:> Modal {:size "lg"
              :centered true
-             :show show}
+             :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+                     :onHide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Edit Inventory Pool"]]
    [:> Modal.Body
     [form {:is-editing true}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :onClick #(do
-                            (core/clean-and-fetch)
-                            (onHide))}
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
-    [:> Button {:onClick #(patch)}
+    [:> Button {:on-click #(patch)}
      "Save"]]])
+
+(defn button []
+  (when (auth/allowed? [pool-auth/pool-inventory-manager?
+                        auth/admin-scopes?])
+    [:<>
+     [:> Button
+      {:className ""
+       :on-click #(search-params/append-to-url {:action "edit"})}
+      "Edit"]
+     [dialog]]))

@@ -4,9 +4,11 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
+   [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :refer [Button Modal]]))
+   [react-bootstrap :refer [Button Modal]]
+   [reagent.core :refer [reaction]]))
 
 (defn delete []
   (go (when (some->
@@ -15,23 +17,38 @@
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
-        (inventory-pool/clean-and-fetch)
+        (search-params/delete-all-from-url)
         (accountant/navigate! (path :inventory-pools)))))
 
-(defn dialog [& {:keys [show onHide]
-                 :or {show false}}]
+(def open*
+  (reaction
+   (->> (:query-params @routing/state*)
+        :action
+        (= "delete"))))
+
+(defn dialog []
   [:> Modal {:size "sm"
              :centered true
-             :show show}
+             :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+                     :on-hide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Delete Inventory Pool"]]
    [:> Modal.Body
     "Please confirm that you want to delete this inventory pool."]
    [:> Modal.Footer
-    [:> Button {:onClick onHide}
+    [:> Button {:onClick #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:variant "danger"
                 :type "button"
-                :onClick delete}
+                :on-click delete}
      "Delete"]]])
+
+(defn button []
+  (when (auth/allowed? [auth/admin-scopes?])
+    [:<>
+     [:> Button
+      {:className "ml-3"
+       :variant "danger"
+       :on-click #(search-params/append-to-url {:action "delete"})}
+      "Delete"]
+     [dialog]]))
