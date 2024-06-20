@@ -15,27 +15,22 @@
   (let [url (new js/URL (:url @routing/state*))]
     [url (new js/URLSearchParams (.. url -search))]))
 
-(defn- append [name value]
-  (let [[url params] (use-search-params)
-        search-params (.. params
-                          (toString
-                           (.. params (append name value))))]
-
-    (set! (.-search url) search-params)
+(defn- append [param-map]
+  (let [[key value] (first param-map)
+        [url params] (use-search-params)]
+    (.. params (append (name key) value))
+    (set! (.-search url) (.. params toString))
     url))
 
 (defn- delete [name]
-  (let [[url params] (use-search-params)
-        search-params (.. params
-                          (toString
-                           (.. params (delete name))))]
-
-    (set! (.-search url) search-params)
+  (let [[url params] (use-search-params)]
+    (.. params (delete name))
+    (set! (.-search url) (.. params toString))
     url))
 
 (defn append-to-url [name value]
   (set-params-in-url
-   (append name value)))
+   (append {(keyword name) value})))
 
 (defn delete-from-url [name]
   (set-params-in-url
