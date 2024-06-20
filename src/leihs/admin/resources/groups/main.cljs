@@ -7,6 +7,7 @@
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.groups.group.core :as group-core]
    [leihs.admin.resources.groups.group.create :as create]
    [leihs.admin.resources.groups.shared :as shared]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -115,17 +116,6 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col group])])
 
-(defn add-group-button []
-  (let [show (reagent/atom false)]
-    (fn []
-      [:<>
-       [:> Button
-        {:className "ml-3"
-         :onClick #(reset! show true)}
-        "Add Group"]
-       [create/dialog  {:show @show
-                        :onHide #(reset! show false)}]])))
-
 (defn core-table-component [hds tds groups]
   (if-let [groups (seq groups)]
     [:<>
@@ -168,9 +158,12 @@
     [icons/groups] " Groups"]
    [:section
     [routing/hidden-state-component
-     {:did-change fetch-groups}]
+     {:did-change #(do
+                     (reset! group-core/data* nil)
+                     (fetch-groups))}]
+
     [filter-component]
-    [table/toolbar [add-group-button]]
+    [table/toolbar [create/button]]
     [table-component
      [name-th-component
       org-th-component
@@ -180,5 +173,5 @@
       org-td-component
       org-id-td-component
       users-count-td-component]]
-    [table/toolbar [add-group-button]]
+    [table/toolbar [create/button]]
     [debug-component]]])
