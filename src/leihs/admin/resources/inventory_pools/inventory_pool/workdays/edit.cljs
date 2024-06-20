@@ -16,19 +16,17 @@
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
 
-(defonce data* (reagent/atom nil))
-
 (defn patch []
   (let [workdays-route (path :inventory-pool-workdays
-                             {:inventory-pool-id (:inventory_pool_id @data*)})]
+                             {:inventory-pool-id (:inventory_pool_id @core/data*)})]
     (go (when (some->
                {:url workdays-route
                 :method :patch
-                :json-params @data*
+                :json-params @core/data*
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (core/clean-and-fetch)))))
+          (search-params/delete-all-from-url)))))
 
 (defn opened-closed-comp [day]
   (let [switch-id (str (name day) "-switch")]
@@ -37,8 +35,8 @@
       {:id switch-id
        :name (name day)
        :type :checkbox
-       :checked (day @data*)
-       :on-change #(swap! data* update day not)
+       :checked (day @core/data*)
+       :on-change #(swap! core/data* update day not)
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
 
@@ -47,15 +45,15 @@
    [:input.form-control
     {:type "number"
      :min 1
-     :value ((core/DAYS day) (:max_visits @data*))
+     :value ((core/DAYS day) (:max_visits @core/data*))
      :placeholder "unlimited"
-     :on-change #(swap! data*
+     :on-change #(swap! core/data*
                         assoc-in
                         [:max_visits (core/DAYS day)]
                         (-> % .-target .-value presence))}]])
 
 (defn form []
-  (if-not @data*
+  (if-not @core/data*
     [wait-component]
     [:> Form {:id "workdays-form"
               :on-submit (fn [e]
@@ -74,7 +72,7 @@
   (reaction
    (->> (:query-params @routing/state*)
         :action
-        (= "edit"))))
+        (= "edit-workdays"))))
 
 (defn dialog []
   [:> Modal {:size "lg"
@@ -89,15 +87,17 @@
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
-    [:> Button {:type "submit" :form "workdays-form"}
+    [:> Button {:type "submit"
+                :form "workdays-form"}
      "Save"]]])
 
 (defn button []
-  (when (auth/allowed? [pool-auth/pool-inventory-manager?
-                        auth/admin-scopes?])
+  (when (auth/allowed?
+         [pool-auth/pool-inventory-manager?
+          auth/admin-scopes?])
     [:<>
      [:> Button
       {:on-click #(search-params/append-to-url
-                   "action" "edit")}
+                   {:action "edit-workdays"})}
       "Edit"]
      [dialog]]))

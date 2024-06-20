@@ -39,8 +39,7 @@
   [:<>
    [:> Button
     {:className ""
-     :on-click #(search-params/append-to-url
-                 "action" "edit")}
+     :on-click #(search-params/append-to-url {:action "edit"})}
     "Edit"]])
 
 (defn delegation-info-section []
