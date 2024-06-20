@@ -14,8 +14,7 @@
                       :url (path :inventory-pool-holidays
                                  (-> @routing/state* :route-params))}
                      http-client/request :chan <!
-                     http-client/filter-success! :body))
-      (js/console.debug "fetching holidays" @data*)))
+                     http-client/filter-success! :body))))
 
 (defn clean-and-fetch [& args]
   (reset! data* nil)
