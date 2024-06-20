@@ -7,13 +7,13 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
-   [leihs.admin.resources.inventory-pools.inventory-pool.edit :as edit]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
    [react-bootstrap :refer [Button Modal]]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 (defonce data* (reagent/atom nil))
 
@@ -26,43 +26,48 @@
                      http-client/request :chan <!
                      http-client/filter-success!
                      :body :id)]
+        (search-params/delete-all-from-url)
         (accountant/navigate!
          (path :inventory-pool {:inventory-pool-id id})))))
 
 (defn form [& {:keys [is-editing]
                :or {is-editing false}}]
-  (if-not @data*
-    [wait-component]
-    [:div.inventory-pool.mt-3
-     [:div.mb-3
-      [form-components/switch-component data* [:is_active]
-       :disabled (not @current-user/admin?*)
-       :label "Active"]]
-     [:div
-      [form-components/input-component data* [:name]
-       :label "Name"
-       :required true]]
-     [:div
-      [form-components/input-component data* [:shortname]
-       :label "Short name"
-       :disabled is-editing
-       :required true]]
-     [:div
-      [form-components/input-component data* [:email]
-       :label "Email"
-       :type :email
-       :required true]]
-     [form-components/input-component data* [:description]
-      :label "Description"
-      :element :textarea
-      :rows 10]]))
+  [:div.inventory-pool.mt-3
+   [:div.mb-3
+    [form-components/switch-component data* [:is_active]
+     :disabled (not @current-user/admin?*)
+     :label "Active"]]
+   [:div
+    [form-components/input-component data* [:name]
+     :label "Name"
+     :required true]]
+   [:div
+    [form-components/input-component data* [:shortname]
+     :label "Short name"
+     :disabled is-editing
+     :required true]]
+   [:div
+    [form-components/input-component data* [:email]
+     :label "Email"
+     :type :email
+     :required true]]
+   [form-components/input-component data* [:description]
+    :label "Description"
+    :element :textarea
+    :rows 10]])
 
-(defn dialog [& {:keys [show onHide] :or {show false}}]
+(def open*
+  (reaction
+   (->> (:query-params @routing/state*)
+        :action
+        (= "add"))))
+
+(defn dialog []
   [:> Modal {:size "lg"
              :centered true
-             :show show}
+             :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide onHide}
+                     :on-hide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Add Inventory Pool"]]
    [:> Modal.Body
     [:div.new-inventory-pool
@@ -70,10 +75,13 @@
       {:did-mount #(reset! core/data* {})}]
      [:form.form
       {:id "create-inventory-pool-form"
-       :on-submit (fn [e] (.preventDefault e) (create))}
+       :on-submit (fn [e]
+                    (.preventDefault e)
+                    (create))}
       [form]]]]
    [:> Modal.Footer
-    [:> Button {:variant "secondary" :onClick onHide}
+    [:> Button {:variant "secondary"
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "create-inventory-pool-form"}
@@ -81,14 +89,11 @@
 
 (defn button []
   (when (auth/allowed? [auth/admin-scopes?])
-    (let [show (reagent/atom false)]
-      (fn []
-        [:<>
-         [:> Button
-          {:className "ml-3"
-           :onClick #(do (when-not @data* (reset! data* {}))
-                         (reset! show true))}
-          "Add Inventory Pool"]
-         [dialog {:show @show
-                  :onHide #(reset! show false)}]]))))
+    [:<>
+     [:> Button
+      {:className "ml-3"
+       :onClick #(search-params/append-to-url
+                  {:action "add"})}
+      "Add Inventory Pool"]
+     [dialog]]))
 

@@ -123,10 +123,15 @@
 
 (defn page []
   [:article.inventory-pools
-   [:h1.my-5 [icons/warehouse] " Inventory Pools"]
+   [routing/hidden-state-component
+    {:did-change #(do
+                    (reset! create/data* nil)
+                    (http/route-cached-fetch data*))}]
+
+   [:h1.my-5
+    [icons/warehouse] " Inventory Pools"]
+
    [:section
-    [routing/hidden-state-component
-     {:did-change #(http/route-cached-fetch data*)}]
     [filter-section]
     [table/toolbar
      [create/button]]
