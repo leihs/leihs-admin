@@ -17,8 +17,7 @@
 
 (defn prepare-for-patch [data]
   (->> data
-       (map #(if (:new %) (dissoc % :new :id) %))
-       (js/console.debug @core/data*)))
+       (map #(if (:new %) (dissoc % :new :id) %))))
 
 (defn patch []
   (let [route (path :inventory-pool-holidays
@@ -113,7 +112,7 @@
          "Delete"]))]])
 
 (defn form []
-  (if-not @core/data*
+  (if-not @pool-core/data*
     [wait-component]
     [:<>
      [add-new-holiday-comp]
