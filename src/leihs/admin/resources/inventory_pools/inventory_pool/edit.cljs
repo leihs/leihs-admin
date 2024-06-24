@@ -6,7 +6,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
@@ -18,12 +18,12 @@
 
 (defn patch []
   (let [route (path :inventory-pool
-                    {:inventory-pool-id @inventory-pool-core/id*})]
-    (go (reset! inventory-pool-core/data*
+                    {:inventory-pool-id @core/id*})]
+    (go (reset! core/data*
                 (when (some->
                        {:url route
                         :method :patch
-                        :json-params @inventory-pool-core/data*
+                        :json-params @core/data*
                         :chan (async/chan)}
                        http-client/request :chan <!
                        http-client/filter-success!)))
@@ -80,7 +80,7 @@
 
 (def open*
   (reaction
-   (reset! data* @inventory-pool-core/data*)
+   (reset! data* @core/data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))

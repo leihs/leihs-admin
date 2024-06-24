@@ -6,7 +6,6 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
