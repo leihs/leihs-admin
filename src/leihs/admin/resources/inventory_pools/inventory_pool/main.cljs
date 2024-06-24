@@ -4,7 +4,7 @@
    [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
    [leihs.admin.resources.inventory-pools.inventory-pool.delete :as delete]
    [leihs.admin.resources.inventory-pools.inventory-pool.edit :as edit]
    [leihs.admin.utils.misc :refer [wait-component]]
@@ -22,7 +22,7 @@
     (when hint [:small.form-text hint])]))
 
 (defn inventory-pool []
-  (let [data* @inventory-pool-core/data*]
+  (let [data* @core/data*]
     (fn []
       [:div
        [table/container
@@ -91,13 +91,13 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(inventory-pool-core/fetch)}]
+    {:did-mount #(core/fetch)}]
 
-   (if-not @inventory-pool-core/data*
+   (if-not @core/data*
      [:div.my-5
       [wait-component]]
      [:article.inventory-pool.my-5
-      [inventory-pool-core/header]
-      [inventory-pool-core/tabs (join ["/admin/inventory-pools/" @inventory-pool-core/id*])]
+      [core/header]
+      [core/tabs (join ["/admin/inventory-pools/" @core/id*])]
       [inventory-pool]
-      [inventory-pool-core/debug-component]])])
+      [core/debug-component]])])

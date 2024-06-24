@@ -27,10 +27,11 @@
     (go (when (some->
                {:url route
                 :method :patch
-                :json-params (prepare-for-patch @core/data*)
+                :json-params (prepare-for-patch @data*)
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
+          (reset! core/data* @data*)
           (search-params/delete-from-url "action")))))
 
 (defn add-new-holiday-comp []
@@ -48,7 +49,7 @@
            [:div.alert.alert-danger "End date cannot be before start date."])
          [:form.form-inline {:on-submit (fn [e]
                                           (.preventDefault e)
-                                          (swap! core/data* conj
+                                          (swap! data* conj
                                                  (assoc @new-holiday
                                                         :new true
                                                         :id (str (random-uuid))))
@@ -97,7 +98,7 @@
         [:> Button
          {:onClick
           (fn [_]
-            (swap! core/data*
+            (swap! data*
                    (fn [d]
                      (s/transform specter-path #(dissoc % :delete) d))))
           :variant "outline-secondary" :size "sm"}
@@ -105,7 +106,7 @@
         [:> Button
          {:onClick
           (fn [_]
-            (swap! core/data*
+            (swap! data*
                    (fn [d]
                      (if (:new holiday)
                        (s/setval specter-path s/NONE d)
@@ -126,7 +127,7 @@
        {:borders false
         :header [:tr [:th "Day"] [:th "From"] [:th "To"] [:th]]
         :body
-        (doall (for [holiday @core/data*]
+        (doall (for [holiday @data*]
                  [holiday-row-comp holiday]))}]]]))
 
 (comment (let [hs [{:id 1} {:id 2}]]
