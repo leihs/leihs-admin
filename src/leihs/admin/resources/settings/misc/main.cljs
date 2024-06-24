@@ -86,6 +86,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-change misc-core/clean-and-fetch}]
+
    (if-not @misc-core/data*
      [wait-component]
      [:article.settings-page
