@@ -20,7 +20,7 @@
               :method :delete}
              http-client/request :chan <!
              http-client/filter-success!)
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate! (path :groups {})))))
 
 (def open*
@@ -35,13 +35,13 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Delete Group"]]
    [:> Modal.Body
     "Are you sure you want to delete this group?"]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:variant "danger"
                 :onClick #(post)}

@@ -26,7 +26,7 @@
                      http-client/request :chan <!
                      http-client/filter-success!
                      :body :id)]
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate!
          (path :inventory-pool {:inventory-pool-id id})))))
 

@@ -29,7 +29,7 @@
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate! (path :users)))))
 
 (defn transfer-data-and-delete-user [& _]
@@ -41,7 +41,7 @@
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate! (path :users)))))
 
 (defn delete-without-reasignment-component []
@@ -118,14 +118,14 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:close-button true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Delete User"]]
    [:> Modal.Body
     [delete-without-reasignment-component]
     [delete-with-transfer-component]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     (if (empty? (:target-user-uid @transfer-data*))
       [:> Button {:variant "danger"

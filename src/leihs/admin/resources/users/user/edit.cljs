@@ -22,7 +22,7 @@
                                            (fn [s] (.parse js/JSON s))))}
              http-client/request :chan <!
              http-client/filter-success!)
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (user/clean-and-fetch))))
 
 (defn inner-form-component []
@@ -46,7 +46,7 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit User"]]
    [:> Modal.Body
     [:> Form {:id "add-user-form"
@@ -56,7 +56,7 @@
      [inner-form-component]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-user-form"}

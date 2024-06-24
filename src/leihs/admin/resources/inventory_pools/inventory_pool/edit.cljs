@@ -24,7 +24,7 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (search-params/delete-all-from-url)))))
+          (search-params/delete-from-url "action")))))
 
 (defn form [& {:keys [is-editing]
                :or {is-editing false}}]
@@ -86,13 +86,13 @@
              :centered true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide #(search-params/delete-all-from-url)}
+                     :onHide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Inventory Pool"]]
    [:> Modal.Body
     [form {:is-editing true}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:on-click #(patch)}
      "Save"]]])

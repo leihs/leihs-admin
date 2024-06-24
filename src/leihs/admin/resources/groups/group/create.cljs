@@ -20,7 +20,7 @@
                        http-client/request
                        :chan <! http-client/filter-success!
                        :body)]
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate!
          (path :group {:group-id (:id body)})))))
 
