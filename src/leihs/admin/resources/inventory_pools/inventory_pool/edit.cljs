@@ -23,10 +23,11 @@
                 (when (some->
                        {:url route
                         :method :patch
-                        :json-params @core/data*
+                        :json-params @data*
                         :chan (async/chan)}
                        http-client/request :chan <!
                        http-client/filter-success!)))
+        (reset! core/data* @data*)
         (search-params/delete-from-url "action"))))
 
 (defn form [& {:keys [is-editing]
