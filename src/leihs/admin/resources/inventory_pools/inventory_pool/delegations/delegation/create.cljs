@@ -4,7 +4,7 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.shared :as shared :refer [set-user-id-from-params]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
@@ -12,25 +12,26 @@
    [reagent.core :as reagent :refer [reaction]]
    [taoensso.timbre]))
 
-(def open*
-  (reaction
-   (->> (:query-params @routing/state*)
-        :action
-        (= "add"))))
-
 (defn create [data]
   (go (when-let [id (some->
                      {:chan (async/chan)
                       :url (path :inventory-pool-delegations
-                                 {:inventory-pool-id @inventory-pool/id*})
+                                 {:inventory-pool-id @core/id*})
                       :method :post
                       :json-params data}
                      http-client/request :chan <!
                      http-client/filter-success! :body :id)]
         (search-params/delete-from-url "action")
         (accountant/navigate!
-         (path :inventory-pool-delegation {:inventory-pool-id @inventory-pool/id*
+         (path :inventory-pool-delegation {:inventory-pool-id @core/id*
                                            :delegation-id id})))))
+
+(def open*
+  (reaction
+   (reset! core/data* nil)
+   (->> (:query-params @routing/state*)
+        :action
+        (= "add"))))
 
 (defn dialog []
   [:> Modal {:size "lg"

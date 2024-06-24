@@ -3,7 +3,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http]
+   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -32,6 +32,9 @@
    (path :inventory-pools {} @current-query-parameters-normalized*)))
 
 (def data* (reagent/atom nil))
+
+(defn fetch []
+  (http-client/route-cached-fetch data* {:route @current-route*}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -127,9 +130,7 @@
 (defn page []
   [:article.inventory-pools
    [routing/hidden-state-component
-    {:did-change #(http/route-cached-fetch
-                   data*
-                   {:route @current-route*})}]
+    {:did-change #(fetch)}]
 
    [:header.my-5
     [:h1

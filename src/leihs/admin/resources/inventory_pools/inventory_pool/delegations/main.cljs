@@ -21,16 +21,23 @@
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
+                (dissoc :action)
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
 
 (def current-query-parameters-normalized*
   (reaction (merge default-query-params
                    @current-query-parameters*)))
 
-(def data* (reagent/atom {}))
+(def current-route*
+  (reaction
+   (path :inventory-pool-delegations
+         (:route-params @routing/state*)
+         @current-query-parameters-normalized*)))
 
-(defn fetch-delegations []
-  (http-client/route-cached-fetch data*))
+(def data* (reagent/atom nil))
+
+(defn fetch []
+  (http-client/route-cached-fetch data* {:route @current-route*}))
 
 ;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -106,7 +113,7 @@
               :method method}
              http-client/request :chan <!
              http-client/filter-success!)
-        (fetch-delegations))))
+        (fetch))))
 
 (defn action-td
   [{member :member id :id protected :pool_protected
@@ -167,7 +174,7 @@
    [suspension-td delegation]])
 
 (defn delegations-table []
-  (let [current-url (:route @routing/state*)]
+  (let [current-url @current-route*]
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
@@ -198,7 +205,7 @@
 (defn page []
   [:article.delegations
    [routing/hidden-state-component
-    {:did-change fetch-delegations}]
+    {:did-change #(fetch)}]
 
    [inventory-pool/header]
    [inventory-pool/tabs]
