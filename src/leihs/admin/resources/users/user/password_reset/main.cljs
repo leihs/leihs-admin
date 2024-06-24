@@ -133,7 +133,7 @@
                 :scrollable true
                 :show @open*}
       [:> Modal.Header {:closeButton true
-                        :on-hide #(search-params/delete-all-from-url)}
+                        :on-hide #(search-params/delete-from-url ["action" "valid-for"])}
        [:> Modal.Title "Reset Password"]]
       [:> Modal.Body
        (if-not @user-password-resetable?*
@@ -141,7 +141,7 @@
          [form data*])]
       [:> Modal.Footer
        [:> Button {:variant "secondary"
-                   :on-click #(search-params/delete-all-from-url)}
+                   :on-click #(search-params/delete-from-url ["action" "valid-for"])}
         "Cancel"]
        [mail-link-button data*]]])])
 

@@ -27,7 +27,7 @@
                       :json-params data}
                      http-client/request :chan <!
                      http-client/filter-success! :body :id)]
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate!
          (path :inventory-pool-delegation {:inventory-pool-id @inventory-pool/id*
                                            :delegation-id id})))))
@@ -38,14 +38,14 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide #(search-params/delete-all-from-url)}
+                     :onHide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Add a new Delegation"]]
    [:> Modal.Body
     [shared/delegation-form {:action create
                              :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-delegation-form"}

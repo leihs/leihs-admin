@@ -17,7 +17,7 @@
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate! (path :inventory-pools)))))
 
 (def open*
@@ -31,12 +31,12 @@
              :centered true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Delete Inventory Pool"]]
    [:> Modal.Body
     "Please confirm that you want to delete this inventory pool."]
    [:> Modal.Footer
-    [:> Button {:onClick #(search-params/delete-all-from-url)}
+    [:> Button {:onClick #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:variant "danger"
                 :type "button"

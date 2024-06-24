@@ -23,7 +23,7 @@
                                                      (fn [s] (.parse js/JSON s))))}
                        http-client/request :chan <!
                        http-client/filter-success! :body)]
-        (search-params/delete-all-from-url)
+        (search-params/delete-from-url "action")
         (accountant/navigate!
          (path :user {:user-id (:id data)})))))
 

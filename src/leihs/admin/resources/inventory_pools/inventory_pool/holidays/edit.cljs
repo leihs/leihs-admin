@@ -29,7 +29,7 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (search-params/delete-all-from-url)))))
+          (search-params/delete-from-url "action")))))
 
 (defn add-new-holiday-comp []
   (let [new-holiday (reagent/atom {:inventory_pool_id (:id @pool-core/data*)})
@@ -144,12 +144,12 @@
              :centered true
              :show @open*}
    [:> Modal.Header {:close-button true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Holidays"]]
    [:> Modal.Body [form]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "workdays-form"}
