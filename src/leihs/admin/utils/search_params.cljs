@@ -33,9 +33,12 @@
   (set-params-in-url
    (append param-map)))
 
-(defn delete-from-url [name]
+(defn delete-from-url [names]
   (set-params-in-url
-   (delete name)))
+   (if (coll? names)
+     (doseq [name names]
+       (delete name))
+     (delete names))))
 
 (defn delete-all-from-url []
   (let [[_ params] (use-search-params)

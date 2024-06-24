@@ -67,7 +67,7 @@
              :centered true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Add Inventory Pool"]]
    [:> Modal.Body
     [:div.new-inventory-pool
@@ -81,7 +81,7 @@
       [form]]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "create-inventory-pool-form"}

@@ -39,7 +39,7 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:close-button true
-                     :on-hide #(search-params/delete-all-from-url)}
+                     :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Add a new User"]]
    [:> Modal.Body
     [:> Form {:id "add-user-form"
@@ -47,7 +47,7 @@
      [edit/inner-form-component]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-all-from-url)}
+                :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-user-form"}
