@@ -10,6 +10,7 @@
    [leihs.admin.resources.users.user.inventory-pools :as inventory-pools]
    [leihs.admin.resources.users.user.password-reset.main :as password-reset]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [ButtonGroup Dropdown
@@ -39,24 +40,40 @@
       (when (auth/allowed? [modifieable?])
         [:<>
          [:> DropdownButton {:as ButtonGroup :title "Reset Password"}
-          [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                            (when (string? @password-reset/user-password-resetable?*)
-                                              (password-reset/submit :valid_for 1)))}
+          [:> Dropdown.Item
+           {:on-click #(do (search-params/append-to-url
+                            {:action "reset-password"
+                             :valid-for 1})
+                           (when (string? @password-reset/user-password-resetable?*)
+                             (password-reset/get-reset-data)))}
            "Create Reset Link - 1 hour"]
-          [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                            (when (string? @password-reset/user-password-resetable?*)
-                                              (password-reset/submit)))}
+
+          [:> Dropdown.Item
+           {:on-click #(do (search-params/append-to-url
+                            {:action "reset-password"
+                             :valid-for (* 1 24)})
+                           (when (string? @password-reset/user-password-resetable?*)
+                             (password-reset/get-reset-data)))}
            "Create Reset Link - 24 hours"]
-          [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                            (when (string? @password-reset/user-password-resetable?*)
-                                              (password-reset/submit :valid_for (* 3 24))))}
+
+          [:> Dropdown.Item
+           {:on-click #(do (search-params/append-to-url
+                            {:action "reset-password"
+                             :valid-for (* 3 24)})
+                           (when (string? @password-reset/user-password-resetable?*)
+                             (password-reset/get-reset-data)))}
            "Create Reset Link - 3 days"]
-          [:> Dropdown.Item {:on-click #(do (reset! show true)
-                                            (when (string? @password-reset/user-password-resetable?*)
-                                              (password-reset/submit {:valid_for (* 7 24)})))}
+
+          [:> Dropdown.Item
+           {:on-click #(do
+                         (search-params/append-to-url
+                          {:action "reset-password"
+                           :valid-for (* 7 24)})
+                         (when (string? @password-reset/user-password-resetable?*)
+                           (password-reset/get-reset-data)))}
            "Create Reset Link - 7 days"]]
-         [password-reset/dialog  {:show @show
-                                  :onHide #(reset! show false)}]]))))
+
+         [password-reset/dialog]]))))
 
 (defn basic-properties []
   (let [data @user-data*]
