@@ -6,8 +6,6 @@
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
-   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
@@ -30,7 +28,8 @@
         (accountant/navigate!
          (path :inventory-pool {:inventory-pool-id id})))))
 
-(defn form []
+(defn form [& {:keys [is-editing]
+               :or {is-editing false}}]
   [:div.inventory-pool.mt-3
    [:div.mb-3
     [form-components/switch-component data* [:is_active]
@@ -43,7 +42,7 @@
    [:div
     [form-components/input-component data* [:shortname]
      :label "Short name"
-     :disabled false
+     :disabled is-editing
      :required true]]
    [:div
     [form-components/input-component data* [:email]
@@ -71,9 +70,6 @@
     [:> Modal.Title "Add Inventory Pool"]]
    [:> Modal.Body
     [:div.new-inventory-pool
-     [routing/hidden-state-component
-      {:did-mount #(reset! core/data* {})}]
-
      [:form.form
       {:id "create-inventory-pool-form"
        :on-submit (fn [e]

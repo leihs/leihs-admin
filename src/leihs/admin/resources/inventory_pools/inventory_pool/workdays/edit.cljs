@@ -6,6 +6,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
@@ -16,16 +17,19 @@
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
 
+(defonce data* (reagent/atom nil))
+
 (defn patch []
   (let [workdays-route (path :inventory-pool-workdays
-                             {:inventory-pool-id (:inventory_pool_id @core/data*)})]
+                             {:inventory-pool-id (:inventory_pool_id @data*)})]
     (go (when (some->
                {:url workdays-route
                 :method :patch
-                :json-params @core/data*
+                :json-params @data*
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
+          (reset! core/data* @data*)
           (search-params/delete-from-url "action")))))
 
 (defn opened-closed-comp [day]
@@ -35,8 +39,8 @@
       {:id switch-id
        :name (name day)
        :type :checkbox
-       :checked (day @core/data*)
-       :on-change #(swap! core/data* update day not)
+       :checked (day @data*)
+       :on-change #(swap! data* update day not)
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
 
@@ -45,15 +49,15 @@
    [:input.form-control
     {:type "number"
      :min 1
-     :value ((core/DAYS day) (:max_visits @core/data*))
+     :value ((core/DAYS day) (:max_visits @data*))
      :placeholder "unlimited"
-     :on-change #(swap! core/data*
+     :on-change #(swap! data*
                         assoc-in
                         [:max_visits (core/DAYS day)]
                         (-> % .-target .-value presence))}]])
 
 (defn form []
-  (if-not @core/data*
+  (if-not data*
     [wait-component]
     [:> Form {:id "workdays-form"
               :on-submit (fn [e]
@@ -70,6 +74,7 @@
 
 (def open*
   (reaction
+   (reset! data* @core/data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit-workdays"))))

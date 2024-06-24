@@ -15,6 +15,8 @@
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
 
+(defonce data* (reagent/atom nil))
+
 (defn prepare-for-patch [data]
   (->> data
        (map #(if (:new %) (dissoc % :new :id) %))))
@@ -134,6 +136,7 @@
 
 (def open*
   (reaction
+   (reset! data* @core/data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit-holidays"))))

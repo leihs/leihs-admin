@@ -31,7 +31,7 @@
   (reaction
    (path :inventory-pools {} @current-query-parameters-normalized*)))
 
-(def pools-per-page* (reagent/atom nil))
+(def data* (reagent/atom nil))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -99,9 +99,9 @@
             (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
-  (if-not (contains? @pools-per-page* @current-route*)
+  (if-not (contains? @data* @current-route*)
     [wait-component]
-    (if-let [inventory-pools (-> @pools-per-page* (get  @current-route* {}) :inventory-pools seq)]
+    (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
       [table/container {:className "inventory-pools"
                         :header (table-head hds)
                         :body (table-body inventory-pools tds)}]
@@ -122,13 +122,13 @@
       [:pre (with-out-str (pprint @current-route*))]]
      [:div
       [:h3 "@data*"]
-      [:pre (with-out-str (pprint @pools-per-page*))]]]))
+      [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
   [:article.inventory-pools
    [routing/hidden-state-component
     {:did-change #(http/route-cached-fetch
-                   pools-per-page*
+                   data*
                    {:route @current-route*})}]
 
    [:header.my-5
