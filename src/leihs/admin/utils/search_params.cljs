@@ -16,9 +16,10 @@
     [url (new js/URLSearchParams (.. url -search))]))
 
 (defn- append [param-map]
-  (let [[key value] (first param-map)
-        [url params] (use-search-params)]
-    (.. params (append (name key) value))
+  (let [[url params] (use-search-params)]
+    (doseq [[key value] param-map]
+      (.. params (append (name key) value)))
+    ;; (.. params (append (name key) value))
     (set! (.-search url) (.. params toString))
     url))
 
