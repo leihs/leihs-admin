@@ -39,7 +39,9 @@
     (fn []
       (when (auth/allowed? [modifieable?])
         [:<>
-         [:> DropdownButton {:as ButtonGroup :title "Reset Password"}
+         [password-reset/dialog]
+         [:> DropdownButton {:as ButtonGroup
+                             :title "Reset Password"}
           [:> Dropdown.Item
            {:on-click #(do (search-params/append-to-url
                             {:action "reset-password"
@@ -71,9 +73,7 @@
                            :valid-for (* 7 24)})
                          (when (string? @password-reset/user-password-resetable?*)
                            (password-reset/get-reset-data)))}
-           "Create Reset Link - 7 days"]]
-
-         [password-reset/dialog]]))))
+           "Create Reset Link - 7 days"]]]))))
 
 (defn basic-properties []
   (let [data @user-data*]

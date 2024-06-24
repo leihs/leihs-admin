@@ -123,11 +123,11 @@
 (defn dialog []
   [:<>
    [routing/hidden-state-component
-    {:did-mount (fn [] (when-not @data*
-                         (get-reset-data)))}]
+    {:did-mount (fn [] (when
+                        (and @open* (not @data*)
+                             (get-reset-data))))}]
 
-   (if-not @data*
-     [wait-component]
+   (when @data*
      [:> Modal {:size "md"
                 :centered true
                 :scrollable true
