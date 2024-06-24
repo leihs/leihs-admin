@@ -19,16 +19,19 @@
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
+                (dissoc :action)
                 (assoc :term (-> @routing/state* :query-params-raw :term)
                        :order (some-> @routing/state* :query-params
                                       :order clj->js json/to-json)))))
 
-(def current-route* (reaction (:route @routing/state*)))
-
 (def current-query-parameters-normalized*
   (reaction (shared/normalized-query-parameters @current-query-parameters*)))
 
-(def data* (reagent/atom {}))
+(def current-route*
+  (reaction
+   (path :inventory-pools {} @current-query-parameters-normalized*)))
+
+(def pools-per-page* (reagent/atom nil))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -96,9 +99,9 @@
             (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
-  (if-not (contains? @data* @current-route*)
+  (if-not (contains? @pools-per-page* @current-route*)
     [wait-component]
-    (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
+    (if-let [inventory-pools (-> @pools-per-page* (get  @current-route* {}) :inventory-pools seq)]
       [table/container {:className "inventory-pools"
                         :header (table-head hds)
                         :body (table-body inventory-pools tds)}]
@@ -119,17 +122,18 @@
       [:pre (with-out-str (pprint @current-route*))]]
      [:div
       [:h3 "@data*"]
-      [:pre (with-out-str (pprint @data*))]]]))
+      [:pre (with-out-str (pprint @pools-per-page*))]]]))
 
 (defn page []
   [:article.inventory-pools
    [routing/hidden-state-component
-    {:did-change #(do
-                    (reset! create/data* nil)
-                    (http/route-cached-fetch data*))}]
+    {:did-change #(http/route-cached-fetch
+                   pools-per-page*
+                   {:route @current-route*})}]
 
-   [:h1.my-5
-    [icons/warehouse] " Inventory Pools"]
+   [:header.my-5
+    [:h1
+     [icons/warehouse] " Inventory Pools"]]
 
    [:section
     [filter-section]

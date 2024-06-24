@@ -30,8 +30,7 @@
         (accountant/navigate!
          (path :inventory-pool {:inventory-pool-id id})))))
 
-(defn form [& {:keys [is-editing]
-               :or {is-editing false}}]
+(defn form []
   [:div.inventory-pool.mt-3
    [:div.mb-3
     [form-components/switch-component data* [:is_active]
@@ -44,7 +43,7 @@
    [:div
     [form-components/input-component data* [:shortname]
      :label "Short name"
-     :disabled is-editing
+     :disabled false
      :required true]]
    [:div
     [form-components/input-component data* [:email]
@@ -58,6 +57,7 @@
 
 (def open*
   (reaction
+   (reset! data* nil)
    (->> (:query-params @routing/state*)
         :action
         (= "add"))))
@@ -73,6 +73,7 @@
     [:div.new-inventory-pool
      [routing/hidden-state-component
       {:did-mount #(reset! core/data* {})}]
+
      [:form.form
       {:id "create-inventory-pool-form"
        :on-submit (fn [e]
