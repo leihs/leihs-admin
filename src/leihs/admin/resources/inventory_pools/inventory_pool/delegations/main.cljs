@@ -30,9 +30,13 @@
 
 (def current-route*
   (reaction
-   (path :inventory-pool-delegations
-         (:route-params @routing/state*)
-         @current-query-parameters-normalized*)))
+   (when (-> @routing/state*
+             :route-params
+             :inventory-pool-id)
+
+     (path :inventory-pool-delegations
+           (:route-params @routing/state*)
+           @current-query-parameters-normalized*))))
 
 (def data* (reagent/atom nil))
 
@@ -175,6 +179,7 @@
 
 (defn delegations-table []
   (let [current-url @current-route*]
+    (js/console.debug "current-url" current-url)
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
