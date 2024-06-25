@@ -89,7 +89,9 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(core/fetch)}]
+    {:did-mount #(do
+                   (js/console.debug "fetching inventory pool on mount")
+                   (core/fetch))}]
 
    (if-not @core/data*
      [:div.my-5

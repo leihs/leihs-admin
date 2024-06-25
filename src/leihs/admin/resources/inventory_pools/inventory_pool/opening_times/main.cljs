@@ -1,7 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.opening-times.main
   (:require
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool-core]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.core :as holidays-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.main :as holidays]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as workdays-core]
@@ -25,17 +25,14 @@
        [:pre (with-out-str (pprint @holidays-core/data*))]]]]))
 
 (defn page []
-  [:article.inventory-pool-opening-times
+  [:<>
    [routing/hidden-state-component
-    {:did-mount inventory-pool-core/fetch}]
+    {:did-mount #(pool-core/fetch)}]
 
-   (if-not @inventory-pool-core/data*
-     [:div.my-5
-      [wait-component]]
-     [:<>
-      [inventory-pool-core/header]
-      [inventory-pool-core/tabs]
-      [:div.row
-       [:div.col-6 [workdays/component]]
-       [:div.col-6 [holidays/component]]]
-      [debug-component]])])
+   [:article.inventory-pool-opening-times
+    [pool-core/header]
+    [pool-core/tabs]
+    [:div.row
+     [:div.col-6 [workdays/component]]
+     [:div.col-6 [holidays/component]]]
+    [debug-component]]])

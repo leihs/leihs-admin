@@ -7,7 +7,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.create :as create]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.shared :refer [default-query-params]]
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
@@ -85,7 +85,7 @@
 
 (defn link-to-delegation [id inner-component]
   [:a {:href (path :inventory-pool-delegation
-                   {:inventory-pool-id @inventory-pool/id*
+                   {:inventory-pool-id @pool-core/id*
                     :delegation-id id})}
    inner-component])
 
@@ -112,7 +112,7 @@
   (go (when (some->
              {:chan (async/chan)
               :url (path :inventory-pool-delegation
-                         {:inventory-pool-id @inventory-pool/id*
+                         {:inventory-pool-id @pool-core/id*
                           :delegation-id (:id delegation)})
               :method method}
              http-client/request :chan <!
@@ -148,7 +148,7 @@
     :update-handler (fn [updated]
                       (go (let [data (<! (suspension/put-suspension<
                                           (path :inventory-pool-delegation-suspension
-                                                {:inventory-pool-id @inventory-pool/id*
+                                                {:inventory-pool-id @pool-core/id*
                                                  :delegation-id (:id delegation)})
                                           updated))]
                             (swap! data* assoc-in
@@ -179,7 +179,6 @@
 
 (defn delegations-table []
   (let [current-url @current-route*]
-    (js/console.debug "current-url" current-url)
     (if-not (contains? @data* current-url)
       [wait-component]
       (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
@@ -208,17 +207,19 @@
       [:pre (with-out-str (pprint @data*))]]]))
 
 (defn page []
-  [:article.delegations
+  [:<>
    [routing/hidden-state-component
-    {:did-change #(fetch)}]
+    {:did-mount #(pool-core/fetch)
+     :did-change #(fetch)}]
 
-   [inventory-pool/header]
-   [inventory-pool/tabs]
-   [filter-section]
-   [table/toolbar
-    [add-button]]
-   [delegations-table]
-   [table/toolbar
-    [add-button]]
-   [create/dialog]
-   [debug-component]])
+   [:article.delegations
+    [pool-core/header]
+    [pool-core/tabs]
+    [filter-section]
+    [table/toolbar
+     [add-button]]
+    [delegations-table]
+    [table/toolbar
+     [add-button]]
+    [create/dialog]
+    [debug-component]]])
