@@ -43,7 +43,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn essentials-form-component []
+(defn essentials-form-component [data*]
   [:div.essential-fields
    [:h3 "Essential Fields"]
    [:div.form-row
@@ -64,7 +64,7 @@
     [:div.col-md-4 [input-component data* [:lastname]
                     :label "Last name"]]]])
 
-(defn personal-and-contact-form-component []
+(defn personal-and-contact-form-component [data*]
   [:div
    [:h3.mt-5 "Personal and Contact Information "]
    [:div.form-row
@@ -91,7 +91,7 @@
                     :label "Country"]]]
    [:hr]])
 
-(defn account-settings-form-component []
+(defn account-settings-form-component [data*]
   [:div.account-settings.mt-5
    [:h3 "Account Settings "]
    [:div.form-row

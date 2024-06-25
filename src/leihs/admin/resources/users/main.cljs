@@ -24,14 +24,15 @@
 
 (def current-query-params*
   (reaction (merge shared/default-query-params
-                   (:query-params-raw @routing/state*))))
+                   (dissoc (:query-params-raw @routing/state*) :action))))
 
-(def current-route* (reaction (:route @routing/state*)))
+(def current-route*
+  (reaction (path :users {} @current-query-params*)))
 
 (def data* (reagent/atom {}))
 
 (defn fetch-users []
-  (http/route-cached-fetch data*))
+  (http/route-cached-fetch data* {:route @current-route*}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -161,6 +162,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-change fetch-users}]
+
    (if-not (contains? @data* @current-route*)
      [wait-component]
      (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
@@ -193,8 +195,8 @@
 
 (defn page []
   [:article.users.my-5
-   [routing/hidden-state-component
-    {:did-change #(reset! user-core/user-data* nil)}]
+   ;; [routing/hidden-state-component
+   ;;  {:did-change #(reset! user-core/user-data* nil)}]
 
    [:h1.my-5
     [icons/users] " Users"]

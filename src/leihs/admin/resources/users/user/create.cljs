@@ -5,6 +5,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
+   [leihs.admin.resources.users.user.core :as core]
    [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
    [leihs.admin.utils.search-params :as search-params]
@@ -29,6 +30,7 @@
 
 (def open*
   (reaction
+   (reset! core/user-data* nil)
    (->> (:query-params @routing/state*)
         :action
         (= "add"))))
