@@ -38,15 +38,15 @@
              :centered true
              :scrollable true
              :show @open*}
-   [:> Modal.Header {:closeButton true
-                     :onHide #(search-params/delete-from-url "action")}
+   [:> Modal.Header {:close-button true
+                     :on-hide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Add a new Delegation"]]
    [:> Modal.Body
     [shared/delegation-form {:action create
                              :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-from-url "action")}
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-delegation-form"}

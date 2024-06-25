@@ -28,7 +28,7 @@
                 :json-params  data}
                http-client/request :chan <!
                http-client/filter-success!)
-          (search-params/delete-from-url "action")))))
+          (search-params/delete-all-from-url)))))
 
 (defn dialog []
   [:> Modal {:size "lg"
@@ -36,14 +36,14 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :onHide #(search-params/delete-from-url "action")}
+                     :onHide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Edit Delegation"]]
    [:> Modal.Body
     [delegation/delegation-form {:action patch
                                  :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-from-url "action")}
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     [:> Button {:type "submit"
                 :form "add-delegation-form"}
