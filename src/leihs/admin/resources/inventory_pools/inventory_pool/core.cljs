@@ -33,7 +33,16 @@
                http-client/request :chan <!
                http-client/filter-success! :body))))
 
-(defn clean-and-fetch [& args]
+(defn fetch-pool []
+  (http-client/route-cached-fetch
+   data*
+   {:route
+    (path :inventory-pool
+          (-> @routing/state* :route-params))}
+   (js/console.debug @data*)))
+
+(defn clean-and-fetch []
+  (js/console.debug "reset data")
   (reset! data* nil)
   (fetch))
 
@@ -76,6 +85,7 @@
         :href href})
      [icons/users]
      " Users "]]
+
    [:> react-bootstrap/Nav.Item
     [:> react-bootstrap/Nav.Link
      (let [href (path :inventory-pool-groups
@@ -84,6 +94,7 @@
         :href href})
      [icons/groups]
      " Groups "]]
+
    [:> react-bootstrap/Nav.Item
     [:> react-bootstrap/Nav.Link
      (let [href (path :inventory-pool-delegations
@@ -92,6 +103,7 @@
         :href href})
      [icons/delegations]
      " Delegations "]]
+
    [:> react-bootstrap/Nav.Item
     [:> react-bootstrap/Nav.Link
      (let [href (path :inventory-pool-entitlement-groups
@@ -127,6 +139,7 @@
   [:span
    [routing/hidden-state-component
     {:did-change fetch}]
+
    (let [p (path :inventory-pool {:inventory-pool-id @id*})
          inner (if @data*
                  [:em (str (:name @data*))]

@@ -209,7 +209,7 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(pool-core/fetch)
+    {:did-mount #(pool-core/fetch-pool)
      :did-change #(fetch)}]
 
    [:article.delegations
