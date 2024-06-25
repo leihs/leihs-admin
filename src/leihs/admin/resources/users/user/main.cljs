@@ -30,10 +30,6 @@
                 (or (nil? user-data*) (:admin_protected @user-data*)) false
                 :else true)))
 
-(defn onHide [show]
-  (clean-and-fetch)
-  (reset! show false))
-
 (defn reset-password-button []
   (let [show (reagent/atom false)]
     (fn []
@@ -76,28 +72,26 @@
            "Create Reset Link - 7 days"]]]))))
 
 (defn basic-properties []
-  (let [data @user-data*]
-    (fn []
-      [:div.basic-properties.mb-3
-       [:h2 "Basic User Properties"]
-       [:div.row
-        [:div.col-md-3.mb-2
-         [:hr]
-         [:h3 " Image / Avatar "]
-         [user-core/img-avatar-component data]]
-        [:div.col-md
-         [:hr]
-         [:h3 "Personal Properties"]
-         [user-core/personal-properties-component data]]
-        [:div.col-md
-         [:hr]
-         [:h3 "Account Properties"]
-         [user-core/account-properties-component data]]]
-       [:div.mt-3
-        [:> ButtonGroup {:className "mr-3"}
-         [edit/button]
-         [reset-password-button]]
-        [delete/button]]])))
+  [:div.basic-properties.mb-3
+   [:h2 "Basic User Properties"]
+   [:div.row
+    [:div.col-md-3.mb-2
+     [:hr]
+     [:h3 " Image / Avatar "]
+     [user-core/img-avatar-component @user-data*]]
+    [:div.col-md
+     [:hr]
+     [:h3 "Personal Properties"]
+     [user-core/personal-properties-component @user-data*]]
+    [:div.col-md
+     [:hr]
+     [:h3 "Account Properties"]
+     [user-core/account-properties-component @user-data*]]]
+   [:div.mt-3
+    [:> ButtonGroup {:className "mr-3"}
+     [edit/button]
+     [reset-password-button]]
+    [delete/button]]])
 
 (defn header []
   (let [name (str (:firstname @user-data*)
@@ -116,8 +110,7 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-change #(clean-and-fetch)
-     :will-unmount #(reset! user-data* nil)}]
+    {:did-mount #(clean-and-fetch)}]
 
    (if-not @user-data*
      [:div.mt-5

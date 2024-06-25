@@ -3,39 +3,42 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.users.user.core :as user :refer [user-id*]]
-   [leihs.admin.resources.users.user.edit-core :as edit-core :refer [data*]]
+   [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
+   [leihs.admin.resources.users.user.edit-core :as edit-core]
    [leihs.admin.resources.users.user.edit-image :as edit-image]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
-   [reagent.core :refer [reaction]]))
+   [reagent.core :as reagent :refer [reaction]]))
+
+(defonce data* (reagent/atom nil))
 
 (defn patch []
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :user {:user-id @user-id*})
-              :method :patch
-              :json-params  (-> @data*
-                                (update-in [:extended_info]
-                                           (fn [s] (.parse js/JSON s))))}
-             http-client/request :chan <!
-             http-client/filter-success!)
+  (go (when-let [res (some->
+                      {:chan (async/chan)
+                       :url (path :user {:user-id @user-id*})
+                       :method :patch
+                       :json-params  (-> @data*
+                                         (update-in [:extended_info]
+                                                    (fn [s] (.parse js/JSON s))))}
+                      http-client/request :chan <!
+                      http-client/filter-success! :body)]
         (search-params/delete-from-url "action")
-        (user/clean-and-fetch))))
+        (reset! core/user-data* res))))
 
 (defn inner-form-component []
   [:div
-   [edit-core/essentials-form-component]
+   [edit-core/essentials-form-component data*]
    [:div.image.mt-5
     [:h3 "Image / Avatar"]
-    [edit-image/image-component]]
-   [edit-core/personal-and-contact-form-component]
-   [edit-core/account-settings-form-component]])
+    [edit-image/image-component data*]]
+   [edit-core/personal-and-contact-form-component data*]
+   [edit-core/account-settings-form-component data*]])
 
 (def open*
   (reaction
+   (reset! data* @core/user-data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))
@@ -45,7 +48,7 @@
              :centered true
              :scrollable true
              :show @open*}
-   [:> Modal.Header {:closeButton true
+   [:> Modal.Header {:close-button true
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit User"]]
    [:> Modal.Body
@@ -63,7 +66,7 @@
      "Save"]]])
 
 (defn button []
-  (when (auth/allowed? [user/modifieable?])
+  (when (auth/allowed? [core/modifieable?])
     [:<>
      [:> Button
       {:on-click #(search-params/append-to-url
