@@ -123,8 +123,8 @@
 (defn dialog []
   [:<>
    [routing/hidden-state-component
-    {:did-mount (fn [] (when (and @open* (not @data*))
-                         (get-reset-data)))}]
+    {:did-change #(when (and @open* (not @data*))
+                    (get-reset-data))}]
 
    (when @data*
      [:> Modal {:size "md"

@@ -6,6 +6,7 @@
    [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
    [leihs.admin.resources.users.user.edit-core :as edit-core]
    [leihs.admin.resources.users.user.edit-image :as edit-image]
+   [leihs.admin.resources.users.user.inventory-pools :as user-inventory-pools]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
@@ -25,6 +26,7 @@
                       http-client/request :chan <!
                       http-client/filter-success! :body)]
         (search-params/delete-from-url "action")
+        (user-inventory-pools/clean-and-fetch)
         (reset! core/user-data* res))))
 
 (defn inner-form-component []
