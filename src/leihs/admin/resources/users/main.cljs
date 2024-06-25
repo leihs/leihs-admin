@@ -10,14 +10,11 @@
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.shared :as shared]
    [leihs.admin.resources.users.user.core :as user]
-   [leihs.admin.resources.users.user.core :as user-core]
    [leihs.admin.resources.users.user.create :as create]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
-   [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Alert]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -27,7 +24,9 @@
                    (dissoc (:query-params-raw @routing/state*) :action))))
 
 (def current-route*
-  (reaction (path :users {} @current-query-params*)))
+  (reaction (path (:handler-key @routing/state*)
+                  (:route-params @routing/state*)
+                  @current-query-params*)))
 
 (def data* (reagent/atom {}))
 
@@ -165,18 +164,19 @@
 
    (if-not (contains? @data* @current-route*)
      [wait-component]
-     (if-let [users (-> @data* (get  @current-route* {}) :users seq)]
-       [table/container
-        {:className "users"
-         :header (table-head hds)
-         :body (doall (for [user users]
-                        (table-row user tds)))}]
-       (if @on-first-page?*
-         (cond
-           (and membership-filter? @users-membership/filtered-by-member?*) (users-membership/empty-members-alert)
-           (and role-filter? @roles/filtered-by-role?*) (roles/empty-alert)
-           :else [:> Alert {:variant "info" :className "my-3 text-center"} "No users found."])
-         [:> Alert {:variant "info" :className "my-3 text-center"} "No more users found."])))])
+     [:<>
+      (if-let [users (:users (get @data* @current-route*))]
+        [table/container
+         {:className "users"
+          :header (table-head hds)
+          :body (doall (for [user users]
+                         (table-row user tds)))}]
+        (if @on-first-page?*
+          (cond
+            (and membership-filter? @users-membership/filtered-by-member?*) (users-membership/empty-members-alert)
+            (and role-filter? @roles/filtered-by-role?*) (roles/empty-alert)
+            :else [:> Alert {:variant "info" :className "my-3 text-center"} "No users found."])
+          [:> Alert {:variant "info" :className "my-3 text-center"} "No more users found."]))])])
 
 (defn debug-component []
   (when (:debug @state/global-state*)
