@@ -123,9 +123,8 @@
 (defn dialog []
   [:<>
    [routing/hidden-state-component
-    {:did-mount (fn [] (when
-                        (and @open* (not @data*)
-                             (get-reset-data))))}]
+    {:did-mount (fn [] (when (and @open* (not @data*))
+                         (get-reset-data)))}]
 
    (when @data*
      [:> Modal {:size "md"
@@ -133,7 +132,8 @@
                 :scrollable true
                 :show @open*}
       [:> Modal.Header {:closeButton true
-                        :on-hide #(search-params/delete-from-url ["action" "valid-for"])}
+                        :on-hide #(search-params/delete-from-url
+                                   ["action" "valid-for"])}
        [:> Modal.Title "Reset Password"]]
       [:> Modal.Body
        (if-not @user-password-resetable?*
@@ -141,7 +141,8 @@
          [form data*])]
       [:> Modal.Footer
        [:> Button {:variant "secondary"
-                   :on-click #(search-params/delete-from-url ["action" "valid-for"])}
+                   :on-click #(search-params/delete-from-url
+                               ["action" "valid-for"])}
         "Cancel"]
        [mail-link-button data*]]])])
 

@@ -118,14 +118,14 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:close-button true
-                     :on-hide #(search-params/delete-from-url "action")}
+                     :on-hide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Delete User"]]
    [:> Modal.Body
     [delete-without-reasignment-component]
     [delete-with-transfer-component]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-from-url "action")}
+                :on-click #(search-params/delete-all-from-url)}
      "Cancel"]
     (if (empty? (:target-user-uid @transfer-data*))
       [:> Button {:variant "danger"
