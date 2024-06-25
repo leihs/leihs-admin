@@ -50,16 +50,17 @@
        [:h1.mt-3 name]])))
 
 (defn page []
-  [:article.group
+  [:<>
    [routing/hidden-state-component
     {:did-mount #(do
                    (reset! inventory-pools/data* nil)
                    (core/fetch))}]
 
-   (if (empty? @data*)
-     [:div.mt-5
+   (if-not @data*
+     [:div.my-5
       [wait-component]]
-     [:<>
+
+     [:article.group
       [header]
 
       [:section
@@ -82,6 +83,6 @@
                        (clojure.core/str "/users/"))}
             "Users"]])]
 
-       [:div
+       [:section
         [inventory-pools/table-component]]
        [debug-component]]])])
