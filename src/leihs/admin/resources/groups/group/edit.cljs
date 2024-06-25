@@ -3,28 +3,30 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :as core :refer [clean-and-fetch
-                                                             data* group-id*]]
+   [leihs.admin.resources.groups.group.core :as core :refer [clean-and-fetch group-id*]]
    [leihs.admin.resources.groups.group.edit-core :as edit-core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
-   [reagent.core :refer [reaction]]))
+   [reagent.core :as reagent :refer [reaction]]))
+
+(defonce data* (reagent/atom nil))
 
 (defn patch []
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :group {:group-id @group-id*})
-              :method :patch
-              :json-params @data*}
-             http-client/request :chan <!
-             http-client/filter-success!)
+  (go (when-let [res (some->
+                      {:chan (async/chan)
+                       :url (path :group {:group-id @group-id*})
+                       :method :patch
+                       :json-params @data*}
+                      http-client/request :chan <!
+                      http-client/filter-success! :body)]
         (search-params/delete-from-url "action")
-        (clean-and-fetch))))
+        (reset! core/data* res))))
 
 (def open*
   (reaction
+   (reset! data* @core/data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))
@@ -42,7 +44,7 @@
               :on-submit (fn [e]
                            (.preventDefault e)
                            (patch))}
-     [edit-core/inner-form-component]]]
+     [edit-core/inner-form-component data*]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}

@@ -2,8 +2,8 @@
   (:require
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.resources.groups.group.core :refer [clean-and-fetch data*
-                                                    debug-component]]
+   [leihs.admin.resources.groups.group.core :as core :refer [clean-and-fetch data*
+                                                             debug-component]]
    [leihs.admin.resources.groups.group.delete :as delete]
    [leihs.admin.resources.groups.group.edit :as edit]
    [leihs.admin.resources.groups.group.inventory-pools :as inventory-pools]
@@ -14,35 +14,33 @@
    [react-bootstrap :as react-bootstrap :refer [Nav]]))
 
 (defn properties-table []
-  (let [data @data*]
-    (fn []
-      [table/container
-       {:className "properties"
-        :borders false
-        :header [:tr [:th "Property"] [:th.w-75 "Value"]]
-        :body
-        [:<>
-         [:tr.name
-          [:td "Name" [:small " (name)"]]
-          [:td (:name data)]]
-         [:tr.description
-          [:td "Description" [:small " (description)"]]
-          [:td {:style {:white-space "break-spaces"}} (:description data)]]
-         [:tr.admin_protected
-          [:td "Admin Protected" [:small " (admin_protected"]]
-          [:td (if (:admin_protected data) "yes " "no")]]
-         [:tr.system_admin_protected
-          [:td "System-admin Protected" [:small " (system_admin_protected)"]]
-          [:td (if (:system_admin_protected data) "yes " "no")]]
-         [:tr.organization
-          [:td "Organization" [:small " (organization)"]]
-          [:td (:organization data)]]
-         [:tr.org_id
-          [:td "Org ID" [:small " (org_id)"]]
-          [:td (:org_id data)]]
-         [:tr.user_counts
-          [:td "Number of Users" [:small " (users_count)"]]
-          [:td (:users_count data)]]]}])))
+  [table/container
+   {:className "properties"
+    :borders false
+    :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+    :body
+    [:<>
+     [:tr.name
+      [:td "Name" [:small " (name)"]]
+      [:td (:name @data*)]]
+     [:tr.description
+      [:td "Description" [:small " (description)"]]
+      [:td {:style {:white-space "break-spaces"}} (:description @data*)]]
+     [:tr.admin_protected
+      [:td "Admin Protected" [:small " (admin_protected"]]
+      [:td (if (:admin_protected @data*) "yes " "no")]]
+     [:tr.system_admin_protected
+      [:td "System-admin Protected" [:small " (system_admin_protected)"]]
+      [:td (if (:system_admin_protected @data*) "yes " "no")]]
+     [:tr.organization
+      [:td "Organization" [:small " (organization)"]]
+      [:td (:organization @data*)]]
+     [:tr.org_id
+      [:td "Org ID" [:small " (org_id)"]]
+      [:td (:org_id @data*)]]
+     [:tr.user_counts
+      [:td "Number of Users" [:small " (users_count)"]]
+      [:td (:users_count @data*)]]]}])
 
 (defn header []
   (let [name (:name @data*)]
@@ -54,7 +52,9 @@
 (defn page []
   [:article.group
    [routing/hidden-state-component
-    {:did-change clean-and-fetch}]
+    {:did-mount #(do
+                   (reset! inventory-pools/data* nil)
+                   (core/fetch))}]
 
    (if (empty? @data*)
      [:div.mt-5

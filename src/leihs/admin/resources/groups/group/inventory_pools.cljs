@@ -22,7 +22,7 @@
 
 (defonce data* (reagent/atom nil))
 
-(defn fetch-inventory-pools-roles []
+(defn fetch []
   (go (reset! data*
               (some->
                {:chan (async/chan)
@@ -34,7 +34,7 @@
 
 (defn clean-and-fetch [& args]
   (reset! data* nil)
-  (fetch-inventory-pools-roles))
+  (fetch))
 
 (defn roles-update-handler [roles row]
   (go (<! (put-roles<
@@ -47,7 +47,8 @@
 (defn table-component []
   [:div
    [routing/hidden-state-component
-    {:did-change clean-and-fetch}]
+    {:did-mount #(fetch)}]
+
    (if (seq @data*)
      (let [data @group-core/data*]
        [table/container

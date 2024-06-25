@@ -161,7 +161,7 @@
          role-filter? false}}]
   [:<>
    [routing/hidden-state-component
-    {:did-change fetch-users}]
+    {:did-change #(fetch-users)}]
 
    (if-not (contains? @data* @current-route*)
      [wait-component]

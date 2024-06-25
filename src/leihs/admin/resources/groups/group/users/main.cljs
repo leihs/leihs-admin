@@ -148,7 +148,8 @@
 (defn page []
   [:article.group.my-5
    [routing/hidden-state-component
-    {:did-mount group-core/clean-and-fetch}]
+    {:did-mount #(group-core/fetch)}]
+
    [group/header]
    [:section
     [group/properties-table]
