@@ -4,7 +4,7 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :refer [data*]]
+   [leihs.admin.resources.groups.group.core :as core]
    [leihs.admin.resources.groups.group.edit-core :as edit-core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
@@ -16,7 +16,7 @@
                        {:chan (async/chan)
                         :url (path :groups)
                         :method :post
-                        :json-params @data*}
+                        :json-params @core/data*}
                        http-client/request
                        :chan <! http-client/filter-success!
                        :body)]
@@ -26,6 +26,7 @@
 
 (def open*
   (reaction
+   (reset! core/data* nil)
    (->> (:query-params @routing/state*)
         :action
         (= "add"))))

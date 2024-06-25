@@ -20,17 +20,23 @@
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
+                (dissoc :action)
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
 
-(def current-url* (reaction (:route @routing/state*)))
-
 (def current-query-parameters-normalized*
-  (reaction (shared/normalized-query-parameters @current-query-parameters*)))
+  (reaction (shared/normalized-query-parameters
+             @current-query-parameters*)))
 
-(def data* (reagent/atom {}))
+(def current-url*
+  (reaction
+   (path (:handler-key @routing/state*)
+         (:route-params @routing/state*)
+         @current-query-parameters-normalized*)))
+
+(def data* (reagent/atom nil))
 
 (defn fetch-groups []
-  (http/route-cached-fetch data*))
+  (http/route-cached-fetch data* {:route @current-url*}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,10 +136,10 @@
      "No (more) groups found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* (:route @routing/state*))
+  (if-not (contains? @data* @current-url*)
     [wait-component]
     [core-table-component hds tds
-     (-> @data* (get (:route @routing/state*) {}) :groups)]))
+     (-> @data* (get @current-url* {}) :groups)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -154,14 +160,13 @@
 
 (defn page []
   [:article.groups.my-5
+   [routing/hidden-state-component
+    {:did-change #(fetch-groups)}]
+
    [:h1.my-5
     [icons/groups] " Groups"]
-   [:section
-    [routing/hidden-state-component
-     {:did-change #(do
-                     (reset! group-core/data* nil)
-                     (fetch-groups))}]
 
+   [:section
     [filter-component]
     [table/toolbar [create/button]]
     [table-component

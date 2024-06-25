@@ -29,7 +29,9 @@
 
 (def current-route*
   (reaction
-   (path :inventory-pools {} @current-query-parameters-normalized*)))
+   (path (:handler-key @routing/state*)
+         (:route-params @routing/state*)
+         @current-query-parameters-normalized*)))
 
 (def data* (reagent/atom nil))
 
