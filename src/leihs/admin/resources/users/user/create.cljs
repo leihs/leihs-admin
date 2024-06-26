@@ -62,7 +62,7 @@
 
     [:> Button {:type "submit"
                 :form "add-user-form"}
-     "Save"]]])
+     "Add"]]])
 
 (defn button []
   (when (auth/allowed? [auth/admin-scopes?
