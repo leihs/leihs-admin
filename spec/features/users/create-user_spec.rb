@@ -8,7 +8,7 @@ shared_examples :create_with_extra_props do |extra_props = {}|
     click_on 'Users'
     click_on_first 'Add User'
     wait_until { page.has_css?('.modal') }
-    within '.modal.show' do
+    within '.modal' do
       fill_in_user_properties properties
     end
     sleep 0.1
