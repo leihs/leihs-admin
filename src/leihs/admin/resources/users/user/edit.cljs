@@ -29,7 +29,7 @@
         (user-inventory-pools/clean-and-fetch)
         (reset! core/user-data* res))))
 
-(defn inner-form-component []
+(defn inner-form-component [data*]
   [:div
    [edit-core/essentials-form-component data*]
    [:div.image.mt-5
@@ -54,17 +54,17 @@
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit User"]]
    [:> Modal.Body
-    [:> Form {:id "add-user-form"
+    [:> Form {:id "edit-user-form"
               :on-submit (fn [e]
                            (.preventDefault e)
                            (patch))}
-     [inner-form-component]]]
+     [inner-form-component data*]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
     [:> Button {:type "submit"
-                :form "add-user-form"}
+                :form "edit-user-form"}
      "Save"]]])
 
 (defn button []

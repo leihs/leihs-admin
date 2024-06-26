@@ -19,7 +19,7 @@
                        {:chan (async/chan)
                         :url (path :users)
                         :method :post
-                        :json-params  (-> @data*
+                        :json-params  (-> @core/user-data*
                                           (update-in [:extended_info]
                                                      (fn [s] (.parse js/JSON s))))}
                        http-client/request :chan <!
@@ -40,17 +40,26 @@
              :centered true
              :scrollable true
              :show @open*}
+
    [:> Modal.Header {:close-button true
-                     :on-hide #(search-params/delete-from-url "action")}
+                     :on-hide #(search-params/delete-from-url
+                                "action")}
     [:> Modal.Title "Add a new User"]]
+
    [:> Modal.Body
     [:> Form {:id "add-user-form"
-              :on-submit (fn [e] (.preventDefault e) (post))}
-     [edit/inner-form-component]]]
+              :on-submit #(do
+                            (.preventDefault %)
+                            (js/console.debug "hello")
+                            (post))}
+     [edit/inner-form-component core/user-data*]]]
+
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-from-url "action")}
+                :on-click #(search-params/delete-from-url
+                            "action")}
      "Cancel"]
+
     [:> Button {:type "submit"
                 :form "add-user-form"}
      "Add"]]])

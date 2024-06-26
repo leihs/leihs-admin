@@ -37,16 +37,21 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:closeButton true
-                     :on-hide #(search-params/delete-from-url "action")}
+                     :on-hide #(search-params/delete-from-url
+                                "action")}
     [:> Modal.Title "Add a new Group"]]
+
    [:> Modal.Body
     [:> Form {:id "add-group-form"
               :on-submit (fn [e] (.preventDefault e) (post))}
-     [edit-core/inner-form-component]]]
+     [edit-core/inner-form-component core/data*]]]
+
    [:> Modal.Footer
     [:> Button {:variant "secondary"
-                :on-click #(search-params/delete-from-url "action")}
+                :on-click #(search-params/delete-from-url
+                            "action")}
      "Cancel"]
+
     [:> Button {:type "submit"
                 :form "add-group-form"}
      "Add"]]])
