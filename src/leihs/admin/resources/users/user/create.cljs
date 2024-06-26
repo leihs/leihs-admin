@@ -48,10 +48,10 @@
 
    [:> Modal.Body
     [:> Form {:id "add-user-form"
-              :on-submit #(do
-                            (.preventDefault %)
-                            (js/console.debug "hello")
-                            (post))}
+              :on-submit (fn [e]
+                           (.preventDefault e)
+                           (js/console.debug "hello")
+                           (post))}
      [edit/inner-form-component core/user-data*]]]
 
    [:> Modal.Footer
@@ -62,7 +62,7 @@
 
     [:> Button {:type "submit"
                 :form "add-user-form"}
-     "Add"]]])
+     "Save"]]])
 
 (defn button []
   (when (auth/allowed?

@@ -50,8 +50,7 @@
     [:div.col-md-5 [input-component data* [:email]
                     :type :email
                     :label "Email-address"
-                    :validator (fn [value]
-                                 (or false))
+                    :validator (fn [value] (or false))
                     :hint [:span "A real email-address is essential for many processes inside leihs. "
                            "Each value must be " [:strong " unique accross all users "] " and  "
                            [:strong " must contain a " [:span.text-monospace "@"]] " sign."

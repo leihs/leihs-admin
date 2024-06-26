@@ -39,18 +39,21 @@
    [:> Modal.Header {:close-button true
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Group"]]
+
    [:> Modal.Body
-    [:> Form {:id "add-user-form"
+    [:> Form {:id "edit-group-form"
               :on-submit (fn [e]
                            (.preventDefault e)
                            (patch))}
      [edit-core/inner-form-component data*]]]
+
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}
      "Cancel"]
+
     [:> Button {:type "submit"
-                :form "add-user-form"}
+                :form "edit-group-form"}
      "Save"]]])
 
 (defn button []

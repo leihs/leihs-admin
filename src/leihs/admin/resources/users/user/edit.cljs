@@ -30,7 +30,7 @@
         (reset! core/user-data* res))))
 
 (defn inner-form-component [data*]
-  [:div
+  [:<>
    [edit-core/essentials-form-component data*]
    [:div.image.mt-5
     [:h3 "Image / Avatar"]
