@@ -50,5 +50,4 @@
       {:className "ml-3"
        :variant "danger"
        :on-click #(search-params/append-to-url {:action "delete"})}
-      "Delete"]
-     [dialog]]))
+      "Delete"]]))

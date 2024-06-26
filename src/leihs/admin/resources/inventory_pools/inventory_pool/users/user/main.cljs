@@ -176,4 +176,5 @@
         (when-let [ext-info (-> @user-data* :extended_info presence)]
           [:pre (.stringify js/JSON (.parse js/JSON ext-info) nil 2)])]]
 
+      [user-edit/dialog]
       [debug-component]])])

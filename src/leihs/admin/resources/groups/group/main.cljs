@@ -85,4 +85,6 @@
 
        [:section
         [inventory-pools/table-component]]
+       [delete/dialog]
+       [edit/dialog]
        [debug-component]]])])

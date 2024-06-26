@@ -217,4 +217,5 @@
       pools-count-td-component
       groups-count-td-component]]
     [table/toolbar [create/button]]
+    [create/dialog]
     [debug-component]]])

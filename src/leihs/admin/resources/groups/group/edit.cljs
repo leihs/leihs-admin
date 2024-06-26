@@ -64,5 +64,4 @@
     [:<>
      [:> Button
       {:onClick #(search-params/append-to-url {:action "edit"})}
-      "Edit"]
-     [dialog]]))
+      "Edit"]]))

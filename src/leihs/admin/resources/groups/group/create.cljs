@@ -62,5 +62,4 @@
     {:className "ml-3"
      :on-click #(search-params/append-to-url
                  {:action "add"})}
-    "Add Group"]
-   [dialog]])
+    "Add Group"]])

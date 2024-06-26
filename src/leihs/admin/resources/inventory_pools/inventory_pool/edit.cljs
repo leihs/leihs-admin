@@ -109,5 +109,4 @@
      [:> Button
       {:className ""
        :on-click #(search-params/append-to-url {:action "edit"})}
-      "Edit"]
-     [dialog]]))
+      "Edit"]]))

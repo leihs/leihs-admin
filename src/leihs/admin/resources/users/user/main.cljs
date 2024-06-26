@@ -130,4 +130,7 @@
               [auth/system-admin-scopes? own-user-admin-scopes?])
          [:> Tab {:eventKey "api-tokens" :title "API Tokens"}
           [api-tokens/table-component]])]
+
+      [delete/dialog]
+      [edit/dialog]
       [user-core/debug-component]])])

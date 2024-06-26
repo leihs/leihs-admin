@@ -26,4 +26,5 @@
                         [:td (toggle-component (day @core/data*))]
                         [:td (or ((core/DAYS day) (@core/data* :max_visits))
                                  "unlimited")]]))}]
-      [edit/button]])])
+      [edit/button]
+      [edit/dialog]])])

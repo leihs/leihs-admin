@@ -42,7 +42,7 @@
   (reaction
    (reset! data* @core/user-data*)
    (->> (:query-params @routing/state*)
-        :action
+        (:action)
         (= "edit"))))
 
 (defn dialog []
@@ -51,8 +51,10 @@
              :scrollable true
              :show @open*}
    [:> Modal.Header {:close-button true
+
                      :on-hide #(search-params/delete-from-url "action")}
-    [:> Modal.Title "Edit User"]]
+    [:> Modal.Title {:class-name "edit-user-modal"}
+     "Edit User"]]
    [:> Modal.Body
     [:> Form {:id "edit-user-form"
               :on-submit (fn [e]
@@ -73,5 +75,4 @@
      [:> Button
       {:on-click #(search-params/append-to-url
                    {:action "edit"})}
-      "Edit User"]
-     [dialog]]))
+      "Edit User"]]))

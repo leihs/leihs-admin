@@ -91,6 +91,4 @@
       {:className "ml-3"
        :onClick #(search-params/append-to-url
                   {:action "add"})}
-      "Add Inventory Pool"]
-     [dialog]]))
-
+      "Add Inventory Pool"]]))

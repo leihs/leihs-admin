@@ -144,5 +144,8 @@
      [create/button]]
     [inventory-pools-table]
     [table/toolbar
-     [create/button]]
+     [create/button]]]
+
+   [:section
+    [create/dialog]
     [debug-component]]])

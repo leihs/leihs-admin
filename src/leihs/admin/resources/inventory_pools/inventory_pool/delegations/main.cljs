@@ -41,9 +41,8 @@
 (def data* (reagent/atom nil))
 
 (defn fetch []
-  (http-client/route-cached-fetch data* {:route @current-route*}))
-
-;;; Filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (http-client/route-cached-fetch
+   data* {:route @current-route*}))
 
 (defn filter-section []
   [filter/container
@@ -59,15 +58,6 @@
     [filter/form-suspension]
     [filter/form-per-page]
     [filter/reset]]])
-
-;;; Table ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn add-button []
-  [:<>
-   [:> Button
-    {:className "ml-3"
-     :on-click #(search-params/append-to-url {:action "add"})}
-    "Add Delegation"]])
 
 (defn delegations-thead []
   [:thead
@@ -216,10 +206,8 @@
     [pool-core/header]
     [pool-core/tabs]
     [filter-section]
-    [table/toolbar
-     [add-button]]
+    [table/toolbar [create/button]]
     [delegations-table]
-    [table/toolbar
-     [add-button]]
+    [table/toolbar [create/button]]
     [create/dialog]
     [debug-component]]])

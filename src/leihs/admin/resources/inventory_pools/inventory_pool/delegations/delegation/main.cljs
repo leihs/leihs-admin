@@ -35,13 +35,6 @@
           :update-handler
           #(go (reset! data* (<! (suspension-core/put-suspension< suspension-path %))))]])]]]])
 
-(defn edit-button []
-  [:<>
-   [:> Button
-    {:className ""
-     :on-click #(search-params/append-to-url {:action "edit"})}
-    "Edit"]])
-
 (defn delegation-info-section []
   [:section.delegation
    (if-let [delegation (get @delegation/data* @delegation/id*)]
@@ -97,7 +90,7 @@
          [:td "Created "]
          [:td.created (-> delegation :created_at humanize-datetime-component)]]]]]
      [wait-component])
-   [edit-button]])
+   [edit/button]])
 
 (defn page []
   [:article.delegation.my-5

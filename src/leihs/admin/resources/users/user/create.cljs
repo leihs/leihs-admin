@@ -65,12 +65,11 @@
      "Save"]]])
 
 (defn button []
-  (when (auth/allowed?
-         [auth/admin-scopes? pool-auth/some-lending-manager?])
+  (when (auth/allowed? [auth/admin-scopes?
+                        pool-auth/some-lending-manager?])
     [:<>
      [:> Button
       {:className "ml-3"
        :onClick #(search-params/append-to-url
                   {:action "add"})}
-      "Add User"]
-     [dialog]]))
+      "Add User"]]))

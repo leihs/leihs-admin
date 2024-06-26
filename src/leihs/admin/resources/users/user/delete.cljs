@@ -143,6 +143,4 @@
        :variant "danger"
        :onClick #(search-params/append-to-url
                   {:action "delete"})}
-      "Delete User"]
-     [dialog]]))
-
+      "Delete User"]]))

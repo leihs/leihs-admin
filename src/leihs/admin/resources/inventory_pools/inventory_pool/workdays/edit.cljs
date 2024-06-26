@@ -103,5 +103,4 @@
      [:> Button
       {:on-click #(search-params/append-to-url
                    {:action "edit-workdays"})}
-      "Edit"]
-     [dialog]]))
+      "Edit"]]))

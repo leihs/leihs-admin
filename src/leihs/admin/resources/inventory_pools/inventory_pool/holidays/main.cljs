@@ -25,4 +25,5 @@
                         [:td (:name holiday)]
                         [:td (:start_date holiday)]
                         [:td (:end_date holiday)]]))}]
-      [edit/button]])])
+      [edit/button]
+      [edit/dialog]])])

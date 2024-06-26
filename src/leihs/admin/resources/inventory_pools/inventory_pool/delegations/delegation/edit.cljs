@@ -48,3 +48,11 @@
     [:> Button {:type "submit"
                 :form "add-delegation-form"}
      "Save"]]])
+
+(defn button []
+  [:<>
+   [:> Button
+    {:className ""
+     :on-click #(search-params/append-to-url
+                 {:action "edit"})}
+    "Edit"]])

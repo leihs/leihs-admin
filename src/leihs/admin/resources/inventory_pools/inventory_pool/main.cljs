@@ -100,4 +100,6 @@
       [core/header]
       [core/tabs (join ["/admin/inventory-pools/" @core/id*])]
       [inventory-pool]
+      [edit/dialog]
+      [delete/dialog]
       [core/debug-component]])])

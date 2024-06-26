@@ -51,3 +51,11 @@
     [:> Button {:type "submit"
                 :form "add-delegation-form"}
      "Add"]]])
+
+(defn button []
+  [:<>
+   [:> Button
+    {:className "ml-3"
+     :on-click #(search-params/append-to-url
+                 {:action "add"})}
+    "Add Delegation"]])

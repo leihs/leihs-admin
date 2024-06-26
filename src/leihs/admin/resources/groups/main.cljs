@@ -179,4 +179,5 @@
       org-id-td-component
       users-count-td-component]]
     [table/toolbar [create/button]]
+    [create/dialog]
     [debug-component]]])

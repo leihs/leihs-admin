@@ -166,5 +166,4 @@
      [:> Button
       {:on-click #(search-params/append-to-url
                    {:action "edit-holidays"})}
-      "Edit"]
-     [dialog]]))
+      "Edit"]]))
