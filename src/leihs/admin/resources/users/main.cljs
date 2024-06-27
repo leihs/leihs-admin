@@ -24,9 +24,11 @@
                    (dissoc (:query-params-raw @routing/state*) :action))))
 
 (def current-route*
-  (reaction (path (:handler-key @routing/state*)
-                  (:route-params @routing/state*)
-                  @current-query-params*)))
+  (reaction
+   (def current-route*
+     (reaction (path (:handler-key @routing/state*)
+                     (:route-params @routing/state*)
+                     @current-query-params*)))))
 
 (def data* (reagent/atom {}))
 
