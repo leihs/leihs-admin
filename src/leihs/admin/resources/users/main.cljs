@@ -21,19 +21,18 @@
 
 (def current-query-params*
   (reaction (merge shared/default-query-params
-                   (dissoc (:query-params-raw @routing/state*) :action))))
+                   (:query-params-raw @routing/state*))))
 
 (def current-route*
-  (reaction
-   (def current-route*
-     (reaction (path (:handler-key @routing/state*)
-                     (:route-params @routing/state*)
-                     @current-query-params*)))))
+  (reaction (path (:handler-key @routing/state*)
+                  (:route-params @routing/state*)
+                  (dissoc (:query-params @routing/state*) :action))))
 
 (def data* (reagent/atom {}))
 
 (defn fetch-users []
-  (http/route-cached-fetch data* {:route @current-route*}))
+  (when (string? @current-route*)
+    (http/route-cached-fetch data* {:route @current-route*})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -167,7 +166,9 @@
    (if-not (contains? @data* @current-route*)
      [wait-component]
      [:<>
-      (if-let [users (:users (get @data* @current-route*))]
+      (if-let [users (->> @current-route*
+                          (get @data*)
+                          :users)]
         [table/container
          {:className "users"
           :header (table-head hds)

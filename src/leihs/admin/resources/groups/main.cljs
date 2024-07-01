@@ -36,7 +36,10 @@
 (def data* (reagent/atom nil))
 
 (defn fetch-groups []
-  (http/route-cached-fetch data* {:route @current-url*}))
+  (when (string? @current-url*)
+    (http/route-cached-fetch data* {:route @current-url*
+                                    :replace true
+                                    :reload true})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -136,10 +139,10 @@
      "No (more) groups found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* @current-url*)
+  (if-not (contains? @data* (:route @routing/state*))
     [wait-component]
     [core-table-component hds tds
-     (-> @data* (get @current-url* {}) :groups)]))
+     (-> @data* (get (:route @routing/state* {}) :groups))]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

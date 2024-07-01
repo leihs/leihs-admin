@@ -36,7 +36,10 @@
 (def data* (reagent/atom nil))
 
 (defn fetch []
-  (http-client/route-cached-fetch data* {:route @current-route*}))
+  (when (string? @current-route*)
+    (http-client/route-cached-fetch data* {:route @current-route*
+                                           :replace true
+                                           :reload true})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -104,9 +107,9 @@
             (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
-  (if-not (contains? @data* @current-route*)
+  (if-not (contains? @data* (:route @routing/state*))
     [wait-component]
-    (if-let [inventory-pools (-> @data* (get  @current-route* {}) :inventory-pools seq)]
+    (if-let [inventory-pools (-> @data* (get  (:route @routing/state*) {}) :inventory-pools seq)]
       [table/container {:className "inventory-pools"
                         :header (table-head hds)
                         :body (table-body inventory-pools tds)}]

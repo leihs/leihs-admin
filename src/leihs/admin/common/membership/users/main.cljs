@@ -41,14 +41,14 @@
 ;;; direct member ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn update-aggregated-membership [user]
-  (swap! users/data* update-in @[users/current-route*
-                                 :users (:page-index user)]
+  (swap! users/data* update-in [(:route @routing/state*)
+                                :users (:page-index user)]
          (fn [row]
            (assoc row :member (or (:direct_member row)
                                   (:group_member row))))))
 
 (defn update-membership-in-table [new-state user]
-  (swap! users/data* assoc-in [@users/current-route*
+  (swap! users/data* assoc-in [(:route @routing/state*)
                                :users (:page-index user)
                                :direct_member] new-state)
   (update-aggregated-membership user))
