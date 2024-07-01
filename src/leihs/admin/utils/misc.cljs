@@ -4,11 +4,18 @@
    [clojure.string :as clj-str]
    [goog.string :as gstring]
    [leihs.admin.common.icons :as icons]
+   [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
-   [leihs.core.digest]))
+   [leihs.core.digest]
+   [leihs.core.routing.front :as routing]))
 
 ; TODO stuff in this namespace should be moved removed completely
+
+(def fetch-route*
+  (path (:handler-key @routing/state*)
+        (:route-params @routing/state*)
+        (dissoc (:query-params @routing/state*) :action)))
 
 (defn humanize-datetime [ref_dt dt add-suffix]
   [:span (date-fns/formatDistance

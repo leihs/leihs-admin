@@ -124,23 +124,19 @@
          [wait-component @req*])])))
 
 (defn route-cached-fetch
-  [data* & {:keys [reload route replace]
-            :or {reload false
-                 replace false}}]
+  [data* & {:keys [reload route]
+            :or {reload false}}]
 
   (let [route (or route (-> @routing/state* :route))
-        chan (async/chan)
-        data-key (if replace (:route @routing/state*) route)]
+        chan (async/chan)]
 
     (go-loop [do-fetch true]
       (when do-fetch
-
-        (js/console.debug "hello" route data-key)
         (let [req (request {:chan chan
                             :url route})
               resp (<! chan)]
           (when (< (:status resp) 300)
-            (swap! data* assoc data-key (-> resp :body)))))
+            (swap! data* assoc route (-> resp :body)))))
 
       (<! (timeout (* 3 60 1000)))
 
@@ -149,4 +145,4 @@
            (starts-with? (:route @routing/state*) route))
 
         (recur reload)
-        (swap! data* dissoc data-key)))))
+        (swap! data* dissoc route)))))

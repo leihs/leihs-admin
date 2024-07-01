@@ -10,7 +10,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.misc :refer [wait-component fetch-route*]]
    [leihs.core.auth.core :as auth-core]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
@@ -19,7 +19,6 @@
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
-                (dissoc :action)
                 (assoc :term (-> @routing/state* :query-params-raw :term)
                        :order (some-> @routing/state* :query-params
                                       :order clj->js json/to-json)))))
@@ -36,9 +35,8 @@
 (def data* (reagent/atom nil))
 
 (defn fetch []
-  (when (string? @current-route*)
-    (http-client/route-cached-fetch data* {:route @current-route*
-                                           :replace true
+  (when (string? @fetch-route*)
+    (http-client/route-cached-fetch data* {:route @fetch-route*
                                            :reload true})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -107,9 +105,9 @@
             (table-row inventory-pool tds)))])
 
 (defn inventory-pools-table [& [hds tds]]
-  (if-not (contains? @data* (:route @routing/state*))
+  (if-not (contains? @data* @fetch-route*)
     [wait-component]
-    (if-let [inventory-pools (-> @data* (get  (:route @routing/state*) {}) :inventory-pools seq)]
+    (if-let [inventory-pools (-> @data* (get  @fetch-route* {}) :inventory-pools seq)]
       [table/container {:className "inventory-pools"
                         :header (table-head hds)
                         :body (table-body inventory-pools tds)}]
