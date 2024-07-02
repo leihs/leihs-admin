@@ -7,20 +7,18 @@
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.users-and-groups.core :as users-and-groups]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.groups.group.core :as group-core]
    [leihs.admin.resources.groups.group.create :as create]
    [leihs.admin.resources.groups.shared :as shared]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button Alert]]
+   [react-bootstrap :as react-bootstrap :refer [Alert]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
-                (dissoc :action)
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
 
 (def current-query-parameters-normalized*
@@ -36,9 +34,8 @@
 (def data* (reagent/atom nil))
 
 (defn fetch-groups []
-  (when (string? @current-url*)
-    (http/route-cached-fetch data* {:route @current-url*
-                                    :replace true
+  (when (string? @fetch-route*)
+    (http/route-cached-fetch data* {:route @fetch-route*
                                     :reload true})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -139,10 +136,11 @@
      "No (more) groups found."]))
 
 (defn table-component [hds tds]
-  (if-not (contains? @data* (:route @routing/state*))
+  (if-not (contains? @data* @fetch-route*)
     [wait-component]
-    [core-table-component hds tds
-     (-> @data* (get (:route @routing/state* {}) :groups))]))
+    [core-table-component hds tds (-> @data*
+                                      (get @fetch-route*)
+                                      :groups seq)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

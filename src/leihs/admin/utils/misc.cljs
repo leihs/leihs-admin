@@ -8,14 +8,16 @@
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.digest]
-   [leihs.core.routing.front :as routing]))
+   [leihs.core.routing.front :as routing]
+   [reagent.core :refer [reaction]]))
 
 ; TODO stuff in this namespace should be moved removed completely
 
 (def fetch-route*
-  (path (:handler-key @routing/state*)
-        (:route-params @routing/state*)
-        (dissoc (:query-params @routing/state*) :action)))
+  (reaction
+   (path (:handler-key @routing/state*)
+         (:route-params @routing/state*)
+         (dissoc (:query-params @routing/state*) :action))))
 
 (defn humanize-datetime [ref_dt dt add-suffix]
   [:span (date-fns/formatDistance

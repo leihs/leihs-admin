@@ -107,7 +107,10 @@
 (defn inventory-pools-table [& [hds tds]]
   (if-not (contains? @data* @fetch-route*)
     [wait-component]
-    (if-let [inventory-pools (-> @data* (get  @fetch-route* {}) :inventory-pools seq)]
+    (if-let [inventory-pools (-> @data*
+                                 (get @fetch-route*)
+                                 :inventory-pools seq)]
+
       [table/container {:className "inventory-pools"
                         :header (table-head hds)
                         :body (table-body inventory-pools tds)}]

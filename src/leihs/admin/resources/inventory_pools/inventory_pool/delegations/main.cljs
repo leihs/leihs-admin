@@ -13,10 +13,9 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.suspension.core :as suspension]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.admin.utils.search-params :as search-params]
+   [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Button Table]]
+   [react-bootstrap :as react-bootstrap :refer [Table]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-parameters*
@@ -42,7 +41,7 @@
 
 (defn fetch []
   (http-client/route-cached-fetch
-   data* {:route @current-route*}))
+   data* {:route @fetch-route*}))
 
 (defn filter-section []
   [filter/container
@@ -142,7 +141,7 @@
                                                  :delegation-id (:id delegation)})
                                           updated))]
                             (swap! data* assoc-in
-                                   [(:route @routing/state*) :delegations
+                                   [@fetch-route* :delegations
                                     (:page-index delegation) :suspension] data)))))])
 
 (defn delegation-row [{id :id :as delegation}]
@@ -168,22 +167,23 @@
    [suspension-td delegation]])
 
 (defn delegations-table []
-  (let [current-url @current-route*]
-    (if-not (contains? @data* current-url)
-      [wait-component]
-      (if-let [delegations (-> @data* (get  current-url  {}) :delegations seq)]
-        [:> Table {:striped true
-                   :hover true
-                   :borderless true
-                   :className "border-top border-bottom"}
+  (if-not (contains? @data* @fetch-route*)
+    [wait-component]
+    (if-let [delegations (-> @data*
+                             (get @fetch-route*)
+                             :delegations seq)]
+      [:> Table {:striped true
+                 :hover true
+                 :borderless true
+                 :className "border-top border-bottom"}
 
-         [delegations-thead]
-         [:tbody
-          (let [page (:page @current-query-parameters-normalized*)
-                per-page (:per-page @current-query-parameters-normalized*)]
-            (for [[k delegation] (map-indexed vector delegations)]
-              ^{:key k} [delegation-row delegation]))]]
-        [:div.alert.alert-info.text-center "No (more) delegations found."]))))
+       [delegations-thead]
+       [:tbody
+        (let [page (:page @current-query-parameters-normalized*)
+              per-page (:per-page @current-query-parameters-normalized*)]
+          (for [[k delegation] (map-indexed vector delegations)]
+            ^{:key k} [delegation-row delegation]))]]
+      [:div.alert.alert-info.text-center "No (more) delegations found."])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
