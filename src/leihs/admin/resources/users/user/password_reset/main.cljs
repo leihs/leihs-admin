@@ -138,19 +138,18 @@
                                  ["action" "valid-for"])}
      [:> Modal.Title "Reset Password"]]
     [:> Modal.Body
-     (if-not @user-password-resetable?*
-       [reset-link-no-possible-warning-component]
-
-       (if-not data*
-         [wait-component]
-         [form data*]))]
+     (if (and @user-password-resetable?*
+              @data*)
+       [form]
+       [reset-link-no-possible-warning-component])]
     [:> Modal.Footer
      [:> Button {:variant "secondary"
                  :on-click #(search-params/delete-from-url
                              ["action" "valid-for"])}
       "Cancel"]
-     (when @user-password-resetable?*
-       [mail-link-button data*])]]])
+     (when (and @user-password-resetable?*
+                @data*)
+       [mail-link-button])]]])
 
 (defn page []
   [:div.user-password-reset
