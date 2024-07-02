@@ -18,11 +18,8 @@
 (defonce data* (reagent/atom nil))
 
 (defn prepare-for-patch [data]
-  (do
-    (js/console.debug "pre" data)
-    (->> data
-         (map #(if (:new %) (dissoc % :new :id) %)))
-    (js/console.debug "post" data)))
+  (->> data
+       (map #(if (:new %) (dissoc % :new :id) %))))
 
 (defn patch []
   (let [route (path :inventory-pool-holidays
@@ -34,7 +31,7 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (reset! core/data* @data*)
+          (core/fetch)
           (search-params/delete-from-url "action")))))
 
 (defn add-new-holiday-comp []
@@ -90,8 +87,7 @@
            "Add"]]]))))
 
 (defn holiday-row-comp [holiday]
-  [:tr {:key (:id holiday)
-        :class (when (:delete holiday) "table-danger")}
+  [:<>
    [:td (cond->> (:name holiday) (:delete holiday) (vector :s))]
    [:td (cond->> (:start_date holiday) (:delete holiday) (vector :s))]
    [:td (cond->> (:end_date holiday) (:delete holiday) (vector :s))]
@@ -131,7 +127,9 @@
         :header [:tr [:th "Day"] [:th "From"] [:th "To"] [:th]]
         :body
         (doall (for [holiday @data*]
-                 [holiday-row-comp holiday]))}]]]))
+                 [:tr {:key (:id holiday)
+                       :class (when (:delete holiday) "table-danger")}
+                  [holiday-row-comp holiday]]))}]]]))
 
 (comment (let [hs [{:id 1} {:id 2}]]
            (s/transform [s/ALL #(= (:id %) 1)]
