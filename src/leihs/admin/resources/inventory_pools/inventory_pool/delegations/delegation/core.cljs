@@ -38,12 +38,12 @@
   (fetch-delegation))
 
 (defn set-user-id-from-params [& _]
-  (let [params (get @routing/state* :query-params)]
-    (reset! delegation-with-id* (merge @delegation*
-                                       (rename-keys params {:user-uid :responsible_user_id})))
-    (when (empty? @delegation-with-id*)
-      (reset! delegation-with-id* {:pool_protected true})))
-  delegation-with-id*)
+  (let [params (dissoc (get @routing/state* :query-params) :action)]
+    (reset! data* (merge @delegation*
+                         (rename-keys params {:user-uid :responsible_user_id})))
+    (when (empty? @data*)
+      (reset! data* {:pool_protected true})))
+  data*)
 
 (defn responsible-user-choose-component []
   [:div.input-group-append
@@ -52,7 +52,11 @@
      :href (path :users-choose {}
                  {:return-to (path (:handler-key @routing/state*)
                                    (:route-params @routing/state*)
-                                   (:query-params @routing/state*)
+                                   (conj
+                                    (:query-params @routing/state*)
+                                    (select-keys @data* [:name
+                                                         :responsible_user_id
+                                                         :pool_protected]))
                                    @id*)})}
 
     [:i.fas.fa-rotate-90.fa-hand-pointer.px-2]

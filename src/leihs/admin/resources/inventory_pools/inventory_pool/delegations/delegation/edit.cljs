@@ -3,8 +3,8 @@
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as delegation]
+   [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
@@ -19,8 +19,8 @@
 
 (defn patch [data]
   (let [route (path :inventory-pool-delegation
-                    {:inventory-pool-id @inventory-pool/id*
-                     :delegation-id @delegation/id*})]
+                    {:inventory-pool-id @pool-core/id*
+                     :delegation-id @core/id*})]
     (go (when (some->
                {:chan (async/chan)
                 :url route
@@ -39,8 +39,8 @@
                      :onHide #(search-params/delete-all-from-url)}
     [:> Modal.Title "Edit Delegation"]]
    [:> Modal.Body
-    [delegation/delegation-form {:action patch
-                                 :id "add-delegation-form"}]]
+    [core/delegation-form {:action patch
+                           :id "add-delegation-form"}]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-all-from-url)}
