@@ -115,37 +115,42 @@
 
 (def open*
   (reaction
-   (and
-    (->> (:query-params @routing/state*)
-         :action
-         (= "reset-password")))))
+   (->> (:query-params @routing/state*)
+        :action
+        (= "reset-password"))))
 
 (defn dialog []
   [:<>
    [routing/hidden-state-component
-    {:did-change #(when (and @open* (not @data*))
+    {:did-change #(when (and
+                         @open*
+                         @user-password-resetable?*
+                         (not @data*))
                     (get-reset-data))}]
 
-   (when @data*
-     [:> Modal {:size "md"
-                :centered true
-                :scrollable true
-                :show @open*
-                :class-name "action"}
-      [:> Modal.Header {:closeButton true
-                        :on-hide #(search-params/delete-from-url
-                                   ["action" "valid-for"])}
-       [:> Modal.Title "Reset Password"]]
-      [:> Modal.Body
-       (if-not @user-password-resetable?*
-         [reset-link-no-possible-warning-component]
-         [form data*])]
-      [:> Modal.Footer
-       [:> Button {:variant "secondary"
-                   :on-click #(search-params/delete-from-url
-                               ["action" "valid-for"])}
-        "Cancel"]
-       [mail-link-button data*]]])])
+   [:> Modal {:size "md"
+              :centered true
+              :scrollable true
+              :show @open*
+              :class-name "action"}
+    [:> Modal.Header {:closeButton true
+                      :on-hide #(search-params/delete-from-url
+                                 ["action" "valid-for"])}
+     [:> Modal.Title "Reset Password"]]
+    [:> Modal.Body
+     (if-not @user-password-resetable?*
+       [reset-link-no-possible-warning-component]
+
+       (if-not data*
+         [wait-component]
+         [form data*]))]
+    [:> Modal.Footer
+     [:> Button {:variant "secondary"
+                 :on-click #(search-params/delete-from-url
+                             ["action" "valid-for"])}
+      "Cancel"]
+     (when @user-password-resetable?*
+       [mail-link-button data*])]]])
 
 (defn page []
   [:div.user-password-reset

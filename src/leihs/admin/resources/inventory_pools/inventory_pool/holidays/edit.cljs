@@ -18,8 +18,11 @@
 (defonce data* (reagent/atom nil))
 
 (defn prepare-for-patch [data]
-  (->> data
-       (map #(if (:new %) (dissoc % :new :id) %))))
+  (do
+    (js/console.debug "pre" data)
+    (->> data
+         (map #(if (:new %) (dissoc % :new :id) %)))
+    (js/console.debug "post" data)))
 
 (defn patch []
   (let [route (path :inventory-pool-holidays
