@@ -130,7 +130,8 @@
      [:> Modal {:size "md"
                 :centered true
                 :scrollable true
-                :show @open*}
+                :show @open*
+                :class-name "action"}
       [:> Modal.Header {:closeButton true
                         :on-hide #(search-params/delete-from-url
                                    ["action" "valid-for"])}

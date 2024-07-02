@@ -28,8 +28,7 @@
 (def current-url*
   (reaction
    (path (:handler-key @routing/state*)
-         (:route-params @routing/state*)
-         @current-query-parameters-normalized*)))
+         (:route-params @routing/state*))))
 
 (def data* (reagent/atom nil))
 

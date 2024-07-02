@@ -25,14 +25,14 @@
 
 (def current-route*
   (reaction (path (:handler-key @routing/state*)
-                  (:route-params @routing/state*)
-                  (:query-params @routing/state*))))
+                  (:route-params @routing/state*))))
 
 (def data* (reagent/atom {}))
 
 (defn fetch-users []
   (when (string? @fetch-route*)
-    (http/route-cached-fetch data* {:route @fetch-route*})))
+    (http/route-cached-fetch data* {:route @fetch-route*
+                                    :reload true})))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -163,10 +163,10 @@
    [routing/hidden-state-component
     {:did-change #(fetch-users)}]
 
-   (if-not (contains? @data* @current-route*)
+   (if-not (contains? @data* @fetch-route*)
      [wait-component]
      [:<>
-      (if-let [users (->> @current-route*
+      (if-let [users (->> @fetch-route*
                           (get @data*)
                           :users)]
         [table/container
