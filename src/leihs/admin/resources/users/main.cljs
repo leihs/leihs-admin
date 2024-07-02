@@ -168,7 +168,7 @@
      [:<>
       (if-let [users (->> @fetch-route*
                           (get @data*)
-                          :users)]
+                          :users seq)]
         [table/container
          {:className "users"
           :header (table-head hds)
