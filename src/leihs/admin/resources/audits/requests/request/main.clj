@@ -12,7 +12,8 @@
    [:audited_requests.http_uid :http_uid]
    [:audited_requests.created_at :request_timestamp]
    [:audited_responses.created_at :response_timestamp]
-   [:audited_requests.user_id :requester_id]])
+   [:audited_requests.user_id :requester_id]
+   [[:coalesce :audited_requests.txid :audited_requests.tx2id] :txid]])
 
 (defn get-request
   [{{request-id :request-id} :route-params

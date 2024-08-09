@@ -10,7 +10,7 @@
                                                 set-per-page-and-offset]]
    [next.jdbc :as jdbc]))
 
-(def auditec-requests-select
+(def audited-requests-select
   [[:audited_requests.id :id]
    [:audited_requests.txid :txid]
    [:audited_requests.tx2id :tx2id]
@@ -24,7 +24,7 @@
    [:audited_responses.status :response_status]])
 
 (def requests-base-query
-  (-> (apply sql/select auditec-requests-select)
+  (-> (apply sql/select audited-requests-select)
       (sql/from :audited_requests)
       (sql/order-by [:audited_requests.created_at :desc])
       (sql/left-join :users
@@ -45,6 +45,13 @@
           (sql/where [:= :users.id :audited_requests.user_id]))])
     query))
 
+(defn filter-by-txid [query {{txid :txid} :query-params}]
+  (if-let [txid (presence txid)]
+    (sql/where query [:or
+                      [:= :audited_requests.txid txid]
+                      [:= :audited_requests.tx2id txid]])
+    query))
+
 (defn filter-by-method [query {{method :method} :query-params}]
   (if-let [method (some-> method presence string/lower-case)]
     (sql/where query [:= :audited_requests.method method])
@@ -54,6 +61,7 @@
   {:body {:requests
           (-> requests-base-query
               (filter-by-user-uid request)
+              (filter-by-txid request)
               (filter-by-method request)
               (set-per-page-and-offset request)
               sql-format
