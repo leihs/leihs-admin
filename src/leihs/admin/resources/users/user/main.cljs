@@ -1,6 +1,7 @@
 (ns leihs.admin.resources.users.user.main
   (:require
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
+   [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.api-tokens.main :as api-tokens]
    [leihs.admin.resources.users.user.core :as user-core :refer [fetch
                                                                 user-data*]]
@@ -13,7 +14,7 @@
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [ButtonGroup Dropdown
+   [react-bootstrap :as react-bootstrap :refer [Button ButtonGroup Dropdown
                                                 DropdownButton Tab Tabs]]
    [reagent.core :as reagent]))
 
@@ -91,6 +92,10 @@
     [:> ButtonGroup {:className "mr-3"}
      [edit/button]
      [reset-password-button]]
+    [:> ButtonGroup {:className "mr-3"}
+     [:a {:class "btn btn-secondary"
+          :href (path :audited-requests nil {:user-uid (:id @user-data*)})}
+      "Show Audit Requests"]]
     [delete/button]]])
 
 (defn header []
