@@ -30,22 +30,38 @@
    " for primary key "
    [components/truncated-id-component (:pkey data) :max-length 8] "."])
 
+(defn audited-change-show-path [id]
+  (and (not= id ":audited-change-id")
+       (= (path :audited-change {:audited-change-id id})
+          (.-pathname js/window.location))))
+
 (defn change-component [data]
-  [:div.change
-   [head-change-component data]
-   [:ol.list-unstyled.list-group
-    [:li.list-group-item.list-group-item-dark.p-2
-     [:dl.row.my-1
-      [:dt.col-sm-2 [:strong "Attribute"]]
-      [:dt.col-sm-5 [:strong "Before"]]
-      [:dt.col-sm-5 [:strong "After"]]]]
-    (for [[i [k [before after]]] (map-indexed (fn [i v] [i v]) (:changed data))]
-      ^{:key k} [:li.list-group-item.p-2
-                 {:class (if (odd? i) "list-group-item-secondary" "")}
-                 [:dl.row.my-1
-                  [:dt.col-sm-2 k]
-                  [dt-change-content-component before]
-                  [dt-change-content-component after]]])]])
+  [:div
+   (when (audited-change-show-path @audited-change-id*)
+     [:div
+      [:h3 "Transaction"]
+      [:ol.list-unstyled.list-group.mb-5
+       (for [[i [k v]] (map-indexed (fn [i v] [i v]) (select-keys data [:txid]))]
+         ^{:key k} [:li.list-group-item.p-2
+                    {:class (if (odd? i) "list-group-item-secondary" "")}
+                    [:dl.row.my-1
+                     [:dd.col-sm-3 k]
+                     [:dd.col-sm-9 v]]])]])
+   [:div.change
+    [head-change-component data]
+    [:ol.list-unstyled.list-group
+     [:li.list-group-item.list-group-item-dark.p-2
+      [:dl.row.my-1
+       [:dt.col-sm-2 [:strong "Attribute"]]
+       [:dt.col-sm-5 [:strong "Before"]]
+       [:dt.col-sm-5 [:strong "After"]]]]
+     (for [[i [k [before after]]] (map-indexed (fn [i v] [i v]) (:changed data))]
+       ^{:key k} [:li.list-group-item.p-2
+                  {:class (if (odd? i) "list-group-item-secondary" "")}
+                  [:dl.row.my-1
+                   [:dt.col-sm-2 k]
+                   [dt-change-content-component before]
+                   [dt-change-content-component after]]])]]])
 
 (defn main-component [id]
   [http/request-response-component

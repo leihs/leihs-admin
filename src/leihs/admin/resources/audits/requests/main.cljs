@@ -74,6 +74,14 @@
      :label "Requester"
      :query-params-key :user-uid
      :prepend responsible-user-choose-component]
+    [:div.col-md-2
+     [filter/delayed-query-params-input-component
+      :label "TXID"
+      :query-params-key :txid]]
+    [:div.col-md-2
+     [filter/delayed-query-params-input-component
+      :label "HTTP-UID"
+      :query-params-key :http-uid]]
     [:div.col-md-2 [method-filter-component]]
     [:div.col-md-2 [filter/form-per-page]]
     [:div.col-md-2 [filter/reset :default-query-params default-query-params]]]])

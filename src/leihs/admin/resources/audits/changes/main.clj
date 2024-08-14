@@ -4,6 +4,7 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.audits.changes.shared :refer [default-query-params]]
+   [leihs.admin.utils.sql :refer [where-with-sanitized-uuid]]
    [leihs.core.core :refer [keyword presence str]]
    [leihs.core.routing.back :as routing :refer [mixin-default-query-params
                                                 set-per-page-and-offset]]
@@ -70,7 +71,7 @@
 
 (defn filter-by-txid [query {{txid :txid} :query-params}]
   (if-let [txid (presence txid)]
-    (sql/where query [:= :audited_changes.txid (str txid)])
+    (where-with-sanitized-uuid query :audited_changes.txid txid)
     query))
 
 (defn filter-by-request-id [query {{request-id :request-id} :query-params}]
