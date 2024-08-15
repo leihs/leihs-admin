@@ -120,9 +120,7 @@
      [:<> inner])])
 
 (defn pool-name []
-  (let [name (:name @data*)]
-    (fn []
-      [:h1 name])))
+  [:h1 (:name @data*)])
 
 (defn header []
   (if-not @data*

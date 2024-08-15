@@ -115,12 +115,10 @@
     :label "External public key"]])
 
 (defn header []
-  (let [name (:name @data*)]
-    (fn []
-      [:header.my-5
-       [breadcrumbs/main {:href (path :authentication-systems {})}]
-       [:h1.mt-3
-        [:span " Authentication System - " name]]])))
+  [:header.my-5
+   [breadcrumbs/main {:href (path :authentication-systems {})}]
+   [:h1.mt-3
+    [:span (:name @data*)]]])
 
 (defn tabs [active]
   [:> Nav

@@ -102,10 +102,9 @@
   (let [name (str (:firstname @user-data*)
                   " "
                   (:lastname @user-data*))]
-    (fn []
-      [:header.my-5
-       [breadcrumbs/main]
-       [:h1.mt-3 name]])))
+    [:header.my-5
+     [breadcrumbs/main]
+     [:h1.mt-3 name]]))
 
 (defn own-user-admin-scopes? [user-state _routing-state]
   (and (= (-> user-state :id)

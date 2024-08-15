@@ -37,12 +37,10 @@
       [:td.building (get-building-name (:building_id @core/data*))]]]}])
 
 (defn header []
-  (let [name (:name @core/data*)]
-    (fn []
-      [:header.my-5
-       [breadcrumbs/main {:to (path :rooms)}]
-       [:h1.mt-3
-        [:span " Room " name]]])))
+  [:header.my-5
+   [breadcrumbs/main {:to (path :rooms)}]
+   [:h1.mt-3
+    [:span " Room " (:name @core/data*)]]])
 
 (defn page []
   [:<>

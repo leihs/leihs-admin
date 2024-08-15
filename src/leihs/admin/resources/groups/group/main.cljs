@@ -42,11 +42,9 @@
       [:td (:users_count @data*)]]]}])
 
 (defn header []
-  (let [name (:name @data*)]
-    (fn []
-      [:header.my-5
-       [breadcrumbs/main]
-       [:h1.mt-3 name]])))
+  [:header.my-5
+   [breadcrumbs/main]
+   [:h1.mt-3 (:name @data*)]])
 
 (defn page []
   [:<>

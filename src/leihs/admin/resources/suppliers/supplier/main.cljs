@@ -25,11 +25,9 @@
       [:td.note {:style {:white-space "break-spaces"}} (:note @core/data*)]]]}])
 
 (defn header []
-  (let [name (:name @core/data*)]
-    (fn []
-      [:header.my-5
-       [breadcrumbs/main  {:to (path :suppliers)}]
-       [:h1.mt-3 name]])))
+  [:header.my-5
+   [breadcrumbs/main  {:to (path :suppliers)}]
+   [:h1.mt-3 (:name @core/data*)]])
 
 (defn page []
   [:<>
