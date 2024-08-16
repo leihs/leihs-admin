@@ -43,10 +43,10 @@
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn link-to-mail-template
-  [mail-template inner & {:keys [authorizers]
-                          :or {authorizers []}}]
+  [mail-template path-fn inner & {:keys [authorizers]
+                                  :or {authorizers []}}]
   (if (auth/allowed? authorizers)
-    [:a {:href (path :mail-template {:mail-template-id (:id mail-template)})} inner]
+    [:a {:href (path-fn mail-template)} inner]
     inner))
 
 (defn language-locales-options [data]
@@ -87,9 +87,9 @@
 (defn name-th-component []
   [:th {:key :name} "Name"])
 
-(defn name-td-component [mail-template]
+(defn name-td-component [mail-template path-fn]
   [:td {:key :name}
-   [link-to-mail-template mail-template [:span (:name mail-template)]
+   [link-to-mail-template mail-template path-fn [:span (:name mail-template)]
     :authorizers [auth/admin-scopes?]]])
 
 (defn type-th-component []
@@ -119,10 +119,10 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col mail-template])])
 
-(defn core-table-component [mail-templates]
+(defn core-table-component [mail-templates path-fn]
   (if-let [mail-templates (seq mail-templates)]
     (let [hds [name-th-component type-th-component language-locale-th-component]
-          tds [name-td-component type-td-component language-locale-td-component]]
+          tds [#(name-td-component % path-fn) type-td-component language-locale-td-component]]
       [table/container {:className "mail-templates"
                         :actions [table/toolbar]
                         :header [mail-templates-thead-component hds]
@@ -134,9 +134,9 @@
 (defn table-component []
   (if-not (contains? @data* @fetch-route*)
     [wait-component]
-    [core-table-component (-> @data*
-                              (get @fetch-route*)
-                              :mail-templates)]))
+    [core-table-component
+     (-> @data* (get @fetch-route*) :mail-templates)
+     #(path :mail-template {:mail-template-id (:id %)})]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
