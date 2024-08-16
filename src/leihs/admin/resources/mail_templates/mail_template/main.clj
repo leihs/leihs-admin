@@ -16,13 +16,18 @@
       (sql/from :mail_templates)
       (sql/where [:= :id mail-template-id])))
 
-(defn mail-template [tx mail-template-id]
-  (-> mail-template-id
-      uuid
-      mail-template-query
-      sql-format
-      (->> (jdbc-query tx))
-      first))
+(defn mail-template
+  ([tx mail-template-id]
+   (mail-template tx mail-template-id nil))
+  ([tx mail-template-id inventory-pool-id]
+   (-> mail-template-id
+       uuid
+       mail-template-query
+       (cond-> inventory-pool-id
+         (sql/where [:= :inventory_pool_id inventory-pool-id]))
+       sql-format
+       (->> (jdbc-query tx))
+       first)))
 
 (defn assert-global [template]
   (when-not (:is_template_template template)

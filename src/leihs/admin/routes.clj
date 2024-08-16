@@ -31,6 +31,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.groups.group.roles.main :as inventory-pool-group-roles]
    [leihs.admin.resources.inventory-pools.inventory-pool.groups.main :as inventory-pool-groups]
    [leihs.admin.resources.inventory-pools.inventory-pool.holidays.main :as inventory-pool-holidays]
+   [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.main :as inventory-pool-mail-template]
    [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.main :as inventory-pool-mail-templates]
    [leihs.admin.resources.inventory-pools.inventory-pool.main :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as inventory-pool-users]
@@ -195,8 +196,10 @@
                                     :authorizers [auth/admin-scopes?
                                                   pool-auth/pool-inventory-manager?
                                                   pool-auth/pool-lending-manager-and-http-safe?]}
+          :inventory-pool-mail-template {:handler inventory-pool-mail-template/routes
+                                         :authorizers [auth/admin-scopes?, pool-auth/pool-inventory-manager?]}
           :inventory-pool-mail-templates {:handler inventory-pool-mail-templates/routes
-                                          :authorizers [auth/admin-scopes?]}
+                                          :authorizers [auth/admin-scopes?, pool-auth/pool-inventory-manager?]}
           :inventory-pool-user-direct-roles {:handler inventory-pool-user-direct-roles/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-groups-roles {:handler inventory-pool-user-groups-roles/groups-roles :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
           :inventory-pool-user-roles {:handler inventory-pool-user-roles/routes :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}

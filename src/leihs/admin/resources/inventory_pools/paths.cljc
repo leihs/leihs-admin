@@ -42,12 +42,10 @@
 (def mail-templates-paths
   (branch "/mail-templates"
           (branch "/"
-                  (leaf "" :inventory-pool-mail-templates)
-                  (leaf "create" :inventory-pool-mail-template-create))
+                  (leaf "" :inventory-pool-mail-templates))
           (branch "/"
                   (param :mail-template-id)
                   (leaf "" :inventory-pool-mail-template)
-                  (leaf "/delete" :inventory-pool-mail-template-delete)
                   (leaf "/edit" :inventory-pool-mail-template-edit)
                   (leaf "/items" :inventory-pool-mail-template-items))))
 

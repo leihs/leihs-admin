@@ -8,12 +8,17 @@
    [leihs.admin.resources.mail-templates.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
+   [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-parameters*
   (reaction (-> @routing/state* :query-params
                 (assoc :term (-> @routing/state* :query-params-raw :term)))))
+
+(defonce pool-id*
+  (reaction (or (-> @routing/state* :route-params :inventory-pool-id presence)
+                ":inventory-pool-id")))
 
 (def current-url* (reaction (:route @routing/state*)))
 
@@ -35,7 +40,7 @@
     [global/core-table-component
      (-> @data* (get @fetch-route*) :mail-templates)
      #(path :inventory-pool-mail-template
-            {:mail-template-id (:id %), :inventory-pool-id @pool-core/id*})]))
+            {:mail-template-id (:id %), :inventory-pool-id @pool-id*})]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
