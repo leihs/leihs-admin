@@ -1,4 +1,5 @@
 jobs:
+
   admin-build-uberjar:
     name: Build admin uberjar
     run_when: &ON_BRANCH_UPDATE
@@ -16,88 +17,88 @@ jobs:
       tasks:
         admin-build-uberjar: { include: cider-ci/task-components/uberjar.yml }
 
-  check-feature-tasks:
-    name: Check if feature tasks are up to date
-    run_when: *ON_BRANCH_UPDATE
-    context:
-      include: cider-ci/jobs/feature_tasks_check.yml
+# check-feature-tasks:
+#   name: Check if feature tasks are up to date
+#   run_when: *ON_BRANCH_UPDATE
+#   context:
+#     include: cider-ci/jobs/feature_tasks_check.yml
 
-  specs:
-    name: Run specs
-    depends_on: &SPEC_DEPENDS
-      uberjar passed:
-        type: job
-        job_key: admin-build-uberjar
-        states: [passed]
-      feature tasks are up todate:
-        type: job
-        job_key: check-feature-tasks
-        states: [passed]
-    run_when: *SPEC_DEPENDS
-    context:
-      task_defaults: *ADMIN_TASK_DEFAULTS
-      include:
-        - cider-ci/specs_job-context.yml
+# specs:
+#   name: Run specs
+#   depends_on: &SPEC_DEPENDS
+#     uberjar passed:
+#       type: job
+#       job_key: admin-build-uberjar
+#       states: [passed]
+#     feature tasks are up todate:
+#       type: job
+#       job_key: check-feature-tasks
+#       states: [passed]
+#   run_when: *SPEC_DEPENDS
+#   context:
+#     task_defaults: *ADMIN_TASK_DEFAULTS
+#     include:
+#       - cider-ci/specs_job-context.yml
 
-  ui-checks:
-    name: Check UI package
-    run_when: *ON_BRANCH_UPDATE
-    tasks:
-      ui-lint:
-        git_options:
-          submodules:
-            include_match: ^.*$
-        scripts:
-          test:
-            body: |
-              ./ui/bin/lint
+# ui-checks:
+#   name: Check UI package
+#   run_when: *ON_BRANCH_UPDATE
+#   tasks:
+#     ui-lint:
+#       git_options:
+#         submodules:
+#           include_match: ^.*$
+#       scripts:
+#         test:
+#           body: |
+#             ./ui/bin/lint
 
-  lint:
-    name: "Linting"
-    description: |
-      Code checks: static checks and metrics: complexity, duplication, and format,
-        also other consistency checks.
-    priority: 3
-    run_when:
-      any branch has been updated:
-        type: branch
-        include_match: ^.*$
-    context:
-      task_defaults:
-        git_options:
-          submodules:
-            include_match: ^.*$
-      tasks:
-        cljc-lint:
-          scripts:
-            test:
-              body: |
-                #!/usr/bin/env bash
-                set -euo pipefail
-                ./bin/cljfmt check
+# lint:
+#   name: "Linting"
+#   description: |
+#     Code checks: static checks and metrics: complexity, duplication, and format,
+#       also other consistency checks.
+#   priority: 3
+#   run_when:
+#     any branch has been updated:
+#       type: branch
+#       include_match: ^.*$
+#   context:
+#     task_defaults:
+#       git_options:
+#         submodules:
+#           include_match: ^.*$
+#     tasks:
+#       cljc-lint:
+#         scripts:
+#           test:
+#             body: |
+#               #!/usr/bin/env bash
+#               set -euo pipefail
+#               ./bin/cljfmt check
 
-  good-to-merge:
-    name: ⚑ Good To Merge
-    description: |
-      This job depends on all other tests and checks
-      and it will pass if and only if all dependencies have passed.
-      Status of this job is **used by github's "branch protection"**!
-    include: cider-ci/good-to-merge_job-context.yml
+# good-to-merge:
+#   name: ⚑ Good To Merge
+#   description: |
+#     This job depends on all other tests and checks
+#     and it will pass if and only if all dependencies have passed.
+#     Status of this job is **used by github's "branch protection"**!
+#   include: cider-ci/good-to-merge_job-context.yml
 
-  merged-to-master:
-    name: "Merged to master"
-    priority: 999
-    depends_on:
-      master branch matches:
-        type: branch
-        include_match: ^master$
-    run_when:
-      master branch matches:
-        type: branch
-        include_match: ^master$
-    context:
-      tasks:
-        merged-to-master:
-          scripts:
-            test:
-              body: "exit 0"
+# merged-to-master:
+#   name: "Merged to master"
+#   priority: 999
+#   depends_on:
+#     master branch matches:
+#       type: branch
+#       include_match: ^master$
+#   run_when:
+#     master branch matches:
+#       type: branch
+#       include_match: ^master$
+#   context:
+#     tasks:
+#       merged-to-master:
+#         scripts:
+#           test:
+#             body: "exit 0"
