@@ -25,6 +25,8 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.fields.main :as inventory-pool-fields]
    [leihs.admin.resources.inventory-pools.inventory-pool.groups.group.roles.main :as inventory-pool-group-roles]
    [leihs.admin.resources.inventory-pools.inventory-pool.groups.main :as inventory-pool-groups]
+   [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.main :as inventory-pool-mail-template]
+   [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.main :as inventory-pool-mail-templates]
    [leihs.admin.resources.inventory-pools.inventory-pool.main :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.opening-times.main :as inventory-pool-opening-times]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as inventory-pool-users]
@@ -93,6 +95,8 @@
    :inventory-pool-fields #'inventory-pool-fields/page
    :inventory-pool-group-roles #'inventory-pool-group-roles/page
    :inventory-pool-groups #'inventory-pool-groups/page
+   :inventory-pool-mail-template #'inventory-pool-mail-template/page
+   :inventory-pool-mail-templates #'inventory-pool-mail-templates/page
    :inventory-pool-opening-times #'inventory-pool-opening-times/page
    :inventory-pool-user #'inventory-pool-user/page
    :inventory-pool-user-edit #'inventory-pool-user-edit/page

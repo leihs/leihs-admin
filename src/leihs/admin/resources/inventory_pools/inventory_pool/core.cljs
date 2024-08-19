@@ -108,7 +108,16 @@
        {:active (clojure.string/includes? (:path @routing/state*) href)
         :href href})
      [icons/award]
-     " Entitlement Groups "]]])
+     " Entitlement Groups "]]
+
+   [:> Nav.Item
+    [:> Nav.Link
+     (let [href (path :inventory-pool-mail-templates
+                      {:inventory-pool-id @id*})]
+       {:active (clojure.string/includes? (:path @routing/state*) href)
+        :href href})
+     [icons/mail-template]
+     " Mail Templates "]]])
 
 (defn name-component []
   [:<>

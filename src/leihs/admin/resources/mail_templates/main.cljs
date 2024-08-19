@@ -43,10 +43,10 @@
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn link-to-mail-template
-  [mail-template inner & {:keys [authorizers]
-                          :or {authorizers []}}]
+  [mail-template path-fn inner & {:keys [authorizers]
+                                  :or {authorizers []}}]
   (if (auth/allowed? authorizers)
-    [:a {:href (path :mail-template {:mail-template-id (:id mail-template)})} inner]
+    [:a {:href (path-fn mail-template)} inner]
     inner))
 
 (defn language-locales-options [data]
@@ -89,7 +89,10 @@
 
 (defn name-td-component [mail-template]
   [:td {:key :name}
-   [link-to-mail-template mail-template [:span (:name mail-template)]
+   [link-to-mail-template
+    mail-template
+    #(path :mail-template {:mail-template-id (:id %)})
+    [:span (:name mail-template)]
     :authorizers [auth/admin-scopes?]]])
 
 (defn type-th-component []
@@ -104,7 +107,7 @@
 (defn language-locale-td-component [mail-template]
   [:td.text-left {:key :language_locale} (:language_locale mail-template)])
 
-;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn mail-templates-thead-component [more-cols]
   [:tr
@@ -119,23 +122,24 @@
    (for [[idx col] (map-indexed vector more-cols)]
      ^{:key idx} [col mail-template])])
 
-(defn core-table-component [hds tds mail-templates]
+(defn core-table-component [mail-templates name-td-component]
   (if-let [mail-templates (seq mail-templates)]
-    [table/container {:className "mail-templates"
-                      :actions [table/toolbar]
-                      :header [mail-templates-thead-component hds]
-                      :body (doall (for [mail-template mail-templates]
-                                     ^{:key (:id mail-template)}
-                                     [mail-template-row-component mail-template tds]))}]
+    (let [hds [name-th-component type-th-component language-locale-th-component]
+          tds [name-td-component type-td-component language-locale-td-component]]
+      [table/container {:className "mail-templates"
+                        :actions [table/toolbar]
+                        :header [mail-templates-thead-component hds]
+                        :body (doall (for [mail-template mail-templates]
+                                       ^{:key (:id mail-template)}
+                                       [mail-template-row-component mail-template tds]))}])
     [:div.alert.alert-info.text-center "No (more) mail-templates found."]))
 
-(defn table-component [hds tds]
+(defn table-component []
   (if-not (contains? @data* @fetch-route*)
-    [:<>
-     [wait-component]]
-    [core-table-component hds tds (-> @data*
-                                      (get @fetch-route*)
-                                      :mail-templates)]))
+    [wait-component]
+    [core-table-component
+     (-> @data* (get @fetch-route*) :mail-templates)
+     name-td-component]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -173,7 +177,5 @@
       "These are intial mail templates which are copied for a new inventory pool when it gets created. "
       "They can then be further edited inside a particular inventory pool."]
      [filter-component]
-     [table-component
-      [name-th-component type-th-component language-locale-th-component]
-      [name-td-component type-td-component language-locale-td-component]]
+     [table-component]
      [debug-component]]]])

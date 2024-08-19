@@ -39,6 +39,16 @@
                   (leaf "/groups-roles/" :inventory-pool-user-groups-roles)
                   (leaf "/suspension" :inventory-pool-user-suspension))))
 
+(def mail-templates-paths
+  (branch "/mail-templates"
+          (branch "/"
+                  (leaf "" :inventory-pool-mail-templates))
+          (branch "/"
+                  (param :mail-template-id)
+                  (leaf "" :inventory-pool-mail-template)
+                  (leaf "/edit" :inventory-pool-mail-template-edit)
+                  (leaf "/items" :inventory-pool-mail-template-items))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def paths
@@ -57,4 +67,5 @@
                   users-paths
                   delegations/paths
                   groups-paths
-                  entitlement-groups-paths)))
+                  entitlement-groups-paths
+                  mail-templates-paths)))

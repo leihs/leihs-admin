@@ -51,6 +51,7 @@
                     ":inventory-pool-groups"
                     ":inventory-pool-opening-times"
                     ":inventory-pool-entitlement-groups"
+                    ":inventory-pool-mail-templates"
                     ":inventory-pool-users"
                     ":inventory-pool-fields"]
    :inventory-pool-delegation [":inventory-pool-delegation.*"]

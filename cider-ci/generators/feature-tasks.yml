@@ -603,6 +603,16 @@
   environment_variables:
     FEATURE_NAME: "Managing inventory-pools: some users and at least one admin as two users with exclusive lending_manager roles in two pools the manager1 of pool1 via the UI 01"
     FEATURE: './spec/features/inventory-pools/listing_spec.rb[1:1:1:2:1]'
+'./spec/features/inventory-pools/mail_templates_spec.rb[1:1]':
+  name: "Mail templates in pool 01"
+  environment_variables:
+    FEATURE_NAME: "Mail templates in pool 01"
+    FEATURE: './spec/features/inventory-pools/mail_templates_spec.rb[1:1]'
+'./spec/features/inventory-pools/mail_templates_spec.rb[1:2]':
+  name: "Mail templates in pool 02"
+  environment_variables:
+    FEATURE_NAME: "Mail templates in pool 02"
+    FEATURE: './spec/features/inventory-pools/mail_templates_spec.rb[1:2]'
 './spec/features/inventory-pools/users/admin_manages_roles_spec.rb[1:1:1]':
   name: "Manage inventory-pool users   an admin, a pool, and  several users 01"
   environment_variables:

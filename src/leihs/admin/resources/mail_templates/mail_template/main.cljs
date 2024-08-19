@@ -8,7 +8,7 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
 
-(defn info-table []
+(defn info-table [data]
   [table/container
    {:className "mail-template"
     :borders false
@@ -17,29 +17,29 @@
     [:<>
      [:tr.name
       [:td "Name" [:small " (name)"]]
-      [:td.name  (:name @core/data*)]]
+      [:td.name  (:name data)]]
      [:tr.type
       [:td "Type" [:small " (type)"]]
-      [:td.type (:type @core/data*)]]
+      [:td.type (:type data)]]
      [:tr.language
       [:td "Language Locale" [:small " (language_locale)"]]
-      [:td.language (:language_locale @core/data*)]]
+      [:td.language (:language_locale data)]]
      [:tr.format
       [:td "Format" [:small " (format)"]]
-      [:td.format (:format @core/data*)]]
+      [:td.format (:format data)]]
      [:tr.body {:style {:white-space "break-spaces"}}
       [:td "Body" [:small " (body)"]]
-      [:td.body (:body @core/data*)]]
+      [:td.body (:body data)]]
      [:tr.variables {:style {:white-space "break-spaces"}}
       [:td "Variables" [:small " (variables)"]]
       [:td.variables
        (core/template-variables)]]]}])
 
-(defn header []
-  (let [name (:name @core/data*)]
+(defn header [data path]
+  (let [name (:name data)]
     (fn []
       [:header.my-5
-       [breadcrumbs/main  {:to (path :mail-templates)}]
+       [breadcrumbs/main {:to path}]
        [:h1.mt-3 name]])))
 
 (defn page []
@@ -52,10 +52,10 @@
       [wait-component]]
 
      [:article.mail-template
-      [header]
+      [header @core/data* (path :mail-templates)]
 
       [:section.mb-5
-       [info-table]
+       [info-table @core/data*]
        [edit/button]
        [edit/dialog]]
 

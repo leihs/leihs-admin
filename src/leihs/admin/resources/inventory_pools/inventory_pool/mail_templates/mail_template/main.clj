@@ -1,57 +1,31 @@
-(ns leihs.admin.resources.mail-templates.mail-template.main
+(ns leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.main
   (:require
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
+   [leihs.admin.resources.mail-templates.mail-template.main :as global]
    [next.jdbc.sql :refer [query update!] :rename {query jdbc-query update! jdbc-update!}]))
-
-;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def write-fields #{:body})
 
 ;;; mail-template ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn mail-template-query [mail-template-id]
-  (-> (sql/select :*)
-      (sql/from :mail_templates)
-      (sql/where [:= :id mail-template-id])))
-
-(defn mail-template
-  ([tx mail-template-id]
-   (mail-template tx mail-template-id nil))
-  ([tx mail-template-id inventory-pool-id]
-   (-> mail-template-id
-       mail-template-query
-       (cond-> inventory-pool-id
-         (sql/where [:= :inventory_pool_id inventory-pool-id]))
-       sql-format
-       (->> (jdbc-query tx))
-       first)))
-
-(defn assert-global [template]
-  (when-not (:is_template_template template)
-    (throw (ex-info "This is not a global mail template (is_template_template)!"
-                    {:status 403}))))
-
 (defn get-mail-template
-  [{tx :tx {mail-template-id :mail-template-id} :route-params}]
-  (let [template (mail-template tx mail-template-id)]
-    (assert-global template)
+  [{tx :tx {:keys [mail-template-id inventory-pool-id]} :route-params}]
+  (let [template (global/mail-template tx mail-template-id inventory-pool-id)]
     {:body template}))
 
 ;;; update mail-template ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn patch-mail-template
-  [{{mail-template-id :mail-template-id} :route-params tx :tx data :body :as request}]
-  (let [template (mail-template tx mail-template-id)]
-    (assert-global template))
+  [{{:keys [mail-template-id inventory-pool-id]} :route-params
+    tx :tx data :body :as request}]
   (when (-> (sql/select [true :exists])
             (sql/from :mail_templates)
+            (sql/where [:= :inventory_pool_id inventory-pool-id])
             (sql/where [:= :id mail-template-id])
             sql-format
             (->> (jdbc-query tx))
             first :exists)
     (jdbc-update! tx :mail_templates
-                  (select-keys data write-fields)
+                  (select-keys data global/write-fields)
                   ["id = ?" mail-template-id])
     {:status 204}))
 

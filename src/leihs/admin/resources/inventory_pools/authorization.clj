@@ -3,17 +3,25 @@
   (:require
    [leihs.admin.common.roles.core :as roles]
    [leihs.core.auth.core :refer [http-safe?]]
-   [leihs.core.core :refer [str]]))
+   [leihs.core.core :refer [str]]
+   [taoensso.timbre :refer [error warn info debug spy]]))
 
-(defn some-lending-manager? [request]
+(defn some-manager? [role request]
   (if (some
-       #(:lending_manager (-> % :role roles/expand-to-hierarchy set))
+       #(role (-> % :role roles/expand-to-hierarchy set))
        (->> request :authenticated-entity :access-rights))
     true
     false))
 
+(def some-lending-manager? (partial some-manager? :lending_manager))
+(def some-inventory-manager? (partial some-manager? :inventory_manager))
+
 (defn some-lending-manager-and-http-safe? [request]
   (and (some-lending-manager? request)
+       (http-safe? request)))
+
+(defn some-inventory-manager-and-http-safe? [request]
+  (and (some-inventory-manager? request)
        (http-safe? request)))
 
 (defn pool-access-right-for-route [request]
@@ -23,26 +31,22 @@
          first)))
 
 (defn pool-lending-manager? [request]
-  (if (if-let [access-right (pool-access-right-for-route request)]
-        (#{"lending_manager" "inventory_manager"} (:role access-right))
-        false)
-    true
+  (if-let [access-right (pool-access-right-for-route request)]
+    (#{"lending_manager" "inventory_manager"} (:role access-right))
     false))
 
 (defn pool-lending-manager-and-http-safe? [request]
-  (if (if-let [access-right (pool-access-right-for-route request)]
-        (#{"lending_manager" "inventory_manager"} (:role access-right))
-        false)
-    (if-not (http-safe? request)
-      false
-      true)))
+  (and (pool-lending-manager? request)
+       (http-safe? request)))
 
 (defn pool-inventory-manager? [request]
-  (if (if-let [access-right (pool-access-right-for-route request)]
-        (#{"inventory_manager"} (:role access-right))
-        false)
-    true
+  (if-let [access-right (pool-access-right-for-route request)]
+    (#{"inventory_manager"} (:role access-right))
     false))
+
+(defn pool-inventory-manager-and-http-safe? [request]
+  (and (pool-inventory-manager? request)
+       (http-safe? request)))
 
 ;#### debug ###################################################################
 
