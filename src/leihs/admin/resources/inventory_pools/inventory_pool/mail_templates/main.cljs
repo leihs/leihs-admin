@@ -3,11 +3,13 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.http-client.core :as http]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.resources.mail-templates.main :as global]
    [leihs.admin.resources.mail-templates.shared :as shared]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
+   [leihs.core.auth.core :as auth]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
@@ -34,13 +36,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn name-td-component [mail-template]
+  [:td {:key :name}
+   [global/link-to-mail-template
+    mail-template
+    #(path :inventory-pool-mail-template {:mail-template-id (:id %)
+                                          :inventory-pool-id @pool-id*})
+    [:span (:name mail-template)]
+    :authorizers [auth/admin-scopes? pool-auth/pool-inventory-manager?]]])
+
 (defn table-component [hds tds]
   (if-not (contains? @data* @fetch-route*)
     [wait-component]
     [global/core-table-component
      (-> @data* (get @fetch-route*) :mail-templates)
-     #(path :inventory-pool-mail-template
-            {:mail-template-id (:id %), :inventory-pool-id @pool-id*})]))
+     name-td-component]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

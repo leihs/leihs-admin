@@ -231,7 +231,7 @@
           :suppliers {:handler suppliers/routes :authorizers [auth/admin-scopes?]}
 
           :languages-settings {:handler languages-settings/routes
-                               :authorizers [auth/admin-scopes?]}
+                               :authorizers [auth/admin-scopes? pool-auth/some-inventory-manager-and-http-safe?]}
           :misc-settings {:handler misc-settings/routes
                           :authorizers [auth/admin-scopes?]}
           :smtp-settings {:handler smtp-settings/routes
