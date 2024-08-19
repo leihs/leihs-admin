@@ -1,12 +1,10 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.main
   (:require
-   [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
-   [leihs.admin.common.components.table :as table]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.core :as core]
-   [leihs.admin.resources.mail-templates.mail-template.main :as global]
-   [leihs.admin.resources.mail-templates.mail-template.edit :as global-edit]
    [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.edit :as edit]
+   [leihs.admin.resources.mail-templates.mail-template.edit :as global-edit]
+   [leihs.admin.resources.mail-templates.mail-template.main :as global]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
 

@@ -1,6 +1,5 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.mail-template.edit
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]

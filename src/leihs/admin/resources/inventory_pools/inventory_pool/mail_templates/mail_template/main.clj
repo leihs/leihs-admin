@@ -3,7 +3,6 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.mail-templates.mail-template.main :as global]
-   [leihs.core.uuid :refer [uuid]]
    [next.jdbc.sql :refer [query update!] :rename {query jdbc-query update! jdbc-update!}]))
 
 ;;; mail-template ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,7 +26,7 @@
             first :exists)
     (jdbc-update! tx :mail_templates
                   (select-keys data global/write-fields)
-                  ["id = ?" (uuid mail-template-id)])
+                  ["id = ?" mail-template-id])
     {:status 204}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

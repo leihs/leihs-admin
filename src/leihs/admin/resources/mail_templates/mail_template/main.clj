@@ -2,7 +2,6 @@
   (:require
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.core.uuid :refer [uuid]]
    [next.jdbc.sql :refer [query update!] :rename {query jdbc-query update! jdbc-update!}]))
 
 ;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -21,7 +20,6 @@
    (mail-template tx mail-template-id nil))
   ([tx mail-template-id inventory-pool-id]
    (-> mail-template-id
-       uuid
        mail-template-query
        (cond-> inventory-pool-id
          (sql/where [:= :inventory_pool_id inventory-pool-id]))
@@ -46,12 +44,15 @@
   [{{mail-template-id :mail-template-id} :route-params tx :tx data :body :as request}]
   (let [template (mail-template tx mail-template-id)]
     (assert-global template))
-  (when (->> ["SELECT true AS exists FROM mail_templates WHERE id = ?" (uuid mail-template-id)]
-             (jdbc-query tx)
-             first :exists)
+  (when (-> (sql/select [true :exists])
+            (sql/from :mail_templates)
+            (sql/where [:= :id mail-template-id])
+            sql-format
+            (->> (jdbc-query tx))
+            first :exists)
     (jdbc-update! tx :mail_templates
                   (select-keys data write-fields)
-                  ["id = ?" (uuid mail-template-id)])
+                  ["id = ?" mail-template-id])
     {:status 204}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
