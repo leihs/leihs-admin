@@ -24,5 +24,10 @@ feature 'Mail templates in pool', type: :feature do
     select "de-CH", from: "language_locale"
 
     click_on "approved"
+    click_on "Edit"
+    body = Faker::Lorem.paragraph
+    fill_in "body", with: body
+    click_on "Save"
+    expect(page).to have_content body
   end
 end
