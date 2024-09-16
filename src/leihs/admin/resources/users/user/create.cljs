@@ -21,8 +21,11 @@
                         :url (path :users)
                         :method :post
                         :json-params  (-> @data*
-                                          (update-in [:extended_info]
-                                                     (fn [s] (.parse js/JSON s))))}
+                                          (update-in
+                                           [:extended_info]
+                                           (fn [s] (js/JSON.parse
+                                                    (js/JSON.stringify
+                                                     (clj->js s))))))}
                        http-client/request :chan <!
                        http-client/filter-success! :body)]
         (search-params/delete-from-url "action")

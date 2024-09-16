@@ -187,7 +187,6 @@ feature 'Manage inventory-pools', type: :feature do
             within('#holidays') do
               click_on 'Edit'
             end
-            binding.pry
             within('.modal') do
               within("tbody") do
                 expect(all("tr").count).to eq 2

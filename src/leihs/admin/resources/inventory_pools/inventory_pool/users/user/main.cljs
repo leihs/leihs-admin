@@ -168,11 +168,11 @@
       [:div.row
        [:div.col-md-6
         [:hr] [groups]]
-       [:div.col-md-6
+       [:div.col-md-6.extended-info
         [:hr]
         [:h2 "Extended User Info"]
         (when-let [ext-info (-> @user-data* :extended_info presence)]
-          [:pre (.stringify js/JSON (.parse js/JSON ext-info) nil 2)])]]
+          [:pre.text-wrap (js/JSON.stringify (clj->js ext-info))])]]
 
       [user-edit/dialog]
       [debug-component]])])
