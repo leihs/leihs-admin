@@ -633,6 +633,11 @@
   environment_variables:
     FEATURE_NAME: "Manage inventory-pool users   an admin, a pool, and  several users   managing the suspension of a user 03"
     FEATURE: './spec/features/inventory-pools/users/admin_manages_suspension_spec.rb[1:1:1:3]'
+'./spec/features/inventory-pools/users/display_extended_info_spec.rb[1:1:1]':
+  name: "Display extended info  an admin, a pool, and a user 01"
+  environment_variables:
+    FEATURE_NAME: "Display extended info  an admin, a pool, and a user 01"
+    FEATURE: './spec/features/inventory-pools/users/display_extended_info_spec.rb[1:1:1]'
 './spec/features/inventory-pools/users/inventory-manager_manages_roles_spec.rb[1:1:1]':
   name: "Manage inventory-pool users   an admin, a pool, an inventory_manager, and  several users 01"
   environment_variables:
