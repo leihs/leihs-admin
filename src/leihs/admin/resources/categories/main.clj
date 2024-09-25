@@ -29,8 +29,7 @@
                          shared/normalized-query-parameters)]
     (-> base-query
         (page/set-per-page-and-offset query-params)
-        #_(term-filter request)
-        )))
+        #_(term-filter request))))
 
 (defn index [{tx :tx :as request}]
   (let [offset (:offset query)]
