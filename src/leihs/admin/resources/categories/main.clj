@@ -4,12 +4,10 @@
    [clojure.set]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.admin.utils.query-params :as shared]
    [leihs.admin.utils.pagination :as page]
+   [leihs.admin.utils.query-params :as shared]
    [leihs.admin.utils.seq :as seq]
-   [leihs.core.core :refer [presence str]]
    [leihs.core.db :as db]
-   [leihs.core.uuid :refer [uuid]]
    [next.jdbc.sql :as jdbc]))
 
 (def base-query
@@ -18,9 +16,6 @@
       (sql/from :model_groups)
       (sql/where [:= :model_groups.type "Category"])
       (sql/order-by :model_groups.name)))
-
-(comment (-> base-query sql-format
-             (->> (jdbc/query (db/get-ds)))))
 
 ; (defn term-filter [query request]
 ;   (if-let [term (-> request :query-params-raw :term presence)]
@@ -57,9 +52,6 @@
     {:status 201, :body category}
     {:status 422
      :body "No category has been created."}))
-
-(comment (create {:tx (db/get-ds)
-                  :body {:name "Test Category"}}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
