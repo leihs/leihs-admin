@@ -3,15 +3,16 @@
   (:require
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.admin.resources.categories.main :as index]
+   [leihs.admin.resources.categories.shared :as shared]
+   [leihs.core.db :as db]
    [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [query update! delete!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
 
-;;; building ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn query [id]
-  (-> index/base-query
+  (-> shared/base-query
       (sql/where [:= :model_groups.id id])))
 
 (defn get-one [tx id]
@@ -25,7 +26,33 @@
              (->> (jdbc-query tx))
              first)})
 
-;;; delete group ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; descendents ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn children [tx category]
+  (-> (sql/select [:model_group_links.child_id :id]
+                  :model_groups.name,
+                  :model_group_links.label)
+      (sql/from :model_group_links)
+      (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
+      (sql/where [:= :model_group_links.parent_id (:id category)])
+      sql-format
+      (->> (jdbc-query tx))))
+
+(defn descendents [tx initial-category]
+  (letfn [(descendents-h [category visited-ids]
+            (if (contains? visited-ids (:id category))
+              category
+              (let [visited-ids* (conj visited-ids (:id category))
+                    children-with-descendents (map #(descendents-h % visited-ids*)
+                                                   (children tx category))]
+                (assoc category :children children-with-descendents))))]
+    (descendents-h initial-category #{})))
+
+(comment
+  (children (db/get-ds) #uuid "56336471-2ce5-541c-be64-7fdb891f49f5")
+  (time (descendents (db/get-ds) {:id #uuid "56336471-2ce5-541c-be64-7fdb891f49f5"})))
+
+;;; delete category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn delete
   [{tx :tx {id :category-id} :route-params}]
@@ -36,7 +63,7 @@
     {:status 204}
     {:status 404 :body "Deleting category failed without error."}))
 
-;;; update building ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; update category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn patch
   [{{id :category-id} :route-params tx :tx data :body :as request}]

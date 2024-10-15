@@ -4,18 +4,13 @@
    [clojure.set]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
+   [leihs.admin.resources.categories.category.main :as category]
+   [leihs.admin.resources.categories.shared :as shared]
    [leihs.admin.utils.pagination :as page]
-   [leihs.admin.utils.query-params :as shared]
+   [leihs.admin.utils.query-params :as query-params]
    [leihs.admin.utils.seq :as seq]
    [leihs.core.db :as db]
    [next.jdbc.sql :as jdbc]))
-
-(def base-query
-  (-> (sql/select :model_groups.id
-                  :model_groups.name)
-      (sql/from :model_groups)
-      (sql/where [:= :model_groups.type "Category"])
-      (sql/order-by :model_groups.name)))
 
 ; (defn term-filter [query request]
 ;   (if-let [term (-> request :query-params-raw :term presence)]
@@ -26,19 +21,33 @@
 (defn query [request]
   (let [query-params (-> request
                          :query-params
-                         shared/normalized-query-parameters)]
-    (-> base-query
+                         query-params/normalized-query-parameters)]
+    (-> shared/base-query
         (page/set-per-page-and-offset query-params)
         #_(term-filter request))))
 
-(defn index [{tx :tx :as request}]
-  (let [offset (:offset query)]
-    {:body
-     {:categories (-> request query
-                      sql-format
-                      (->> (jdbc/query tx)
-                           (seq/with-index offset)
-                           seq/with-page-index))}}))
+(defn roots [tx]
+  (-> shared/base-query
+      (sql/select [nil :label])
+      (sql/where
+       [:not
+        [:exists
+         (-> (sql/select 1)
+             (sql/from :model_group_links)
+             (sql/where [:= :model_group_links.child_id :model_groups.id]))]])
+      sql-format
+      ; (sql-format :inline true)
+      (->> (jdbc/query tx))))
+
+(defn tree [tx]
+  (map #(category/descendents tx %) (roots tx)))
+
+(comment
+  (count (roots (db/get-ds)))
+  (time (tree (db/get-ds))))
+
+(defn index [{tx :tx}]
+  {:body {:categories (tree tx)}})
 
 ;;; create category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
