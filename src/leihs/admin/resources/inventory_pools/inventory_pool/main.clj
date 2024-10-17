@@ -25,7 +25,8 @@
                     :automatic_suspension
                     :automatic_suspension_reason
                     :required_purpose
-                    :reservation_advance_days})
+                    :reservation_advance_days
+                    :borrow_maximum_reservation_duration})
 
 (def create-fields (set/union base-fields #{:is_active}))
 (def patch-fields (set/union base-fields extra-fields))

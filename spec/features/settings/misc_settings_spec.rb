@@ -28,7 +28,6 @@ feature 'SMTP-Settings' do
           fill_in "custom_head_tag", with: "My Header ???"
           fill_in "time_zone", with: "Berlin"
           fill_in "local_currency_string", with: "CHF"
-          fill_in "maximum_reservation_time", with: "500"
           fill_in "timeout_minutes", with: "21"
           check "deliver_received_order_notifications"
           check "include_customer_email_in_contracts"
@@ -48,7 +47,6 @@ feature 'SMTP-Settings' do
           expect(page.text).to have_content 'My Header ???'
           expect(page.text).to have_content 'Berlin'
           expect(page.text).to have_content 'CHF'
-          expect(page.text).to have_content '500'
           expect(page.text).to have_content '21'
           within 'tr .deliver-received-order-notifications' do 
             expect(page.text).to have_content 'true'

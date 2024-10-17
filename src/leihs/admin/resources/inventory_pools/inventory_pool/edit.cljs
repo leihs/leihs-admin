@@ -75,9 +75,14 @@
      :label "Hand Over Purpose"]]
    [:div.mb-3
     [form-components/input-component data* [:reservation_advance_days]
-     :label "Reservation Advance Days"
+     :label "Borrow: Reservation Advance Days"
      :type :number
-     :min 0]]])
+     :min 0]]
+   [:div.mb-3
+    [form-components/input-component data* [:borrow_maximum_reservation_duration]
+     :label "Borrow: Maximum Reservation Duration"
+     :type :number
+     :min 1]]])
 
 (def open*
   (reaction
