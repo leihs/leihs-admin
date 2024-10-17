@@ -125,7 +125,9 @@
                   (param :category-id)
                   (leaf "" :category)
                   (leaf "/delete" :category-delete)
-                  (leaf "/edit" :category-edit))))
+                  (leaf "/edit" :category-edit)
+                  (branch "/models"
+                          (leaf "" :category-models)))))
 
 (def rooms-paths
   (branch "/rooms"

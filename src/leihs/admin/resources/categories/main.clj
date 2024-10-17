@@ -1,5 +1,4 @@
 (ns leihs.admin.resources.categories.main
-  (:refer-clojure :exclude [str keyword])
   (:require
    [clojure.set]
    [honey.sql :refer [format] :rename {format sql-format}]
@@ -9,14 +8,9 @@
    [leihs.admin.utils.pagination :as page]
    [leihs.admin.utils.query-params :as query-params]
    [leihs.admin.utils.seq :as seq]
+   [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
    [next.jdbc.sql :as jdbc]))
-
-; (defn term-filter [query request]
-;   (if-let [term (-> request :query-params-raw :term presence)]
-;     (-> query
-;         (sql/where [:ilike :model_groups.name (str "%" term "%")]))
-;     query))
 
 (defn query [request]
   (let [query-params (-> request
@@ -29,6 +23,7 @@
 (defn roots [tx]
   (-> shared/base-query
       (sql/select [nil :label])
+      category/select-models-count
       (sql/where
        [:not
         [:exists
@@ -42,12 +37,33 @@
 (defn tree [tx]
   (map #(category/descendents tx %) (roots tx)))
 
-(comment
-  (count (roots (db/get-ds)))
-  (time (tree (db/get-ds))))
+(defn current-or-any-descendent? [pred category]
+  (or (pred category)
+      (some (partial current-or-any-descendent? pred)
+            (:children category))))
 
-(defn index [{tx :tx}]
-  {:body {:categories (tree tx)}})
+(defn deep-filter [pred tree]
+  (->> tree
+       (filter (partial current-or-any-descendent? pred))
+       (map #(update % :children (partial deep-filter pred)))))
+
+(defn term-filter [tree request]
+  (if-let [term (-> request :query-params-raw :term presence)]
+    (deep-filter #(re-matches (re-pattern (str "(?i).*" term ".*"))
+                              (:name %))
+                 tree)
+    tree))
+
+(defn index [{tx :tx :as request}]
+  {:body {:categories (-> (tree tx)
+                          (term-filter request))}})
+
+(comment
+  (require '[clojure.inspector :as inspector])
+  (require '[leihs.core.db :as db])
+  (let [tx (db/get-ds)]
+    (deep-filter #(re-matches #"(?i).*audio.*" (:name %))
+                 (tree tx))))
 
 ;;; create category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

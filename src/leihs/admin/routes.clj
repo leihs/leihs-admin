@@ -11,6 +11,7 @@
    [leihs.admin.resources.buildings.building.main :as building]
    [leihs.admin.resources.buildings.main :as buildings]
    [leihs.admin.resources.categories.category.main :as category]
+   [leihs.admin.resources.categories.category.models.main :as category-models]
    [leihs.admin.resources.categories.main :as categories]
    [leihs.admin.resources.groups.group.main :as group]
    [leihs.admin.resources.groups.group.users.main :as group-users]
@@ -139,6 +140,7 @@
           :building {:handler building/routes :authorizers [auth/admin-scopes?]}
           :buildings {:handler buildings/routes :authorizers [auth/admin-scopes?]}
           :category {:handler category/routes :authorizers [auth/admin-scopes?]}
+          :category-models {:handler category-models/routes :authorizers [auth/admin-scopes?]}
           :categories {:handler categories/routes :authorizers [auth/admin-scopes?]}
           :inventory-field {:handler inventory-field/routes :authorizers [auth/admin-scopes?]}
           :inventory-fields {:handler inventory-fields/routes :authorizers [auth/admin-scopes?]}

@@ -4,15 +4,32 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.shared :as shared]
-   [leihs.core.db :as db]
    [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [query update! delete!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn select-models-count [query]
+  (sql/select query
+              [(-> (sql/select :%count.*)
+                   (sql/from :model_links)
+                   (sql/where [:= :model_links.model_group_id :model_groups.id]))
+               :models_count]))
+
+(defn parents [tx category]
+  (-> (apply sql/select shared/fields)
+      (sql/select :model_group_links.label)
+      (sql/from :model_group_links)
+      (sql/join :model_groups
+                [:= :model_group_links.parent_id :model_groups.id])
+      (sql/where [:= :model_group_links.child_id (:id category)])
+      sql-format
+      (->> (jdbc-query tx))))
+
 (defn query [id]
   (-> shared/base-query
+      select-models-count
       (sql/where [:= :model_groups.id id])))
 
 (defn get-one [tx id]
@@ -32,6 +49,7 @@
   (-> (sql/select [:model_group_links.child_id :id]
                   :model_groups.name,
                   :model_group_links.label)
+      select-models-count
       (sql/from :model_group_links)
       (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
       (sql/where [:= :model_group_links.parent_id (:id category)])
@@ -49,8 +67,16 @@
     (descendents-h initial-category #{})))
 
 (comment
-  (children (db/get-ds) #uuid "56336471-2ce5-541c-be64-7fdb891f49f5")
-  (time (descendents (db/get-ds) {:id #uuid "56336471-2ce5-541c-be64-7fdb891f49f5"})))
+  (require '[clojure.inspector :as inspector])
+  (require '[leihs.core.db :as db])
+  (let [tx (db/get-ds)
+        category (get-one tx #uuid "ec06d200-11a9-55f1-b9f5-cf4b36430c41")]
+    ; category
+    (parents tx category)
+    ; (children tx category)
+    ; (descendents tx category)
+    ; (inspector/inspect-tree #_time (descendents tx category))
+    ))
 
 ;;; delete category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
