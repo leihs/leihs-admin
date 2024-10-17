@@ -28,7 +28,6 @@ feature 'SMTP-Settings' do
           fill_in "custom_head_tag", with: "My Header ???"
           fill_in "time_zone", with: "Berlin"
           fill_in "local_currency_string", with: "CHF"
-          fill_in "maximum_reservation_time", with: "500"
           fill_in "timeout_minutes", with: "21"
           check "deliver_received_order_notifications"
           check "include_customer_email_in_contracts"
