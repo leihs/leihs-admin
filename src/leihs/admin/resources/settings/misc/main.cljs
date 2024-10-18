@@ -33,9 +33,6 @@
      [:tr.local-currency-string
       [:td "Location" [:small " (local_currency_string)"]]
       [:td.local-currency-string (:local_currency_string @core/data*)]]
-     [:tr.maximum-reservation-time
-      [:td "Maximum Reservation Time" [:small " (maximum_reservation_time)"]]
-      [:td.maximum-reservation-time (:maximum_reservation_time @core/data*)]]
      [:tr.timeout-minutes
       [:td "Timeout (minutes)" [:small " (timeout_minutes)"]]
       [:td.timeout-minutes (:timeout_minutes @core/data*)]]

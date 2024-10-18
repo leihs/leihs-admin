@@ -101,17 +101,6 @@
 
    [:> Row
     [:> Col
-     [:> Form.Group {:id "maximum_reservation_time"}
-      [:> Form.Label "Maximum Reservation Time"]
-      [:input.form-control
-       {:type "number"
-        :id "maximum_reservation_time"
-        :value (or (:maximum_reservation_time @data*) "")
-        :onChange #(swap! data* assoc :maximum_reservation_time (-> % .-target .-value int))}]
-      [:> Form.Text {:className "text-muted"}
-       "Maximum duration of reservations in days which applies to all inventory pools."]]]
-
-    [:> Col
      [:> Form.Group {:id "timeout_minutes"}
       [:> Form.Label "Timeout Minutes"]
       [:input.form-control

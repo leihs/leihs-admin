@@ -78,11 +78,11 @@
         "Whether the specification of hand over purpose is required."]
        [:td.required-purpose
         (toggle-component (:required_purpose @core/data*))]]
-      [:tr.reservation-advance-days
-       [property-td "Borrow: Reservation Advance Days" "reservation_advance_days"
+      [:tr.borrow-reservation-advance-days
+       [property-td "Borrow: Reservation Advance Days" "borrow_reservation_advance_days"
         "Minimum number of days required between reservation's created date and the expected hand over date when placed by a customer in the borrow app."]
-       [:td.reservation-advance-days
-        (:reservation_advance_days @core/data*)]]
+       [:td.borrow-reservation-advance-days
+        (:borrow_reservation_advance_days @core/data*)]]
       [:tr.borrow-maximum-reservation-duration
        [property-td "Borrow: Maximum Reservation Duration" "borrow_maximum_reservation_duration"
         "Maximum duration in days allowed for a reservation when placed by a customer in the borrow app."]
