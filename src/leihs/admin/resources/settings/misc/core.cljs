@@ -113,14 +113,6 @@
 
    [:> Row
     [:> Col
-     [:> Form.Group {:id "deliver_received_order_notifications"}
-      [:> Form.Check
-       {:type "checkbox"
-        :id "deliver_received_order_notifications"
-        :label "Deliver Received Order Notifications"
-        :checked (:deliver_received_order_notifications @data*)
-        :onChange #(swap! data* assoc :deliver_received_order_notifications (-> % .-target .-checked))}]]]
-    [:> Col
      [:> Form.Group {:id "email_signature"}
       [:> Form.Label "Email Signature"]
       [:textarea.form-control

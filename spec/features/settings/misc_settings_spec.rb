@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'pry'
 
-feature 'SMTP-Settings' do
+feature 'Misc Settings' do
 
   context 'a plain admin exist' do
     before :each do
@@ -29,7 +29,6 @@ feature 'SMTP-Settings' do
           fill_in "time_zone", with: "Berlin"
           fill_in "local_currency_string", with: "CHF"
           fill_in "timeout_minutes", with: "21"
-          check "deliver_received_order_notifications"
           check "include_customer_email_in_contracts"
           fill_in "email_signature", with: "Your awesome Lending Desk"
           check "lending_terms_acceptance_required_for_order"
@@ -48,9 +47,6 @@ feature 'SMTP-Settings' do
           expect(page.text).to have_content 'Berlin'
           expect(page.text).to have_content 'CHF'
           expect(page.text).to have_content '21'
-          within 'tr .deliver-received-order-notifications' do 
-            expect(page.text).to have_content 'true'
-          end
           within 'tr .include-customer-email-in-contracts' do 
             expect(page.text).to have_content 'true'
           end
@@ -82,15 +78,15 @@ feature 'SMTP-Settings' do
 
           get = @http_client.get "/admin/settings/misc/"
           expect(get).to be_success
-          expect(get.body["deliver_received_order_notifications"]).to be false
+          expect(get.body["show_contact_details_on_customer_order"]).to be false
 
-          patch = @http_client.patch "/admin/settings/misc/", {deliver_received_order_notifications: true}.to_json
+          patch = @http_client.patch "/admin/settings/misc/", {show_contact_details_on_customer_order: true}.to_json
           expect(patch).to be_success
-          expect(patch.body["deliver_received_order_notifications"]).to be true
+          expect(patch.body["show_contact_details_on_customer_order"]).to be true
 
           get = @http_client.get "/admin/settings/misc/"
           expect(get).to be_success
-          expect(get.body["deliver_received_order_notifications"]).to be true
+          expect(get.body["show_contact_details_on_customer_order"]).to be true
 
         end
 

@@ -754,14 +754,14 @@
     FEATURE_NAME: "SMTP-Settings a plain admin exist a plain_admin via the UI 01"
     FEATURE: './spec/features/settings/languages_settings_spec.rb[1:1:1:1:1]'
 './spec/features/settings/misc_settings_spec.rb[1:1:1:1:1]':
-  name: "SMTP-Settings a plain admin exist a plain_admin via the UI 02"
+  name: "Misc Settings a plain admin exist a plain_admin via the UI 01"
   environment_variables:
-    FEATURE_NAME: "SMTP-Settings a plain admin exist a plain_admin via the UI 02"
+    FEATURE_NAME: "Misc Settings a plain admin exist a plain_admin via the UI 01"
     FEATURE: './spec/features/settings/misc_settings_spec.rb[1:1:1:1:1]'
 './spec/features/settings/misc_settings_spec.rb[1:1:1:2:1]':
-  name: "SMTP-Settings a plain admin exist a plain_admin via the API 01"
+  name: "Misc Settings a plain admin exist a plain_admin via the API 01"
   environment_variables:
-    FEATURE_NAME: "SMTP-Settings a plain admin exist a plain_admin via the API 01"
+    FEATURE_NAME: "Misc Settings a plain admin exist a plain_admin via the API 01"
     FEATURE: './spec/features/settings/misc_settings_spec.rb[1:1:1:2:1]'
 './spec/features/settings/smtp_settings_spec.rb[1:1:1:1:1]':
   name: "SMTP-Settings a system_admin and a plain admin exist a system_admin via the UI 01"

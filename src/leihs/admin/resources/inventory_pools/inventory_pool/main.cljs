@@ -78,6 +78,11 @@
         "Whether the specification of hand over purpose is required."]
        [:td.required-purpose
         (toggle-component (:required_purpose @core/data*))]]
+      [:tr.deliver-received-order-emails
+       [property-td "Deliver Received Order Emails" "deliver_received_order_emails"
+        "Receive an email to the pool's address when an order for this pool is submitted."]
+       [:td.deliver-received-order-emails
+        (toggle-component (:deliver_received_order_emails @core/data*))]]
       [:tr.borrow-reservation-advance-days
        [property-td "Borrow: Reservation Advance Days" "borrow_reservation_advance_days"
         "Minimum number of days required between reservation's created date and the expected hand over date when placed by a customer in the borrow app."]

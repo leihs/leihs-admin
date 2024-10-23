@@ -74,6 +74,9 @@
     [form-components/switch-component data* [:required_purpose]
      :label "Hand Over Purpose"]]
    [:div.mb-3
+    [form-components/switch-component data* [:deliver_received_order_emails]
+     :label "Deliver Received Order Emails"]]
+   [:div.mb-3
     [form-components/input-component data* [:borrow_reservation_advance_days]
      :label "Borrow: Reservation Advance Days"
      :type :number

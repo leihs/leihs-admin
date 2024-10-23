@@ -36,9 +36,6 @@
      [:tr.timeout-minutes
       [:td "Timeout (minutes)" [:small " (timeout_minutes)"]]
       [:td.timeout-minutes (:timeout_minutes @core/data*)]]
-     [:tr.deliver-received-order-notifications
-      [:td "Deliver Received Order Notifications" [:small " (deliver_received_order_notifications)"]]
-      [:td.deliver-received-order-notifications (str (:deliver_received_order_notifications @core/data*))]]
      [:tr.email-signature
       [:td "Email Signature" [:small " (email_signature)"]]
       [:td.email-signature {:style {:white-pace "break-spaces"}}

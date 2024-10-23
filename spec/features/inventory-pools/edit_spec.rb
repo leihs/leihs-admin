@@ -105,6 +105,7 @@ feature 'Manage inventory-pools', type: :feature do
           click_on_toggle 'automatic_suspension'
           fill_in 'automatic_suspension_reason', with: automatic_suspension_reason
           click_on_toggle 'required_purpose'
+          click_on_toggle 'deliver_received_order_emails'
           fill_in 'borrow_reservation_advance_days', with: borrow_reservation_advance_days
           fill_in 'borrow_maximum_reservation_duration', with: borrow_maximum_reservation_duration
 
@@ -120,6 +121,7 @@ feature 'Manage inventory-pools', type: :feature do
           expect(find("input#automatic_suspension", visible: false)).to be_checked
           expect(find("textarea#automatic_suspension_reason").value).to eq automatic_suspension_reason
           expect(find("input#required_purpose", visible: false)).to be_checked
+          expect(find("input#deliver_received_order_emails", visible: false)).to be_checked
           expect(find("input#borrow_reservation_advance_days").value).to eq borrow_reservation_advance_days.to_s
           expect(find("input#borrow_maximum_reservation_duration").value).to eq borrow_maximum_reservation_duration.to_s
         end

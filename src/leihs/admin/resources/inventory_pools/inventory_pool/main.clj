@@ -25,6 +25,7 @@
                     :automatic_suspension
                     :automatic_suspension_reason
                     :required_purpose
+                    :deliver_received_order_emails
                     :borrow_reservation_advance_days
                     :borrow_maximum_reservation_duration})
 
