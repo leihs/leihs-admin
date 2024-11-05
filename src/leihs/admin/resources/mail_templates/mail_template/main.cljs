@@ -3,7 +3,7 @@
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.mail-templates.mail-template.core :as core]
+   [leihs.admin.resources.mail-templates.mail-template.core :as global-core]
    [leihs.admin.resources.mail-templates.mail-template.edit :as edit]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
@@ -33,7 +33,7 @@
      [:tr.variables {:style {:white-space "break-spaces"}}
       [:td "Variables" [:small " (variables)"]]
       [:td.variables
-       (core/template-variables)]]]}])
+       (global-core/template-variables)]]]}])
 
 (defn header [data path]
   (let [name (:name data)]
@@ -45,18 +45,18 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(core/fetch)}]
+    {:did-mount #(global-core/fetch)}]
 
-   (if-not @core/data*
+   (if-not @global-core/data*
      [:div.my-5
       [wait-component]]
 
      [:article.mail-template
-      [header @core/data* (path :mail-templates)]
+      [header @global-core/data* (path :mail-templates)]
 
       [:section.mb-5
-       [info-table @core/data*]
+       [info-table @global-core/data*]
        [edit/button]
        [edit/dialog]]
 
-      [core/debug-component]])])
+      [global-core/debug-component]])])

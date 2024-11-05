@@ -46,15 +46,19 @@
      :label "Short name"
      :disabled is-editing
      :required true]]
+   [form-components/input-component data* [:description]
+    :label "Description"
+    :element :textarea
+    :rows 10]
    [:div
     [form-components/input-component data* [:email]
      :label "Email"
      :type :email
      :required true]]
-   [form-components/input-component data* [:description]
-    :label "Description"
+   [form-components/input-component data* [:email_signature]
+    :label "Email Signature"
     :element :textarea
-    :rows 10]
+    :rows 5]
    [form-components/input-component data* [:default_contract_note]
     :label "Default Contract Note"
     :element :textarea

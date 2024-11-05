@@ -6,6 +6,7 @@ feature 'Manage inventory-pools', type: :feature do
   let(:name) { Faker::Company.name}
   let(:shortname) { Faker::Name.initials }
   let(:email) { Faker::Internet.email }
+  let(:email_signature) { Faker::Markdown.sandwich }
   let(:description) { Faker::Markdown.sandwich }
   let(:default_contract_note) { Faker::Markdown.sandwich }
   let(:automatic_suspension_reason) { Faker::Markdown.sandwich }
@@ -100,6 +101,7 @@ feature 'Manage inventory-pools', type: :feature do
           expect(find("input#shortname")).to be_disabled
           fill_in 'description', with: description
           fill_in 'email', with: email
+          fill_in 'email_signature', with: email_signature
           fill_in 'default_contract_note', with: default_contract_note
           click_on_toggle 'print_contracts'
           click_on_toggle 'automatic_suspension'
@@ -116,6 +118,7 @@ feature 'Manage inventory-pools', type: :feature do
           expect(find("input#name").value).to eq name
           expect(find("textarea#description").value).to eq description
           expect(find("input#email").value).to eq email
+          expect(find("textarea#email_signature").value).to eq email_signature
           expect(find("textarea#default_contract_note").value).to eq default_contract_note
           expect(find("input#print_contracts", visible: false)).to be_checked
           expect(find("input#automatic_suspension", visible: false)).to be_checked

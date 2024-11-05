@@ -40,10 +40,6 @@
        [property-td "Short Name" "shortname"
         "Prefix for auto-generated inventory codes"]
        [:td.shortname (:shortname @core/data*)]]
-      [:tr.email
-       [property-td "Email" "email"
-        "from_address for emails send in the name of this pool"]
-       [:td.email (:email @core/data*)]]
       [:tr.description
        [property-td "Description" "description"
         "Visible for customers in the borrow app"]
@@ -52,6 +48,15 @@
                        :overflow-y "auto"
                        :height "200px"}}
          (:description @core/data*)]]]
+      [:tr.email
+       [property-td "Email" "email"
+        [:span [:i "from_address"] " for emails send in the name of this pool"]]
+       [:td.email (:email @core/data*)]]
+      [:tr.email-signature
+       [property-td "Email Signature" "email_signature"]
+       [:td.email-signature
+        {:style {:white-space "break-spaces"}}
+        (:email_signature @core/data*)]]
       [:tr.default-contract-note
        [property-td "Default Contract Note" "default_contract_note"]
        [:td.default-contract-note
