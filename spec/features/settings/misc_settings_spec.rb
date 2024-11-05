@@ -50,7 +50,7 @@ feature 'Misc Settings' do
           within 'tr .include-customer-email-in-contracts' do 
             expect(page.text).to have_content 'true'
           end
-          within 'tr .lending-terms-acceptance-required-for_order' do 
+          within 'tr .lending-terms-acceptance-required-for-order' do 
             expect(page.text).to have_content 'true'
           end
           within 'tr .show-contact-details-on-customer-order' do 

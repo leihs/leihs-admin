@@ -23,7 +23,7 @@ feature 'SMTP-Settings' do
 
           wait_until { page.has_content? "Domain Name" }
           click_on "Edit"
-          check "Sending emails enabled"
+          check "Sending Emails Enabled"
           fill_in "Server port", with: "2525"
           fill_in "Server address", with: "my-smtp-host"
           fill_in "Domain name", with: "my-domain"
@@ -39,7 +39,7 @@ feature 'SMTP-Settings' do
           wait_until{ all(".modal").empty? }
           wait_until { page.has_content? "Domain Name" }
 
-          within find('tr', text: "Sending EMails enabled") do
+          within find('tr', text: "Sending Emails Enabled") do
             expect(page.text).to have_content 'true'
           end
 

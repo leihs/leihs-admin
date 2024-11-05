@@ -102,7 +102,7 @@
    [:> Row
     [:> Col
      [:> Form.Group {:id "timeout_minutes"}
-      [:> Form.Label "Timeout Minutes"]
+      [:> Form.Label "Borrow: Cart Timeout"]
       [:input.form-control
        {:type "number"
         :id "timeout_minutes"
