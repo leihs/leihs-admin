@@ -1,0 +1,73 @@
+@import 'bootstrap/scss/bootstrap';
+
+.card-header-border {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: 0;
+}
+
+.card-no-border {
+  border: 0;
+}
+
+.icon {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  ul {
+    list-style-type: none;
+    @extend .list-group;
+    @extend .list-group-flush;
+    padding: 0;
+  }
+
+  li {
+    list-style-type: none;
+    padding-left: 0;
+    padding-right: 0;
+    @extend .list-group-item;
+    background-color: white;
+
+    .visible-on-hover {
+      visibility: hidden;
+    }
+
+    &:hover {
+      background-color: aliceblue;
+      .li {
+        background-color: white;
+      }
+
+      .visible-on-hover {
+        visibility: visible;
+      }
+    }
+  }
+
+  li:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.indent {
+  margin-left: 4rem;
+}
+
+.controls {
+  position: absolute;
+  left: 0;
+}
+
+.expanded {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+
+  li:first-child {
+    padding-top: 0;
+  }
+}

@@ -6,6 +6,7 @@ import sampleNavbarProps from './components/navbar/sampleProps.json'
 import DatePicker from './components/DatePicker'
 import DemoComponent from './components/DemoComponent'
 import Sidebar from './components/sidebar'
+import TreeView from './components/treeview'
 import Layout from './components/layout'
 import { faWarehouse, faBuilding } from '@fortawesome/free-solid-svg-icons'
 
@@ -111,6 +112,12 @@ function App() {
         <h2>Theme</h2>
         <button className="btn btn-primary mr-2">Primary button</button>
         <button className="btn btn-secondary">Primary button</button>
+
+        <h2 className="mt-5">Tree Viewer</h2>
+        <div className="mb-4">
+          <div>Treeviewer</div>
+          <TreeView />
+        </div>
       </div>
     </Layout>
   )
