@@ -19,37 +19,37 @@
      [:<>
       [:tr.active
        [:td [:strong "Active"] [:small " (active)"]]
-       [:td.active (str (:active @core/data*))]]
+       [:td.active (str (:active @core/inventory-field-data*))]]
       [:tr.label
        [:td [:strong "Label"] [:small " (data:label)"]]
-       [:td.label (-> @core/data* :data :label)]]
-      [:tr.label
+       [:td.label (-> @core/inventory-field-data* :data :label)]]
+      [:tr.dynamic
        [:td [:strong "Configurable"] [:small " (dynamic)"]]
        [:td.dynamic (str (:dynamic @core/inventory-field-data*))]]
       [:tr.required
        [:td [:strong "Required"] [:small " (data:required)"]]
-       [:td.required (-> @core/inventory-field-data* :data :required str)]]
+       [:td.required (str (or (-> @core/inventory-field-data* :data :required) false))]]
       [:tr.attribute
        [:td [:strong "Unique ID-Attribute"] [:small " (data:attribute)"]]
-       [:td.attribute (nth (-> @core/data* :data :attribute) 1)]]
+       [:td.attribute (str (-> @core/inventory-field-data* :data :attribute))]]
       [:tr.forPackage
        [:td [:strong "Enabled for packages"] [:small " (data:forPackage)"]]
-       [:td.forPackage (str (or (-> @core/data* :data :forPackage) false))]]
+       [:td.forPackage (str (or (-> @core/inventory-field-data* :data :forPackage) false))]]
       [:tr.owner
        [:td [:strong "Editable by owner only"] [:small " (data:permissions:owner)"]]
-       [:td.owner (str (or (-> @core/data* :data :permissions :owner) false))]]
+       [:td.owner (str (or (-> @core/inventory-field-data* :data :permissions :owner) false))]]
       [:tr.role
        [:td [:strong "Minimum role required for view"] [:small " (data:permissions:role)"]]
-       [:td.role (-> @core/data* :data :permissions :role)]]
+       [:td.role (or (-> @core/inventory-field-data* :data :permissions :role) "inventory_manager")]]
       [:tr.field-group
        [:td [:strong "Field Group"] [:small " (data:group)"]]
-       [:td.field-group (or (-> @core/data* :data :group) "None")]]
+       [:td.field-group (or (-> @core/inventory-field-data* :data :group) "None")]]
       [:tr.target-type
        [:td [:strong "Target"] [:small " (data:target_type)"]]
-       [:td.target-type (or (-> @core/data* :data :target_type) "License+Item")]]
+       [:td.target-type (or (-> @core/inventory-field-data* :data :target_type) "License+Item")]]
       [:tr.type
        [:td [:strong "Type"] [:small " (data:type)"]]
-       [:td.type (-> @core/data* :data :type)]]]}]])
+       [:td.type (-> @core/inventory-field-data* :data :type)]]]}]])
 
 (defn header []
   [:header.my-5
