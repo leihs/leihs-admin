@@ -4,6 +4,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.admin.resources.mail-templates.mail-template.core :as global-core]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
@@ -31,44 +32,6 @@
 (defn fetch []
   (http-client/route-cached-fetch cache* {:route @path*}))
 
-(def template-variables-for-order-component
-  [:ul
-   [:li [:code :comment]],
-   [:li [:code :email_signature]],
-   [:li [:code :inventory_pool.name]],
-   [:li [:code :inventory_pool.description]],
-   [:li [:code :order_url]]
-   [:li [:code :purpose]],
-   [:li [:code :reservations]
-    [:ul
-     [:li [:code :l.end_date]]
-     [:li [:code :l.model_name]],
-     [:li [:code :l.quantity]],
-     [:li [:code :l.start_date]]]],
-   [:li [:code :user.name]]])
-
-(def template-variables-for-user-component
-  [:ul
-   [:li [:code :due_date]],
-   [:li [:code :email_signature]],
-   [:li [:code :inventory_pool.name]],
-   [:li [:code :inventory_pool.description]],
-   [:li [:code :quantity]],
-   [:li [:code :reservations]
-    [:ul
-     [:li [:code :l.end_date]]
-     [:li [:code :l.item_inventory_code]]
-     [:li [:code :l.model_name]],
-     [:li [:code :l.quantity]],
-     [:li [:code :l.start_date]]]],
-   [:li [:code :user.name]]])
-
-(defn template-variables []
-  (case (:type @data* "order")
-    "order" template-variables-for-order-component
-    "user" template-variables-for-user-component
-    nil))
-
 (defn form [action data*]
   [:> Row
    [:> Col {:md 12 :lg 8}
@@ -84,7 +47,7 @@
         :onChange (fn [e] (swap! data* assoc :body (-> e .-target .-value)))}]]]]
    [:> Col
     [:div "Variables"
-     (template-variables)]]])
+     (global-core/template-variables)]]])
 
 (defn debug-component []
   (when (:debug @state/global-state*)

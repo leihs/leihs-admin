@@ -14,18 +14,21 @@
              update! jdbc-update!
              insert! jdbc-insert!}]))
 
-(def base-fields #{:id
-                   :name
-                   :shortname
+(def base-fields #{:id,
+                   :description
                    :email
-                   :description})
+                   :name
+                   :shortname})
 
-(def extra-fields #{:default_contract_note
-                    :print_contracts
-                    :automatic_suspension
+(def extra-fields #{:automatic_suspension
                     :automatic_suspension_reason
-                    :required_purpose
-                    :reservation_advance_days})
+                    :borrow_maximum_reservation_duration
+                    :borrow_reservation_advance_days
+                    :default_contract_note
+                    :deliver_received_order_emails
+                    :email_signature
+                    :print_contracts
+                    :required_purpose})
 
 (def create-fields (set/union base-fields #{:is_active}))
 (def patch-fields (set/union base-fields extra-fields))

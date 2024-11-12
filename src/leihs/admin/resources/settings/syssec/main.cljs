@@ -3,6 +3,7 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.icons :as icons]
+   [leihs.admin.resources.settings.shared.components :refer [row]]
    [leihs.admin.resources.settings.syssec.core :as core]
    [leihs.admin.resources.settings.syssec.edit :as edit]
    [leihs.admin.state :as state]
@@ -21,24 +22,12 @@
     :header [:tr [:th "Property"] [:th.w-75 "Value"]]
     :body
     [:<>
-     [:tr.external-base-url
-      [:td "External Base URL" [:small " (external_base_url)"]]
-      [:td (:external_base_url @core/data*)]]
-     [:tr.instance-element
-      [:td "Instance Element" [:small " (instance_element)"]]
-      [:td (:instance_element @core/data*)]]
-     [:tr.sessions-max-lifetime-secs
-      [:td "Sessions Max Lifetime Secs" [:small " (sessions_max_lifetime_secs)"]]
-      [:td (str (:sessions_max_lifetime_secs @core/data*))]]
-     [:tr.sessions-force-secure
-      [:td "Sessions Force Secure" [:small " (sessions_force_secure)"]]
-      [:td (str (:sessions_force_secure @core/data*))]]
-     [:tr.sessions-force-uniqueness
-      [:td "Sessions Force Uniqueness" [:small " (sessions_force_uniqueness)"]]
-      [:td (str (:sessions_force_uniqueness @core/data*))]]
-     [:tr.public-image-caching-enabled
-      [:td "Public Image Caching Enabled" [:small " (public_image_caching_enabled)"]]
-      [:td (str (:public_image_caching_enabled @core/data*))]]]}])
+     [row "External Base URL" :external_base_url @core/data*]
+     [row "Instance Element" :instance_element @core/data*]
+     [row "Sessions Max Lifetime Secs" :sessions_max_lifetime_secs @core/data*]
+     [row "Sessions Force Secure" :sessions_force_secure @core/data*]
+     [row "Sessions Force Uniqueness" :sessions_force_uniqueness @core/data*]
+     [row "Public Image Caching Enabled" :public_image_caching_enabled @core/data*]]}])
 
 (defn page []
   [:<>

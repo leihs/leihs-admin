@@ -23,6 +23,8 @@ feature 'Manage inventory-fields', type: :feature do
       click_on @required_core_field.id
       @field_path = current_path
 
+      check_values_and_defaults(@required_core_field)
+
       click_on 'Edit'
       fill_in 'Label', with: label
       expect(find("input#active")).to be_disabled
@@ -39,6 +41,9 @@ feature 'Manage inventory-fields', type: :feature do
       end
       wait_until { current_path ==  "/admin/inventory-fields/" }
       expect(page).to have_content label
+
+      click_on @required_core_field.id
+      check_values_and_defaults(@required_core_field.reload)
     end
 
     scenario 'edits a not required active core field' do
@@ -50,6 +55,8 @@ feature 'Manage inventory-fields', type: :feature do
       click_on 'Fields'
       click_on @not_required_active_core_field.id
       @field_path = current_path
+
+      check_values_and_defaults(@not_required_active_core_field)
 
       click_on 'Edit'
       fill_in 'Label', with: label
@@ -63,6 +70,8 @@ feature 'Manage inventory-fields', type: :feature do
       expect(page.text + input_values).to have_content label
       expect(find("tr.active")).to have_content 'false'
       expect(page).to have_content label
+
+      check_values_and_defaults(@not_required_active_core_field.reload)
     end
 
     scenario 'edits a dynamic field' do
@@ -72,6 +81,8 @@ feature 'Manage inventory-fields', type: :feature do
       click_on 'Fields'
       click_on @dynamic_field.id
       @field_path = current_path
+
+      check_values_and_defaults(@dynamic_field)
 
       click_on 'Edit'
 
@@ -122,6 +133,24 @@ feature 'Manage inventory-fields', type: :feature do
       wait_until { all(".modal").empty? }
 
       expect(page).to have_content label
+
+      check_values_and_defaults(@dynamic_field.reload)
+    end
+  end
+
+  def check_values_and_defaults(field)
+    within "tbody" do
+      expect(all("tr.active td")[1].text).to eq field.active.to_s
+      expect(all("tr.label td")[1].text).to eq field.data["label"]
+      expect(all("tr.dynamic td")[1].text).to eq field.dynamic.to_s
+      expect(all("tr.required td")[1].text).to eq ( field.data["required"] || false ).to_s
+      expect(all("tr.attribute td")[1].text).to eq field.data["attribute"].to_s.gsub(",", "")
+      expect(all("tr.forPackage td")[1].text).to eq ( field.data["forPackage"] || false ).to_s
+      expect(all("tr.owner td")[1].text).to eq ( field.data["permissions"]["owner"] || false ).to_s
+      expect(all("tr.role td")[1].text).to eq ( field.data["permissions"]["role"] || "inventory_manager" )
+      expect(all("tr.field-group td")[1].text).to eq ( field.data["group"] || "None" )
+      expect(all("tr.target-type td")[1].text).to eq ( field.data["target_type"] || "License+Item" )
+      expect(all("tr.type td")[1].text).to eq field.data["type"]
     end
   end
 end

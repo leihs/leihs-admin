@@ -32,6 +32,7 @@
    [:li [:code :email_signature]],
    [:li [:code :inventory_pool.name]],
    [:li [:code :inventory_pool.description]],
+   [:li [:code :inventory_pool.email_signature]],
    [:li [:code :order_url]]
    [:li [:code :purpose]],
    [:li [:code :reservations]
@@ -48,6 +49,7 @@
    [:li [:code :email_signature]],
    [:li [:code :inventory_pool.name]],
    [:li [:code :inventory_pool.description]],
+   [:li [:code :inventory_pool.email_signature]],
    [:li [:code :quantity]],
    [:li [:code :reservations]
     [:ul

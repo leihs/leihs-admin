@@ -46,15 +46,19 @@
      :label "Short name"
      :disabled is-editing
      :required true]]
+   [form-components/input-component data* [:description]
+    :label "Description"
+    :element :textarea
+    :rows 10]
    [:div
     [form-components/input-component data* [:email]
      :label "Email"
      :type :email
      :required true]]
-   [form-components/input-component data* [:description]
-    :label "Description"
+   [form-components/input-component data* [:email_signature]
+    :label "Email Signature"
     :element :textarea
-    :rows 10]
+    :rows 5]
    [form-components/input-component data* [:default_contract_note]
     :label "Default Contract Note"
     :element :textarea
@@ -74,10 +78,18 @@
     [form-components/switch-component data* [:required_purpose]
      :label "Hand Over Purpose"]]
    [:div.mb-3
-    [form-components/input-component data* [:reservation_advance_days]
-     :label "Reservation Advance Days"
+    [form-components/switch-component data* [:deliver_received_order_emails]
+     :label "Deliver Received Order Emails"]]
+   [:div.mb-3
+    [form-components/input-component data* [:borrow_reservation_advance_days]
+     :label "Borrow: Reservation Advance Days"
      :type :number
-     :min 0]]])
+     :min 0]]
+   [:div.mb-3
+    [form-components/input-component data* [:borrow_maximum_reservation_duration]
+     :label "Borrow: Maximum Reservation Duration"
+     :type :number
+     :min 1]]])
 
 (def open*
   (reaction

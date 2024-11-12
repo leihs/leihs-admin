@@ -101,19 +101,8 @@
 
    [:> Row
     [:> Col
-     [:> Form.Group {:id "maximum_reservation_time"}
-      [:> Form.Label "Maximum Reservation Time"]
-      [:input.form-control
-       {:type "number"
-        :id "maximum_reservation_time"
-        :value (or (:maximum_reservation_time @data*) "")
-        :onChange #(swap! data* assoc :maximum_reservation_time (-> % .-target .-value int))}]
-      [:> Form.Text {:className "text-muted"}
-       "Maximum duration of reservations in days which applies to all inventory pools."]]]
-
-    [:> Col
      [:> Form.Group {:id "timeout_minutes"}
-      [:> Form.Label "Timeout Minutes"]
+      [:> Form.Label "Borrow: Cart Timeout"]
       [:input.form-control
        {:type "number"
         :id "timeout_minutes"
@@ -123,14 +112,6 @@
        "Timeout of the borrow reservation cart in minutes."]]]]
 
    [:> Row
-    [:> Col
-     [:> Form.Group {:id "deliver_received_order_notifications"}
-      [:> Form.Check
-       {:type "checkbox"
-        :id "deliver_received_order_notifications"
-        :label "Deliver Received Order Notifications"
-        :checked (:deliver_received_order_notifications @data*)
-        :onChange #(swap! data* assoc :deliver_received_order_notifications (-> % .-target .-checked))}]]]
     [:> Col
      [:> Form.Group {:id "email_signature"}
       [:> Form.Label "Email Signature"]

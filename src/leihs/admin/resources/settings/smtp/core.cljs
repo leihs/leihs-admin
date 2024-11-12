@@ -22,7 +22,7 @@
                  (action))}
    [:div.my-3
     [form-components/checkbox-component data* [:enabled]
-     :label "Sending emails enabled"]]
+     :label "Sending Emails Enabled"]]
    [:> Row
     [:> Col
      [form-components/input-component data* [:port]

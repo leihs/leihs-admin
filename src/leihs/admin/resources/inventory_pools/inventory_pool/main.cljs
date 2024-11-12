@@ -40,10 +40,6 @@
        [property-td "Short Name" "shortname"
         "Prefix for auto-generated inventory codes"]
        [:td.shortname (:shortname @core/data*)]]
-      [:tr.email
-       [property-td "Email" "email"
-        "from_address for emails send in the name of this pool"]
-       [:td.email (:email @core/data*)]]
       [:tr.description
        [property-td "Description" "description"
         "Visible for customers in the borrow app"]
@@ -52,6 +48,15 @@
                        :overflow-y "auto"
                        :height "200px"}}
          (:description @core/data*)]]]
+      [:tr.email
+       [property-td "Email" "email"
+        [:span [:i "from_address"] " for emails send in the name of this pool"]]
+       [:td.email (:email @core/data*)]]
+      [:tr.email-signature
+       [property-td "Email Signature" "email_signature"]
+       [:td.email-signature
+        {:style {:white-space "break-spaces"}}
+        (:email_signature @core/data*)]]
       [:tr.default-contract-note
        [property-td "Default Contract Note" "default_contract_note"]
        [:td.default-contract-note
@@ -78,11 +83,21 @@
         "Whether the specification of hand over purpose is required."]
        [:td.required-purpose
         (toggle-component (:required_purpose @core/data*))]]
-      [:tr.reservation-advance-days
-       [property-td "Reservation Advance Days" "reservation_advance_days"
-        "Minimum number of days required between reservation's created date and the expected hand over date."]
-       [:td.reservation-advance-days
-        (:reservation_advance_days @core/data*)]]]}]])
+      [:tr.deliver-received-order-emails
+       [property-td "Deliver Received Order Emails" "deliver_received_order_emails"
+        "Receive an email to the pool's address when an order for this pool is submitted."]
+       [:td.deliver-received-order-emails
+        (toggle-component (:deliver_received_order_emails @core/data*))]]
+      [:tr.borrow-reservation-advance-days
+       [property-td "Borrow: Reservation Advance Days" "borrow_reservation_advance_days"
+        "Minimum number of days required between reservation's created date and the expected hand over date when placed by a customer in the borrow app."]
+       [:td.borrow-reservation-advance-days
+        (:borrow_reservation_advance_days @core/data*)]]
+      [:tr.borrow-maximum-reservation-duration
+       [property-td "Borrow: Maximum Reservation Duration" "borrow_maximum_reservation_duration"
+        "Maximum duration in days allowed for a reservation when placed by a customer in the borrow app."]
+       [:td.borrow-maximum-reservation-duration
+        (:borrow_maximum_reservation_duration @core/data*)]]]}]])
 
 (defn page []
   [:<>
