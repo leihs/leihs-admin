@@ -32,7 +32,9 @@
              (sql/where [:= :model_group_links.child_id :model_groups.id]))]])
       sql-format
       ; (sql-format :inline true)
-      (->> (jdbc/query tx))))
+      (->> (jdbc/query tx) (map #(assoc % :metadata {:id (:id %)
+                                                     :models_count (:models_count %)
+                                                     :label (:label %)})))))
 
 (defn tree [tx]
   (map #(category/descendents tx %) (roots tx)))
@@ -55,8 +57,9 @@
     tree))
 
 (defn index [{tx :tx :as request}]
-  {:body {:categories (-> (tree tx)
-                          (term-filter request))}})
+  {:body {:name "categories"
+          :children (-> (tree tx)
+                        (term-filter request))}})
 
 (comment
   (require '[clojure.inspector :as inspector])

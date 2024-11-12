@@ -54,7 +54,9 @@
       (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
       (sql/where [:= :model_group_links.parent_id (:id category)])
       sql-format
-      (->> (jdbc-query tx))))
+      (->> (jdbc-query tx) (map #(assoc % :metadata {:id (:id %)
+                                                     :models_count (:models_count %)
+                                                     :label (:label %)})))))
 
 (defn descendents [tx initial-category]
   (letfn [(descendents-h [category visited-ids]
