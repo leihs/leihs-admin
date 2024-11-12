@@ -5,25 +5,12 @@
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.category.main :as category]
    [leihs.admin.resources.categories.shared :as shared]
-   [leihs.admin.utils.pagination :as page]
-   [leihs.admin.utils.query-params :as query-params]
-   [leihs.admin.utils.seq :as seq]
    [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
    [next.jdbc.sql :as jdbc]))
 
-(defn query [request]
-  (let [query-params (-> request
-                         :query-params
-                         query-params/normalized-query-parameters)]
-    (-> shared/base-query
-        (page/set-per-page-and-offset query-params)
-        #_(term-filter request))))
-
 (defn roots [tx]
   (-> shared/base-query
-      (sql/select [nil :label])
-      category/select-models-count
       (sql/where
        [:not
         [:exists
@@ -32,9 +19,7 @@
              (sql/where [:= :model_group_links.child_id :model_groups.id]))]])
       sql-format
       ; (sql-format :inline true)
-      (->> (jdbc/query tx) (map #(assoc % :metadata {:id (:id %)
-                                                     :models_count (:models_count %)
-                                                     :label (:label %)})))))
+      (->> (jdbc/query tx))))
 
 (defn tree [tx]
   (map #(category/descendents tx %) (roots tx)))
@@ -65,8 +50,10 @@
   (require '[clojure.inspector :as inspector])
   (require '[leihs.core.db :as db])
   (let [tx (db/get-ds)]
-    (deep-filter #(re-matches #"(?i).*audio.*" (:name %))
-                 (tree tx))))
+    ; (roots tx)
+    (tree tx)
+    #_(deep-filter #(re-matches #"(?i).*audio.*" (:name %))
+                   (tree tx))))
 
 ;;; create category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

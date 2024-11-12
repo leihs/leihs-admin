@@ -4,32 +4,13 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.shared :as shared]
-   [next.jdbc :as jdbc]
-   [next.jdbc.sql :refer [query update! delete!]
+   [next.jdbc.sql :refer [delete! query update!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn select-models-count [query]
-  (sql/select query
-              [(-> (sql/select :%count.*)
-                   (sql/from :model_links)
-                   (sql/where [:= :model_links.model_group_id :model_groups.id]))
-               :models_count]))
-
-(defn parents [tx category]
-  (-> (apply sql/select shared/fields)
-      (sql/select :model_group_links.label)
-      (sql/from :model_group_links)
-      (sql/join :model_groups
-                [:= :model_group_links.parent_id :model_groups.id])
-      (sql/where [:= :model_group_links.child_id (:id category)])
-      sql-format
-      (->> (jdbc-query tx))))
-
 (defn query [id]
   (-> shared/base-query
-      select-models-count
       (sql/where [:= :model_groups.id id])))
 
 (defn get-one [tx id]
@@ -46,23 +27,20 @@
 ;;; descendents ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn children [tx category]
-  (-> (sql/select [:model_group_links.child_id :id]
-                  :model_groups.name,
-                  :model_group_links.label)
-      select-models-count
+  (-> (sql/select [:model_group_links.child_id :category_id]
+                  :model_groups.name)
+      (shared/sql-add-metadata :label-col :model_group_links.label)
       (sql/from :model_group_links)
       (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
-      (sql/where [:= :model_group_links.parent_id (:id category)])
+      (sql/where [:= :model_group_links.parent_id (:category_id category)])
       sql-format
-      (->> (jdbc-query tx) (map #(assoc % :metadata {:id (:id %)
-                                                     :models_count (:models_count %)
-                                                     :label (:label %)})))))
+      (->> (jdbc-query tx))))
 
 (defn descendents [tx initial-category]
   (letfn [(descendents-h [category visited-ids]
-            (if (contains? visited-ids (:id category))
+            (if (contains? visited-ids (:category_id category))
               category
-              (let [visited-ids* (conj visited-ids (:id category))
+              (let [visited-ids* (conj visited-ids (:category_id category))
                     children-with-descendents (map #(descendents-h % visited-ids*)
                                                    (children tx category))]
                 (assoc category :children children-with-descendents))))]
@@ -72,10 +50,9 @@
   (require '[clojure.inspector :as inspector])
   (require '[leihs.core.db :as db])
   (let [tx (db/get-ds)
-        category (get-one tx #uuid "ec06d200-11a9-55f1-b9f5-cf4b36430c41")]
+        category (get-one tx #uuid "78920f6d-57c1-5231-b0c4-f58dcddc64cf")]
     ; category
-    (parents tx category)
-    ; (children tx category)
+    (children tx category)
     ; (descendents tx category)
     ; (inspector/inspect-tree #_time (descendents tx category))
     ))
