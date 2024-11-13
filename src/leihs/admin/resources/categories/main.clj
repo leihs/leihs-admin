@@ -5,6 +5,7 @@
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.category.main :as category]
    [leihs.admin.resources.categories.shared :as shared]
+   [leihs.admin.resources.categories.filter :as filter]
    [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
    [next.jdbc.sql :as jdbc]))
@@ -24,21 +25,11 @@
 (defn tree [tx]
   (map #(category/descendents tx %) (roots tx)))
 
-(defn current-or-any-descendent? [pred category]
-  (or (pred category)
-      (some (partial current-or-any-descendent? pred)
-            (:children category))))
-
-(defn deep-filter [pred tree]
-  (->> tree
-       (filter (partial current-or-any-descendent? pred))
-       (map #(update % :children (partial deep-filter pred)))))
-
 (defn term-filter [tree request]
   (if-let [term (-> request :query-params-raw :term presence)]
-    (deep-filter #(re-matches (re-pattern (str "(?i).*" term ".*"))
-                              (:name %))
-                 tree)
+    (filter/deep-filter #(re-matches (re-pattern (str "(?i).*" term ".*"))
+                                     (:name %))
+                        tree)
     tree))
 
 (defn index [{tx :tx :as request}]
