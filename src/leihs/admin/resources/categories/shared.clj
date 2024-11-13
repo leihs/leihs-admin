@@ -25,10 +25,10 @@
                                         :model_groups.id]))
          "thumbnail_url" [:|| images/IMG-DATA-URL-PREFIX "," :images.content]]
         :metadata])
-      (sql/join :images
-                [:and
-                 [:= :images.target_id :model_groups.id]
-                 [:= :images.thumbnail true]])))
+      (sql/left-join :images
+                     [:and
+                      [:= :images.target_id :model_groups.id]
+                      [:= :images.thumbnail true]])))
 
 (def base-query
   (-> (apply sql/select fields)
