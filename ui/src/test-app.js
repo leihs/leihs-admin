@@ -12,8 +12,15 @@ import { faWarehouse, faBuilding } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const [selectedDate, setSelectedDate] = useState()
+  const [selectedNodeId, setSelectedNodeId] = useState(null)
+
   const onChange = event => {
     setSelectedDate(event.target.value)
+  }
+
+  const handleNodeSelect = element => {
+    setSelectedNodeId(element)
+    console.debug('Selected Node:', element)
   }
 
   return (

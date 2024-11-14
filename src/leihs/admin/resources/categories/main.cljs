@@ -1,23 +1,18 @@
 (ns leihs.admin.resources.categories.main
   (:require
-   ;; ["react-accessible-treeview" :as tree-view :refer [TreeView]]
-
    ["/admin-ui" :as UI]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
-   [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
-   [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
-   [leihs.admin.resources.inventory-pools.inventory-pool.create :as create]
+   [leihs.admin.resources.categories.category.core :as core]
+   [leihs.admin.resources.categories.category.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [wait-component fetch-route*]]
-   [leihs.core.auth.core :as auth-core]
+   [leihs.admin.utils.misc :refer [fetch-route*]]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
+   [react-bootstrap :refer [Button]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-parameters*
@@ -67,6 +62,7 @@
       [:h3 "@data*"]
       [:pre (with-out-str (pprint @data*))]]]))
 
+(def tmp (reagent/atom nil))
 (defn page []
   [:<>
    [routing/hidden-state-component
@@ -78,7 +74,8 @@
      [:h1
       [icons/categories] " Categories"]]
 
-    [:section
+    [:section.mb-5
+     [create/button]
      [:> UI/Components.TreeView]]
 
     [:section

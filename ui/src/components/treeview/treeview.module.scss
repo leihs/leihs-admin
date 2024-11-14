@@ -10,7 +10,7 @@
 }
 
 .icon {
-  margin-right: 1rem;
+  margin-right: 0.5rem;
   margin-left: 1rem;
 }
 
@@ -21,32 +21,17 @@
 
   ul {
     list-style-type: none;
+    padding: 0;
     @extend .list-group;
     @extend .list-group-flush;
-    padding: 0;
   }
 
   li {
     list-style-type: none;
-    padding-left: 0;
-    padding-right: 0;
+    // padding-left: 0;
+    // padding-right: 0;
+    padding: 0;
     @extend .list-group-item;
-    background-color: white;
-
-    .visible-on-hover {
-      visibility: hidden;
-    }
-
-    &:hover {
-      background-color: aliceblue;
-      .li {
-        background-color: white;
-      }
-
-      .visible-on-hover {
-        visibility: visible;
-      }
-    }
   }
 
   li:last-child {
@@ -54,8 +39,37 @@
   }
 }
 
+.thumbnail {
+  width: '32px';
+  height: '32px';
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.element {
+  padding: 1rem;
+
+  .visible-on-hover {
+    visibility: hidden;
+  }
+
+  &:hover {
+    background-color: aliceblue;
+
+    .visible-on-hover {
+      visibility: visible;
+    }
+  }
+}
+
+.pointer-none {
+  pointer-events: none;
+}
+
 .indent {
-  margin-left: 4rem;
+  margin-left: 5rem;
 }
 
 .controls {

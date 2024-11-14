@@ -32,6 +32,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
     "mockdate": "^3.0.5",

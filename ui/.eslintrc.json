@@ -1,9 +1,9 @@
 {
   "parser": "@babel/eslint-parser",
   "plugins": ["prettier"],
-  "extends": ["prettier"],
+  "extends": ["prettier", "plugin:react-hooks/recommended"],
   "rules": {
-    "prettier/prettier": ["error"]
+    "prettier/prettier": ["warn"]
   },
   "ignorePatterns": ["dist/**", "node_modules/**"]
 }

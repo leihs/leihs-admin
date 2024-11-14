@@ -23,6 +23,7 @@
                             (sql/where [:=
                                         :model_links.model_group_id
                                         :model_groups.id]))
+
          "thumbnail_url" [:|| images/IMG-DATA-URL-PREFIX "," :images.content]]
         :metadata])
       (sql/left-join :images
