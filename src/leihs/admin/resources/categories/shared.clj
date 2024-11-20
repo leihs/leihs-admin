@@ -32,7 +32,6 @@
 
 (def base-query
   (-> (apply sql/select fields)
-      (sql-add-metadata :label-col nil)
       (sql/from :model_groups)
       (sql/where [:= :model_groups.type "Category"])
       (sql/order-by :model_groups.name)))

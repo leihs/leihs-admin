@@ -3,59 +3,42 @@
   (:require
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.admin.resources.categories.shared :as shared]
+   [leihs.admin.resources.categories.filter :refer [deep-filter]]
+   [leihs.admin.resources.categories.shared :refer [base-query]]
+   [leihs.admin.resources.categories.tree :refer [tree tree-path roots]]
    [next.jdbc.sql :refer [delete! query update!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn query [id]
-  (-> shared/base-query
+  (-> base-query
       (sql/where [:= :model_groups.id id])))
+
+(defn merge-parents [tx category]
+  (let [subtree (if (some #{(:category_id category)}
+                          (map :category_id (roots tx)))
+                  []
+                  (deep-filter #(= (:category_id %) (:category_id category))
+                               (tree tx)))]
+    (assoc category :parents (map tree-path subtree))))
 
 (defn get-one [tx id]
   (-> id query sql-format
       (->> (jdbc-query tx))
-      first))
+      first
+      (->> (merge-parents tx))))
+
+(comment
+  (do (require '[leihs.core.db :as db])
+      (get-one (db/get-ds)
+               #uuid "0f110e33-989c-5f84-a8dd-01e93dab4730")))
 
 (defn get
   [{tx :tx {id :category-id} :route-params}]
   {:body (-> id query sql-format
              (->> (jdbc-query tx))
              first)})
-
-;;; descendents ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn children [tx category]
-  (-> (sql/select [:model_group_links.child_id :category_id]
-                  :model_groups.name)
-      (shared/sql-add-metadata :label-col :model_group_links.label)
-      (sql/from :model_group_links)
-      (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
-      (sql/where [:= :model_group_links.parent_id (:category_id category)])
-      sql-format
-      (->> (jdbc-query tx))))
-
-(defn descendents [tx initial-category]
-  (letfn [(descendents-h [category visited-ids]
-            (if (contains? visited-ids (:category_id category))
-              category
-              (let [visited-ids* (conj visited-ids (:category_id category))
-                    children-with-descendents (map #(descendents-h % visited-ids*)
-                                                   (children tx category))]
-                (assoc category :children children-with-descendents))))]
-    (descendents-h initial-category #{})))
-
-(comment
-  (require '[clojure.inspector :as inspector])
-  (require '[leihs.core.db :as db])
-  (let [tx (db/get-ds)
-        category (get-one tx #uuid "78920f6d-57c1-5231-b0c4-f58dcddc64cf")]
-    ; category
-    (children tx category)
-    ; (descendents tx category)
-    ; (inspector/inspect-tree #_time (descendents tx category))
-    ))
 
 ;;; delete category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
