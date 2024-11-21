@@ -7,6 +7,8 @@
    [leihs.admin.resources.audits.requests.request.main :as audited-request]
    [leihs.admin.resources.buildings.building.main :as building]
    [leihs.admin.resources.buildings.main :as buildings]
+   [leihs.admin.resources.categories.category.main :as category]
+   [leihs.admin.resources.categories.main :as categories]
    [leihs.admin.resources.groups.group.main :as group]
    [leihs.admin.resources.groups.group.users.main :as group-users]
    [leihs.admin.resources.groups.main :as groups]
@@ -75,6 +77,8 @@
    :buildings #'buildings/page
    :inventory-field #'inventory-field/page
    :inventory-fields #'inventory-fields/page
+   :categories #'categories/page
+   :category #'category/page
    :group #'group/page
    :group-users #'group-users/page
    :groups #'groups/page
