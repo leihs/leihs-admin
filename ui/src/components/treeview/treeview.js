@@ -130,9 +130,19 @@ function TreeView({ data = folder, onSelected = null }) {
   const [filteredNodes, setFilteredNodes] = React.useState(flattenedData)
   const [matchingExpanded, setMatchingExpanded] = React.useState([])
 
-  React.useEffect(() => {
-    console.debug('matching changed')
-  }, [matchingExpanded])
+  function filterTree(node, searchTerm) {
+    if (!node.children) {
+      return node.name.startsWith(searchTerm) ? node : null
+    }
+
+    const filteredChildren = node.children.map(child => filterTree(child, searchTerm)).filter(child => child !== null)
+
+    if (filteredChildren.length > 0 || node.name.startsWith(searchTerm)) {
+      return { ...node, children: filteredChildren }
+    }
+
+    return null
+  }
 
   function reset() {
     setSearchTerm('')
@@ -146,83 +156,12 @@ function TreeView({ data = folder, onSelected = null }) {
       return
     }
 
-    const matchingNodes = flattenedData.filter(node => node.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    const tree = filterTree(data, searchTerm)
+    const flat = flattenTree(tree)
+    const ids = flat.map(node => node.id)
 
-    const findAncestors = (node, data, result) => {
-      if (node.parent === 0) {
-        return
-      }
-
-      const parentNode = data.find(item => item.id === node.parent)
-      if (parentNode) {
-        result.push(parentNode)
-        findAncestors(parentNode, data, result)
-      }
-    }
-
-    const getAllMatchingNodesWithAncestors = (matchingNodes, flattenedData) => {
-      const result = []
-
-      matchingNodes.forEach(node => {
-        result.push(node)
-        findAncestors(node, flattenedData, result)
-      })
-
-      // Remove duplicates
-      const uniqueResult = []
-      const seenIds = new Set()
-
-      result.forEach(item => {
-        if (!seenIds.has(item.id)) {
-          uniqueResult.push(item)
-          seenIds.add(item.id)
-        }
-      })
-
-      return uniqueResult
-    }
-
-    const matchingNodesWithAncestors = getAllMatchingNodesWithAncestors(matchingNodes, flattenedData)
-
-    const filteredTopLevelNodes = matchingNodesWithAncestors.reduce((acc, element) => {
-      if (element.parent === 0) {
-        acc.push(element)
-      }
-
-      return acc
-    }, [])
-
-    const [rootNode, ...remainingNodes] = flattenedData
-    rootNode.children = filteredTopLevelNodes.map(node => node.id)
-    const updatedFilteredNodes = [rootNode, ...remainingNodes]
-
-    const expandedIds = matchingNodes.map(node => node.parent)
-
-    const arraysAreEqual = (array1, array2) => {
-      if (!array1 || !array2) return false
-
-      if (array1.length !== array2.length) {
-        return false
-      }
-
-      for (let i = 0; i < array1.length; i++) {
-        if (array1[i] !== array2[i]) {
-          return false
-        }
-      }
-
-      return true
-    }
-
-    setFilteredNodes(updatedFilteredNodes)
-    setMatchingExpanded(expandedIds)
-    // setExpandedNodeIds(expandedIds)
-
-    // if (arraysAreEqual(expandedIds, expandedNodeIds)) {
-    //   setExpandedNodeIds([])
-    // } else {
-    //   setExpandedNodeIds(expandedIds)
-    // }
+    setFilteredNodes(flat)
+    setExpandedNodeIds(allNodeIds)
   }
 
   return (
