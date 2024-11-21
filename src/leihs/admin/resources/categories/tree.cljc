@@ -29,7 +29,7 @@
 
 (defn convert-tree-path
   "Converts a tree path represented as a map into a tree path represented as a vector
-  while excluding the last element of the path.
+  while excluding the last element of the path (list of ancestors).
   Example:
   ;; (convert-tree-path {:id 1 :children [{:id 2 :children [{:id 3}]}]})
   ;; => [{:id 1} {:id 2}]"
