@@ -41,7 +41,7 @@
                                 "action")}
     [:> Modal.Title "Add a Category"]]
    [:> Modal.Body
-    (js/console.debug @data*)
+    ;; (js/console.debug @data*)
     [core/form create data*]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"

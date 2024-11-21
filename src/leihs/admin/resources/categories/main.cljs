@@ -30,12 +30,10 @@
          (:route-params @routing/state*)
          @current-query-parameters-normalized*)))
 
-(def data* (reagent/atom nil))
-
 (defn fetch []
   (http-client/route-cached-fetch
-   data* {:route @fetch-route*
-          :reload true}))
+   core/categories-data* {:route @fetch-route*
+                          :reload true}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -60,9 +58,8 @@
       [:pre (with-out-str (pprint @current-route*))]]
      [:div
       [:h3 "@data*"]
-      [:pre (with-out-str (pprint @data*))]]]))
+      [:pre (with-out-str (pprint @core/categories-data*))]]]))
 
-(def tmp (reagent/atom nil))
 (defn page []
   [:<>
    [routing/hidden-state-component

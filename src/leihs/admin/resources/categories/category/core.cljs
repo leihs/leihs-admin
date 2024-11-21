@@ -3,13 +3,17 @@
    ["/admin-ui" :as UI]
    [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
+   [clojure.string :as str]
    [leihs.admin.common.http-client.core :as http-client]
+   [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.image :as image]
+   [leihs.admin.resources.categories.filter :as tree-filter]
+   [leihs.admin.resources.categories.tree :as tree-path]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :as react-bootstrap :refer [Form InputGroup Row Col Button]]
+   [react-bootstrap :as react-bootstrap :refer [Form InputGroup Row Col Button Container Card]]
    [reagent.core :as reagent :refer [reaction]]))
 
 ;;; atoms ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -28,6 +32,8 @@
 
 (defonce data-models* (reagent/atom nil))
 
+(defonce categories-data* (reagent/atom nil))
+
 ;;; fetch data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn fetch []
@@ -44,86 +50,97 @@
 
 ;;; form ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn parent-category [data* parent]
-  [:> Form.Group
-   [:> InputGroup
-    [:> InputGroup.Prepend {:class-name "rounded mr-3"}
-     (if (:thumbnail_url parent)
-       [:img  {:style {:height "35px"
-                       :object-fit "contain"
-                       :aspect-ratio "1/1"
-                       :display "flex"}
-               :src (:thumbnail_url parent)}]
+(defn parent-category [form-data* parent]
+  (let [tree (get @categories-data* "/admin/categories/")
+        parent-tree (first (tree-filter/deep-filter #(= (:category_id %)
+                                                        (:id parent))
+                                                    (:children tree)))
+        path (str/join " / " (map :name (tree-path/convert-tree-path parent-tree)))]
 
-       [:div {:style {:font-size "0.5rem"
-                      :height "35px"
-                      :aspect-ratio "1/1"
-                      :display "flex"
-                      :align-items "center"
-                      :text-align "center"}
-              :class-name "border rounded"} "no picture"])]
+    [:> Card {:class-name "mb-3"}
+     [:> Container {:class-name "p-2"}
+      [:button {:type "button"
+                :class-name "close"
+                :style {:z-index "9999"
+                        :position "absolute"
+                        :right "0.5rem"}
+                :on-click #(swap! form-data* update
+                                  :parents
+                                  (fn [parents]
+                                    (filter (fn [element] (not= (:id element)
+                                                                (:id parent)))
+                                            parents)))} [icons/delete]]
+      [:> Row
+       [:> Col (if (:thumbnail_url parent)
+                 [:img  {:style {:object-fit "contain"
+                                 :aspect-ratio "1/1"
+                                 :display "flex"}
+                         :src (:thumbnail_url parent)}]
 
-    [:> Form.Control {:style {:border-top-left-radius "0.25rem"
-                              :border-bottom-left-radius "0.25rem"}
-                      :type "text"
-                      :readOnly true
-                      :class-name "bg-white"}]
+                 [:div {:style {:font-size "0.5rem"
+                                :aspect-ratio "1/1"
+                                :display "flex"
+                                :align-items "center"
+                                :justify-content "center"}
+                        :class-name "border rounded"} [:span "no picture"]])]
+       [:> Col {:sm 10}
+        [:p {:class-name "mr-3"} (if (not (str/blank? path)) path (:name parent))]
+        [:> Form.Group
 
-    [:> InputGroup.Append
-     [:> Button {:variant "warning"
-                 :on-click #(swap! data* update
-                                   :parents
-                                   (fn [parents]
-                                     (filter (fn [element] (not= (:id element)
-                                                                 (:id parent)))
-                                             parents)))} "Remove"]]]])
+         [:input.form-control
+          {:id "name"
+           :type "text"
+           :placeholder "Enter Label"
+           :value (or (:name @form-data*) "")
+           :onChange (fn [e] (swap! form-data* assoc :name (-> e .-target .-value)))}]]]]]]))
 
-(defn form [action data*]
-  (let [show-category-tree* (reagent/atom false)]
-    (fn []
-      [:> Form {:id "category-form"
-                :on-submit (fn [e] (.preventDefault e) (action))}
-       [:> Row
-        [:> Col
-         [:> Form.Group {:control-id "name"}
+(defonce show-category-tree* (reagent/atom false))
 
-          [:> Form.Label {:class-name "h5"} "Name"]
-          [:input.form-control
-           {:id "name"
-            :type "text"
-            :required true
-            :placeholder "Enter Name"
-            :value (or (:name @data*) "")
-            :onChange (fn [e] (swap! data* assoc :name (-> e .-target .-value)))}]]
+(defn form [action form-data*]
+  [:> Form {:id "category-form"
+            :on-submit (fn [e] (.preventDefault e) (action))}
+   [:> Row
+    [:> Col {:sm 4}
+     [:> Form.Group {:control-id "name"}
 
-         [:> Form.Group {:control-id "description"}
-          [:> Form.Label {:class-name "h5"} "Image"]
-          [image/component data*]]]
+      [:> Form.Label {:class-name "h5"} "Name"]
+      [:input.form-control
+       {:id "name"
+        :type "text"
+        :required true
+        :placeholder "Enter Name"
+        :value (or (:name @form-data*) "")
+        :onChange (fn [e] (swap! form-data* assoc :name (-> e .-target .-value)))}]]
 
-        [:> Col
-         (when (seq (:parents @data*))
-           [:div {:class-name "mb-3"}
-            [:> Form.Label {:class-name "h5 mb-0"} "Parent assignments"]
-            [:> Form.Text  "Selected Parent Categories"]])
+     [:> Form.Group {:control-id "description"}
+      [:> Form.Label {:class-name "h5"} "Image"]
+      [image/component form-data*]]]
 
-         (for [parent (:parents @data*)]
-           ^{:key (:id parent)}
-           [parent-category data* parent])
+    [:> Col
+     (when (seq (:parents @form-data*))
+       [:div {:class-name "mb-3"}
+        [:> Form.Label {:class-name "h5 mb-0"} "Parent assignments"]
+        [:> Form.Text  "Selected Parent Categories"]])
 
-         (if (not @show-category-tree*)
-           [:> Button {:on-click #(reset! show-category-tree* true)} "Add parent category"]
-           [:> UI/Components.TreeView
-            {:onSelected #(do (reset! show-category-tree* false)
-                              (swap! data* update :parents
-                                     (fnil (fn [parents]
-                                             (->> (conj parents
-                                                        {:id (.. % -metadata -id)
-                                                         :thumbnail_url (.. % -metadata -thumbnail_url)})
+     (for [parent (:parents @form-data*)]
+       ^{:key (:id parent)}
+       [parent-category form-data* parent])
 
-                                                  (group-by :id)
-                                                  (vals)
-                                                  (map first)
-                                                  (vec))) [])))}])]]])))
+     (if (not @show-category-tree*)
+       [:> Button {:on-click #(reset! show-category-tree* true)} "Add parent category"]
+       [:> UI/Components.TreeView
+        {:onSelected #(do (reset! show-category-tree* false)
+                          (swap! form-data* update :parents
+                                 (fnil (fn [parents]
+                                         (->> (conj parents
+                                                    {:id (.. % -metadata -id)
+                                                     :name (.. % -metadata -name)
+                                                     :thumbnail_url (.. % -metadata -thumbnail_url)})
+
+                                              (group-by :id)
+                                              (vals)
+                                              (map first)
+                                              (vec))) [])))}])]]])
 
 ;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
