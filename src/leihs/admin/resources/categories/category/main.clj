@@ -5,7 +5,7 @@
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.filter :refer [deep-filter]]
    [leihs.admin.resources.categories.shared :refer [base-query sql-add-metadata]]
-   [leihs.admin.resources.categories.tree :refer [tree tree-path roots]]
+   [leihs.admin.resources.categories.tree :refer [tree convert-tree-path roots]]
    [next.jdbc.sql :refer [delete! query update!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
 
@@ -21,7 +21,7 @@
                   []
                   (deep-filter #(= (:category_id %) (:category_id category))
                                (tree tx)))]
-    (assoc category :parents (map tree-path subtree))))
+    (assoc category :parents (map convert-tree-path subtree))))
 
 (defn get-one [tx id]
   (-> id query
