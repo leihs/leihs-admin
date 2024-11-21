@@ -4,7 +4,7 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.filter :refer [deep-filter]]
-   [leihs.admin.resources.categories.shared :refer [base-query]]
+   [leihs.admin.resources.categories.shared :refer [base-query sql-add-metadata]]
    [leihs.admin.resources.categories.tree :refer [tree tree-path roots]]
    [next.jdbc.sql :refer [delete! query update!]
     :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
@@ -24,7 +24,9 @@
     (assoc category :parents (map tree-path subtree))))
 
 (defn get-one [tx id]
-  (-> id query sql-format
+  (-> id query
+      (sql-add-metadata :label-col nil)
+      sql-format
       (->> (jdbc-query tx))
       first
       (->> (merge-parents tx))))
@@ -36,9 +38,7 @@
 
 (defn get
   [{tx :tx {id :category-id} :route-params}]
-  {:body (-> id query sql-format
-             (->> (jdbc-query tx))
-             first)})
+  {:body (get-one tx id)})
 
 ;;; delete category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
