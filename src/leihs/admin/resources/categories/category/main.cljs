@@ -20,9 +20,9 @@
       [:tr.name
        [:td [:strong "Name"] [:small " (name)"]]
        [:td (str (:name @core/data*))]]
-      [:tr.label
-       [:td [:strong "Label"] [:small " (metadata:label)"]]
-       [:td (-> @core/data* :metadata :label)]]
+      [:tr.parents
+       [:td [:strong "Parents"] [:small " (metadata:parents)"]]
+       [:td (-> @core/data* :metadata :parents)]]
       [:tr.thumgnail_url
        [:td [:strong "Thumbnail URL"] [:small " (metadata:thumbnail_url)"]]
        [:td [:img {:src (-> @core/data* :metadata :thumbnail_url)}]]]]}]])

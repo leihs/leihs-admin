@@ -58,9 +58,12 @@
         parent-tree (first (tree-filter/deep-filter #(= (:category_id %)
                                                         (:id parent))
                                                     (:children tree)))
-        path (str/join " / " (map :name (tree-path/convert-tree-path parent-tree)))]
+        path (str/join " / " (map :name (if (vector? parent)
+                                          parent
+                                          (tree-path/convert-tree-path parent-tree))))]
 
     [:> Card {:class-name "mb-3"}
+     (js/console.debug parent)
      [:> Container {:class-name "p-2"}
       [:button {:type "button"
                 :class-name "close"

@@ -144,7 +144,6 @@ function TreeView({ data = folder, onSelected = null }) {
   const [expandedIds, setExpandedIds] = React.useState([])
   const [filteredNodes, setFilteredNodes] = React.useState(flattenedData)
   const [noMatches, setNoMatches] = React.useState(false)
-  const [idsMatch, setIdsMatch] = React.useState(true)
 
   function filterTree(node, searchTerm) {
     if (!node.children) {
@@ -188,11 +187,12 @@ function TreeView({ data = folder, onSelected = null }) {
     setAllIds(ids)
   }
 
-  React.useEffect(() => {
-    // setTimeout(() => {
-    //   console.debug(treeRef.current.querySelectorAll('li'))
-    // }, 1000)
-  })
+  function expand(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      setExpandedIds(allIds)
+    }
+  }
 
   React.useEffect(() => {
     // if (searchTerm !== '') setExpandedIds(allIds)
@@ -218,7 +218,7 @@ function TreeView({ data = folder, onSelected = null }) {
               className={cx('form-control', noMatches && 'text-danger')}
               placeholder="Search"
               aria-label="Category search field"
-              onKeyDown={e => e.key === 'Enter' && setExpandedIds(allIds)}
+              onKeyDown={e => expand(e)}
             />
             <div className="input-group-append">
               <button className="btn btn-secondary" type="button" id="button-addon2" onClick={() => reset()}>

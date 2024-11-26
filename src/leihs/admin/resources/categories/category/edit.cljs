@@ -27,7 +27,6 @@
 (def open?*
   (reaction
    (reset! data* @core/data*)
-   (js/console.debug @data*)
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))
