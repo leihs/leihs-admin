@@ -11,7 +11,7 @@
   (-> (sql/select [:model_group_links.child_id :category_id]
                   :model_groups.name)
       (cond-> with-metadata
-        (shared/sql-add-metadata :label-col :model_group_links.label))
+        (shared/sql-add-metadata :label :model_group_links.label))
       (sql/from :model_group_links)
       (sql/join :model_groups [:= :model_group_links.child_id :model_groups.id])
       (sql/where [:= :model_group_links.parent_id (:category_id category)])

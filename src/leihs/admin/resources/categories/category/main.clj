@@ -6,8 +6,9 @@
    [leihs.admin.resources.categories.filter :refer [deep-filter]]
    [leihs.admin.resources.categories.shared :refer [base-query sql-add-metadata]]
    [leihs.admin.resources.categories.tree :refer [tree convert-tree-path roots]]
-   [next.jdbc.sql :refer [delete! query update!]
-    :rename {query jdbc-query, update! jdbc-update! delete! jdbc-delete!}]))
+   [next.jdbc.sql :refer [delete! insert! query update!]
+    :rename {query jdbc-query, insert! jdbc-insert!
+             update! jdbc-update! delete! jdbc-delete!}]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -20,12 +21,12 @@
                           (map :category_id (roots tx)))
                   []
                   (deep-filter #(= (:category_id %) (:category_id category))
-                               (tree tx)))]
+                               (tree tx :with-metadata true)))]
     (assoc category :parents (map convert-tree-path subtree))))
 
 (defn get-one [tx id]
   (-> id query
-      (sql-add-metadata :label-col nil)
+      (sql-add-metadata :label nil)
       sql-format
       (->> (jdbc-query tx))
       first
@@ -33,8 +34,10 @@
 
 (comment
   (do (require '[leihs.core.db :as db])
-      (get-one (db/get-ds)
-               #uuid "0f110e33-989c-5f84-a8dd-01e93dab4730")))
+      (let [id #uuid "47c5389d-f98d-5bf1-8c6e-8fec37d907a0"]
+        #_(deep-filter #(= (:category_id %) id)
+                       (tree (db/get-ds) :with-metadata true))
+        (get-one (db/get-ds) id))))
 
 (defn get
   [{tx :tx {id :category-id} :route-params}]
@@ -59,6 +62,24 @@
     (jdbc-update! tx :model_groups
                   (select-keys data [:name])
                   ["type = 'Category' AND id = ?" id])
+
+    (cond
+      (and (:image data) (:thumbnail data))
+      (let [image (jdbc-insert! tx :images
+                                {:target_id id
+                                 :target_type "ModelGroup"
+                                 :content (:image data)
+                                 :thumbnail false})]
+        (jdbc-insert! tx :images
+                      {:target_id id
+                       :target_type "ModelGroup"
+                       :content (:thumbnail data)
+                       :parent_id (:id image)
+                       :thumbnail true}))
+      (or (and (:image data) (not (:thumbnail data)))
+          (and (:thumbnail data) (not (:image data))))
+      (throw (ex-info "Both image and thumbnail must be provided." {})))
+
     {:status 204}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

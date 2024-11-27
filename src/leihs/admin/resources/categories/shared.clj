@@ -11,25 +11,34 @@
 (def fields [[:model_groups.id :category_id]
              :model_groups.name])
 
-(defn sql-add-metadata [query & {:keys [label-col]}]
+(defn sql-add-metadata [query & {:keys [label]}]
   (-> query
       (sql/select
        [[:json_build_object
          "id" :model_groups.id
          "name" :model_groups.name
-         "label" label-col
+         "label" label
          "models_count" (-> (sql/select :%count.*)
                             (sql/from :model_links)
                             (sql/where [:=
                                         :model_links.model_group_id
                                         :model_groups.id]))
-
-         "thumbnail_url" [:|| images/IMG-DATA-URL-PREFIX "," :images.content]]
+         "is_deletable" [:not-exists (-> (sql/select true)
+                                         (sql/from :model_links)
+                                         (sql/where [:=
+                                                     :model_links.model_group_id
+                                                     :model_groups.id]))]
+         "image_url" [:|| images/IMG-DATA-URL-PREFIX "," :images.content]
+         "thumbnail_url" [:|| images/IMG-DATA-URL-PREFIX "," :thumbnails.content]]
         :metadata])
       (sql/left-join :images
                      [:and
                       [:= :images.target_id :model_groups.id]
-                      [:= :images.thumbnail true]])))
+                      [:= :images.thumbnail false]])
+      (sql/left-join [:images :thumbnails]
+                     [:and
+                      [:= :thumbnails.target_id :model_groups.id]
+                      [:= :thumbnails.thumbnail true]])))
 
 (def base-query
   (-> (apply sql/select fields)
@@ -38,6 +47,7 @@
       (sql/order-by :model_groups.name)))
 
 (comment (-> base-query
+             sql-add-metadata
              (sql/limit 1)
              (sql-format :inline true)
              (->> (jdbc/query (db/get-ds)))))
