@@ -65,22 +65,28 @@
 
     (cond
       (and (:image data) (:thumbnail data))
-      (let [image (jdbc-insert! tx :images
-                                {:target_id id
-                                 :target_type "ModelGroup"
-                                 :content (:image data)
-                                 :thumbnail false})]
-        (jdbc-insert! tx :images
-                      {:target_id id
-                       :target_type "ModelGroup"
-                       :content (:thumbnail data)
-                       :parent_id (:id image)
-                       :thumbnail true}))
+      (do (jdbc-delete! tx :images ["target_id = ?" id])
+          (let [image (jdbc-insert! tx :images
+                                    {:target_id id
+                                     :target_type "ModelGroup"
+                                     :content (:image data)
+                                     :thumbnail false})]
+            (jdbc-insert! tx :images
+                          {:target_id id
+                           :target_type "ModelGroup"
+                           :content (:thumbnail data)
+                           :parent_id (:id image)
+                           :thumbnail true})))
       (or (and (:image data) (not (:thumbnail data)))
           (and (:thumbnail data) (not (:image data))))
       (throw (ex-info "Both image and thumbnail must be provided." {})))
 
-    {:status 204}))
+    (jdbc-delete! tx :model_group_links ["child_id = ?" id])
+    (doseq [parent (:parents data)]
+      (jdbc-insert! tx :model_group_links
+                    {:child_id id, :parent_id (:category_id parent)})))
+
+  {:status 204})
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

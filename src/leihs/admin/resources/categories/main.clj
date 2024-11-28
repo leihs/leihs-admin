@@ -8,7 +8,8 @@
    [leihs.admin.resources.categories.tree :refer [tree]]
    [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
-   [next.jdbc.sql :as jdbc]))
+   [next.jdbc.sql :refer [insert! query]
+    :rename {query jdbc-query, insert! jdbc-insert!}]))
 
 (defn term-filter [tree request]
   (if-let [term (-> request :query-params-raw :term presence)]
@@ -33,12 +34,34 @@
 ;;; create category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn create [{tx :tx data :body :as request}]
-  (if-let [category (jdbc/insert! tx
+  (if-let [category (jdbc-insert! tx
                                   :model_groups
                                   (-> data
                                       (select-keys [:name])
                                       (assoc :type "Category")))]
-    {:status 201, :body category}
+    (let [id (:id category)]
+      (cond
+        (and (:image data) (:thumbnail data))
+        (let [image (jdbc-insert! tx :images
+                                  {:target_id id
+                                   :target_type "ModelGroup"
+                                   :content (:image data)
+                                   :thumbnail false})]
+          (jdbc-insert! tx :images
+                        {:target_id id
+                         :target_type "ModelGroup"
+                         :content (:thumbnail data)
+                         :parent_id (:id image)
+                         :thumbnail true}))
+        (or (and (:image data) (not (:thumbnail data)))
+            (and (:thumbnail data) (not (:image data))))
+        (throw (ex-info "Both image and thumbnail must be provided." {})))
+
+      (doseq [parent (:parents data)]
+        (jdbc-insert! tx :model_group_links
+                      {:child_id id, :parent_id (:category_id parent)}))
+
+      {:status 201, :body category})
     {:status 422
      :body "No category has been created."}))
 
