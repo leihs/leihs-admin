@@ -5,6 +5,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
+   [leihs.admin.resources.categories.category.image :as image]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
@@ -17,7 +18,7 @@
     (go (when (some->
                {:url route
                 :method :patch
-                :json-params  @data*
+                :json-params  (conj @data* @image/data*)
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)

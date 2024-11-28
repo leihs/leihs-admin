@@ -5,6 +5,7 @@
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
+   [leihs.admin.resources.categories.category.image :as image]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
@@ -12,12 +13,16 @@
 
 (def data* (reagent/atom nil))
 
+(def without-url*
+  (reaction
+   (swap! image/data* update :image dissoc :url)
+   (swap! image/data* update :thumbnail dissoc :url)))
+
 (defn create []
-  ;; (js/console.debug @data*)
   (go (when-let [id (some->
                      {:url (path :categores)
                       :method :post
-                      :json-params  @data*
+                      :json-params  (conj @data* @without-url*)
                       :chan (async/chan)}
                      http-client/request :chan <!
                      http-client/filter-success!
@@ -41,7 +46,6 @@
                                 "action")}
     [:> Modal.Title "Add a Category"]]
    [:> Modal.Body
-    ;; (js/console.debug @data*)
     [core/form create data*]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"

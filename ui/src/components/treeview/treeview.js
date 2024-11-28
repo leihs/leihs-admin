@@ -56,7 +56,7 @@ const folder = data
 //   ]
 // }
 
-function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, isExpanded, isSelectable, onSelected }) {
+function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, isExpanded, onSelected }) {
   function handleClick(event) {
     handleSelect(event)
     onSelected(element)

@@ -1,8 +1,16 @@
 (ns leihs.admin.resources.categories.category.image
   (:refer-clojure :exclude [str keyword])
   (:require
+   [cljs-http.client :as http]
+   [cljs.core.async :refer [<! go]]
+   [cljs.core.async.interop :refer-macros [<p!]]
+   [goog.object :as gobj]
    [leihs.admin.utils.image-resize :as image-resize]
    [reagent.core :as reagent]))
+
+;;; atoms ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defonce data* (reagent/atom nil))
 
 ;;; image ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -19,17 +27,32 @@
     (js/console.log (clj->js ["ITEMS" (.-items dataTransfer)]))
     (js/console.log (clj->js ["TYPES" (.-types dataTransfer)]))))
 
-(defn get-file-data [dataTransfer array-buffer-handler data*]
+(defn get-file-data [dataTransfer array-buffer-handler]
   (let [f (aget (.-files dataTransfer) 0)
         fname (.-name f)
         reader (js/FileReader.)]
     (set! (.-onload reader)
           (fn [e]
             (let [data (-> e .-target .-result)]
-              (array-buffer-handler data data*))))
+              (array-buffer-handler data fname))))
     (.readAsArrayBuffer reader f)))
 
-(defn img-handler [data data*]
+(defn img-handler [data filename]
+  (image-resize/resize-to-b64
+   data 32
+
+   :error-handler
+   (fn [err]
+     (swap! img-processing* assoc :error err))
+
+   :success-handler
+   (fn [b64 raw width height content-type]
+     (swap! data* assoc :thumbnail {:url b64
+                                    :data raw
+                                    :filename filename
+                                    :content_type content-type
+                                    :width width
+                                    :height height})))
   (image-resize/resize-to-b64
    data 512
 
@@ -38,27 +61,32 @@
      (swap! img-processing* assoc :error err))
 
    :success-handler
-   (fn [b64]
-     (swap! data* assoc :image b64))))
+   (fn [b64 raw width height content-type]
+     (swap! data* assoc :image {:url b64
+                                :data raw
+                                :filename filename
+                                :content_type content-type
+                                :width width
+                                :height height}))))
 
-(defn handle-img-drop [evt data*]
+(defn handle-img-drop [evt]
   (reset! img-processing* {})
   (allow-drop evt)
   (.stopPropagation evt)
   (let [data-transfer (.. evt -dataTransfer)]
     (if (< 0 (-> data-transfer .-files .-length))
-      (get-file-data data-transfer img-handler data*)
+      (get-file-data data-transfer img-handler)
       (get-img-data data-transfer img-handler))))
 
-(defn handle-img-chosen [evt data*]
+(defn handle-img-chosen [evt]
   (reset! img-processing* {})
-  (get-file-data (-> evt .-target) img-handler data*))
+  (get-file-data (-> evt .-target) img-handler))
 
-(defn file-upload [data*]
+(defn file-upload []
   [:div.mb-2
    {:style {:position :relative}
     :on-drag-over #(allow-drop %)
-    :on-drop #(handle-img-drop % data*)
+    :on-drop #(handle-img-drop %)
     :on-drag-enter #(allow-drop %)}
    [:div
     {:style
@@ -68,7 +96,7 @@
       :aspect-ratio "1/1"
       :left 0
       :top 0}}
-    (if-let [img-data (:image @data*)]
+    (if-let [img-data (:url (:image @data*))]
       [:img {:src img-data
              :style {:display :block
                      :object-fit "contain"
@@ -91,7 +119,7 @@
       " Choose file "
       [:input#user-image.sr-only
        {:type :file
-        :on-change #(handle-img-chosen % data*)}]]
+        :on-change #(handle-img-chosen %)}]]
 
      [:p "or drop file image here"]]
     [:div.text-center
@@ -103,15 +131,8 @@
         [:p {:style {:margin-top "1em"}}
          [:a.btn.btn-sm.btn-dark
           {:href "#"
-           :on-click #(swap! data* assoc :image nil)}
+           :on-click #(reset! data* nil)}
           [:i.fas.fa-times] " Remove image "]])]]]])
 
-(defn component [data*]
-  [:div
-   [file-upload data*]
-   [:input
-    {:id "image"
-     :type "text"
-     :hidden true
-     :readOnly true
-     :value (or (:image @data*) "")}]])
+(defn component []
+  [file-upload])
