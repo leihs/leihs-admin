@@ -4,57 +4,57 @@ import { default as DefaultTreeView, flattenTree } from 'react-accessible-treevi
 import cx from 'classnames'
 import s from './treeview.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { data } from './sample'
+// import { data } from './sample'
 import { faPlus, faMinus, faX, faInfo, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import NoImageSVG from './no-image.svg'
 import { UncontrolledTooltip } from 'reactstrap'
 
 // console.debug(data)
-const folder = data
+// const folder = data
 
-// const folder = {
-//   name: '',
-//   children: [
-//     {
-//       name: 'src',
-//       children: [
-//         {
-//           name: 'index.js',
-//
-//           children: [{ name: 'index.js' }, { name: 'styles.css' }, { name: 'styles.css' }, { name: 'test.css' }]
-//         },
-//         { name: 'sample.js' }
-//       ]
-//     },
-//     {
-//       name: 'node_modules',
-//       metadata: { isDirectory: true },
-//       children: [
-//         {
-//           name: 'react-accessible-treeview',
-//           children: [{ name: 'bundle.js' }]
-//         },
-//         { name: 'react', children: [{ name: 'bundle.js' }] }
-//       ]
-//     },
-//     {
-//       name: '.npmignore'
-//     },
-//     {
-//       name: 'package.json'
-//     },
-//     {
-//       name: 'webpack.config.js',
-//       children: [
-//         {
-//           name: 'react-accessible-treeview',
-//           children: [{ name: 'bundle.js' }]
-//         },
-//         { name: 'react', children: [{ name: 'bundle.js' }] }
-//       ]
-//     }
-//   ]
-// }
+const folder = {
+  name: '',
+  children: [
+    {
+      name: 'src',
+      children: [
+        {
+          name: 'index.js',
+
+          children: [{ name: 'index.js' }, { name: 'styles.css' }, { name: 'styles.css' }, { name: 'test.css' }]
+        },
+        { name: 'sample.js' }
+      ]
+    },
+    {
+      name: 'node_modules',
+      metadata: { isDirectory: true },
+      children: [
+        {
+          name: 'react-accessible-treeview',
+          children: [{ name: 'bundle.js' }]
+        },
+        { name: 'react', children: [{ name: 'bundle.js' }] }
+      ]
+    },
+    {
+      name: '.npmignore'
+    },
+    {
+      name: 'package.json'
+    },
+    {
+      name: 'webpack.config.js',
+      children: [
+        {
+          name: 'react-accessible-treeview',
+          children: [{ name: 'bundle.js' }]
+        },
+        { name: 'react', children: [{ name: 'bundle.js' }] }
+      ]
+    }
+  ]
+}
 
 function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, isExpanded, onSelected }) {
   function handleClick(event) {

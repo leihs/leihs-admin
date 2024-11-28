@@ -46,3 +46,4 @@
 (defn warehouse [] (FontAwesomeIcon #js{:icon solids/faWarehouse :className ""}))
 (defn clock-rotate-left [] (FontAwesomeIcon #js{:icon solids/faClockRotateLeft :className ""}))
 (defn categories [] (FontAwesomeIcon #js{:icon solids/faBarsStaggered :className ""}))
+(defn info [] (FontAwesomeIcon #js{:icon solids/faCircleInfo :className ""}))

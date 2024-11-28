@@ -5,8 +5,9 @@
    [cljs.core.async :refer [<! go]]
    [cljs.core.async.interop :refer-macros [<p!]]
    [goog.object :as gobj]
+
    [leihs.admin.utils.image-resize :as image-resize]
-   [reagent.core :as reagent]))
+   [reagent.core :as reagent :refer [reaction]]))
 
 ;;; atoms ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -134,5 +135,15 @@
            :on-click #(reset! data* nil)}
           [:i.fas.fa-times] " Remove image "]])]]]])
 
-(defn component []
-  [file-upload])
+(defn component
+  [inital-data*]
+
+  (reagent/create-class
+   {:component-did-mount
+    (fn []
+      (when @inital-data*
+        (swap! data* assoc :image {:url (-> @inital-data* :metadata :image_url)})))
+
+    :reagent-render
+    (fn []
+      [file-upload])}))

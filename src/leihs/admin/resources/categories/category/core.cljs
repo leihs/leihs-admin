@@ -58,12 +58,11 @@
         parent-tree (first (tree-filter/deep-filter #(= (:category_id %)
                                                         (:id parent))
                                                     (:children tree)))
-        path (str/join " / " (map :name (if (vector? parent)
-                                          parent
-                                          (tree-path/convert-tree-path parent-tree))))]
+        path (str/join " <- " (map :name (if (vector? parent)
+                                           parent
+                                           (tree-path/convert-tree-path parent-tree))))]
 
     [:> Card {:class-name "mb-3"}
-     (js/console.debug parent)
      [:> Container {:class-name "p-2"}
       [:button {:type "button"
                 :class-name "close"
@@ -94,11 +93,17 @@
         [:> Form.Group
 
          [:input.form-control
-          {:id "name"
+          {:id "label"
            :type "text"
            :placeholder "Enter Label"
-           :value (or (:name @form-data*) "")
-           :onChange (fn [e] (swap! form-data* assoc :name (-> e .-target .-value)))}]]]]]]))
+           :value (or (:label parent) "")
+           :onChange #(swap! form-data* update
+                             :parents
+                             (fn [parents]
+                               (map (fn [el]
+                                      (if (= (:id parent) (:id el))
+                                        (assoc el :label (.. % -target -value))                                                                    el))
+                                    parents)))}]]]]]]))
 
 (defonce show-category-tree* (reagent/atom false))
 

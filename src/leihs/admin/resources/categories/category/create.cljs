@@ -19,19 +19,22 @@
    (swap! image/data* update :thumbnail dissoc :url)))
 
 (defn create []
-  (go (when-let [id (some->
-                     {:url (path :categores)
-                      :method :post
-                      :json-params  (conj @data* @without-url*)
-                      :chan (async/chan)}
-                     http-client/request :chan <!
-                     http-client/filter-success!
-                     :body :id)]
-        (accountant/navigate!
-         (path :category {:category-id id})))))
+  (js/console.debug (conj @data* @without-url*))
+  #_(go (when-let [id (some->
+                       {:url (path :categores)
+                        :method :post
+                        :json-params  (conj @data* @without-url*)
+                        :chan (async/chan)}
+                       http-client/request :chan <!
+                       http-client/filter-success!
+                       :body :id)]
+          (accountant/navigate!
+           (path :category {:category-id id})))))
 
 (def open?*
   (reaction
+   (reset! data* nil)
+   (reset! image/data* nil)
    (->> (:query-params @routing/state*)
         :action
         (= "add"))))

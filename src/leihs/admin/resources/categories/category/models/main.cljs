@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.categories.category.models.main
   (:require
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]))
 
 (defn models-in-category-table []
@@ -17,5 +16,4 @@
          [:td [:ul.p-0.pl-3.m-0
                (for [used-in-pools (:used-in-pools model)]
                  [:li {:key (:id used-in-pools)}
-                  [:a {:href (path :inventory-pool {:inventory-pool-id (:id used-in-pools)})}
-                   (:name used-in-pools)]])]]])]}]])
+                  [:p (:name used-in-pools)]])]]])]}]])
