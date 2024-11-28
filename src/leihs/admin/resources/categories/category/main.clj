@@ -1,6 +1,7 @@
 (ns leihs.admin.resources.categories.category.main
   (:refer-clojure :exclude [get])
   (:require
+   [better-cond.core :as b]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.filter :refer [deep-filter]]
@@ -63,23 +64,28 @@
                   (select-keys data [:name])
                   ["type = 'Category' AND id = ?" id])
 
-    (cond
-      (and (:image data) (:thumbnail data))
-      (do (jdbc-delete! tx :images ["target_id = ?" id])
-          (let [image (jdbc-insert! tx :images
-                                    {:target_id id
-                                     :target_type "ModelGroup"
-                                     :content (:image data)
-                                     :thumbnail false})]
-            (jdbc-insert! tx :images
-                          {:target_id id
-                           :target_type "ModelGroup"
-                           :content (:thumbnail data)
-                           :parent_id (:id image)
-                           :thumbnail true})))
-      (or (and (:image data) (not (:thumbnail data)))
-          (and (:thumbnail data) (not (:image data))))
-      (throw (ex-info "Both image and thumbnail must be provided." {})))
+    (let [image (not-empty (:image data)),
+          thumbnail (:thumbnail data)]
+      (jdbc-delete! tx :images ["target_id = ?" id])
+      (when image
+        (let [target-type "ModelGroup"
+              image-row (jdbc-insert! tx :images
+                                      {:target_id id
+                                       :target_type target-type
+                                       :content (:data image)
+                                       :content_type (:content_type image)
+                                       :width (:width image)
+                                       :height (:height image)
+                                       :thumbnail false})]
+          (jdbc-insert! tx :images
+                        {:target_id id
+                         :target_type target-type
+                         :content (:data thumbnail)
+                         :content_type (:content_type thumbnail)
+                         :width (:width thumbnail)
+                         :height (:height thumbnail)
+                         :parent_id (:id image-row)
+                         :thumbnail true}))))
 
     (jdbc-delete! tx :model_group_links ["child_id = ?" id])
     (doseq [parent (:parents data)]

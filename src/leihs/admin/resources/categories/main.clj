@@ -40,26 +40,30 @@
                                       (select-keys [:name])
                                       (assoc :type "Category")))]
     (let [id (:id category)]
-      (cond
-        (and (:image data) (:thumbnail data))
-        (let [image (jdbc-insert! tx :images
-                                  {:target_id id
-                                   :target_type "ModelGroup"
-                                   :content (:image data)
-                                   :thumbnail false})]
+      (when-let [image (not-empty (:image data))]
+        (let [target-type "ModelGroup"
+              image-row (jdbc-insert! tx :images
+                                      {:target_id id
+                                       :target_type target-type
+                                       :content (:data image)
+                                       :content_type (:content_type image)
+                                       :width (:width image)
+                                       :height (:height image)
+                                       :thumbnail false})
+              thumbnail (:thumbnail data)]
           (jdbc-insert! tx :images
                         {:target_id id
-                         :target_type "ModelGroup"
-                         :content (:thumbnail data)
-                         :parent_id (:id image)
+                         :target_type target-type
+                         :content (:data thumbnail)
+                         :content_type (:content_type thumbnail)
+                         :width (:width thumbnail)
+                         :height (:height thumbnail)
+                         :parent_id (:id image-row)
                          :thumbnail true}))
-        (or (and (:image data) (not (:thumbnail data)))
-            (and (:thumbnail data) (not (:image data))))
-        (throw (ex-info "Both image and thumbnail must be provided." {})))
 
-      (doseq [parent (:parents data)]
-        (jdbc-insert! tx :model_group_links
-                      {:child_id id, :parent_id (:category_id parent)}))
+        (doseq [parent (:parents data)]
+          (jdbc-insert! tx :model_group_links
+                        {:child_id id, :parent_id (:category_id parent)})))
 
       {:status 201, :body category})
     {:status 422
