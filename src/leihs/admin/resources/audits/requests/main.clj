@@ -53,7 +53,7 @@
     query))
 
 (defn filter-by-method [query {{method :method} :query-params}]
-  (if-let [method (some-> method presence string/lower-case)]
+  (if-let [method (some-> method presence string/upper-case)]
     (sql/where query [:= :audited_requests.method method])
     query))
 
