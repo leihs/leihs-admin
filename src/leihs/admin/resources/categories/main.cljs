@@ -9,7 +9,7 @@
    [leihs.admin.resources.categories.category.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [fetch-route*]]
+   [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :refer [Button]]
@@ -32,8 +32,8 @@
 
 (defn fetch []
   (http-client/route-cached-fetch
-   core/categories-data* {:route @fetch-route*
-                          :reload true}))
+   core/categories-cache* {:route @fetch-route*
+                           :reload true}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -73,7 +73,9 @@
 
     [:section.mb-5
      [create/button]
-     [:> UI/Components.TreeView]]
+     (if @core/categories-data*
+       [:> UI/Components.TreeView {:data (clj->js @core/categories-data*)}]
+       [wait-component])]
 
     [:section
      [create/dialog]

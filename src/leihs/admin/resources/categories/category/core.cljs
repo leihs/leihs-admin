@@ -32,7 +32,10 @@
 
 (defonce data-models* (reagent/atom nil))
 
-(defonce categories-data* (reagent/atom nil))
+(defonce categories-cache* (reagent/atom nil))
+
+(defonce categories-data*
+  (reaction (get @categories-cache* "/admin/categories/")))
 
 ;;; fetch data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -51,7 +54,7 @@
 ;;; form ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn parent-category [form-data* parent]
-  (let [tree (get @categories-data* "/admin/categories/")
+  (let [tree @categories-data*
         parent-tree (first (tree-filter/deep-filter #(= (:category_id %)
                                                         (:id parent))
                                                     (:children tree)))

@@ -20,7 +20,7 @@
 
 (defn index [{tx :tx :as request}]
   {:body {:name "categories"
-          :children (-> (tree tx)
+          :children (-> (tree tx {:with-metadata true})
                         (term-filter request))}})
 
 (comment

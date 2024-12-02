@@ -13,17 +13,17 @@
 (def data* (reagent/atom nil))
 
 (defn create []
-  (js/console.debug @data*)
-  #_(go (when-let [id (some->
-                       {:url (path :categores)
-                        :method :post
-                        :json-params  @data*
-                        :chan (async/chan)}
-                       http-client/request :chan <!
-                       http-client/filter-success!
-                       :body :id)]
-          (accountant/navigate!
-           (path :category {:category-id id})))))
+  ;; (js/console.debug @data*)
+  (go (when-let [id (some->
+                     {:url (path :categores)
+                      :method :post
+                      :json-params  @data*
+                      :chan (async/chan)}
+                     http-client/request :chan <!
+                     http-client/filter-success!
+                     :body :id)]
+        (accountant/navigate!
+         (path :category {:category-id id})))))
 
 (def open?*
   (reaction

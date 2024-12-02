@@ -93,7 +93,7 @@ function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, i
             </>
           )}
         </div>
-        {element.metadata.thumbnail_url ? (
+        {element?.metadata?.thumbnail_url ? (
           <img src={element.metadata.thumbnail_url} width="32" height="32" />
         ) : (
           <NoImageSVG className={s['thumbnail']} />
