@@ -12,9 +12,11 @@
     :rename {query jdbc-query,
              delete! jdbc-delete!
              update! jdbc-update!
-             insert! jdbc-insert!}]))
+             insert! jdbc-insert!}]
+   [taoensso.timbre :refer [spy]]))
 
-(def base-fields #{:id,
+(def base-fields #{:id
+                   :is_active
                    :description
                    :email
                    :name
@@ -30,9 +32,9 @@
                     :print_contracts
                     :required_purpose})
 
-(def create-fields (set/union base-fields #{:is_active}))
-(def patch-fields (set/union base-fields extra-fields))
-(def get-fields (set/union create-fields extra-fields))
+(def create-fields base-fields)
+(def get-fields (set/union base-fields extra-fields))
+(def patch-fields get-fields)
 
 (defn inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params tx :tx :as request}]
@@ -50,15 +52,67 @@
     {:status 422
      :body "No inventory-pool has been created."}))
 
+(defn validate-deactivation [tx inventory-pool-id]
+  (when (-> (sql/select
+             [[:exists
+               (-> (sql/select 1)
+                   (sql/from :items)
+                   (sql/where [:or [:= :inventory_pool_id inventory-pool-id]
+                               [:= :owner_id inventory-pool-id]])
+                   (sql/where [:is-null :retired]))]])
+            sql-format
+            (->> (jdbc-query tx))
+            first :exists)
+    (throw (ex-info "Inventory pool cannot be deactivated because it still has unretired items."
+                    {:status 422})))
+  (when (-> (sql/select
+             [[:exists
+               (-> (sql/select 1)
+                   (sql/from :reservations)
+                   (sql/where [:= :inventory_pool_id inventory-pool-id])
+                   (sql/where [:in :status ["submitted" "approved" "signed"]]))]])
+            sql-format
+            (->> (jdbc-query tx))
+            first :exists)
+    (throw (ex-info "Inventory pool cannot be deactivated because it still has active reservations."
+                    {:status 422}))))
+
+(comment
+  (require '[leihs.core.db :as db])
+  (let [tx (db/get-ds)
+        inventory-pool-id #uuid "a7dc0cbd-9692-4fa7-bc9b-67ee6707aa24"]
+    ; (-> (sql/select
+    ;       [[:exists
+    ;         (-> (sql/select 1) 
+    ;             (sql/from :reservations)
+    ;             (sql/where [:= :inventory_pool_id inventory-pool-id])
+    ;             (sql/where [:in :status ["submitted" "approved" "signed"]]))]])
+    ;     sql-format
+    ;     (->> (jdbc-query tx))
+    ;     first :exists)
+    ; (-> (sql/select
+    ;       [[:exists
+    ;         (-> (sql/select 1) 
+    ;             (sql/from :items)
+    ;             (sql/where [:or [:= :inventory_pool_id inventory-pool-id]
+    ;                         [:= :owner_id inventory-pool-id]])
+    ;             (sql/where [:is-null :retired]))]])
+    ;     sql-format
+    ;     (->> (jdbc-query tx))
+    ;     first :exists)
+    (validate-deactivation tx inventory-pool-id)))
+
 (defn patch-inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params
     tx :tx data :body :as request}]
   (when (->> ["SELECT true AS exists FROM inventory_pools WHERE id = ?" inventory-pool-id]
              (jdbc-query tx)
              first :exists)
-    (jdbc-update! tx :inventory_pools
-                  (select-keys data patch-fields)
-                  ["id = ?" inventory-pool-id])
+    (let [patch-data (select-keys data patch-fields)]
+      (when-not (:is_active patch-data)
+        (validate-deactivation tx inventory-pool-id))
+      (jdbc-update! tx :inventory_pools patch-data
+                    ["id = ?" inventory-pool-id]))
     {:status 204}))
 
 (defn delete-inventory-pool [{tx :tx {inventory-pool-id :inventory-pool-id} :route-params}]
