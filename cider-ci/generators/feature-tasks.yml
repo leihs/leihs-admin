@@ -63,6 +63,21 @@
   environment_variables:
     FEATURE_NAME: "Managing Buildings: an admin via the UI searching for a building 01"
     FEATURE: './spec/features/buildings/listing_spec.rb[1:1:2:1]'
+'./spec/features/categories/tree_search_spec.rb[1:1:1]':
+  name: "Interact with TreeViewer  an admin 01"
+  environment_variables:
+    FEATURE_NAME: "Interact with TreeViewer  an admin 01"
+    FEATURE: './spec/features/categories/tree_search_spec.rb[1:1:1]'
+'./spec/features/categories/tree_search_spec.rb[1:1:2]':
+  name: "Interact with TreeViewer  an admin 02"
+  environment_variables:
+    FEATURE_NAME: "Interact with TreeViewer  an admin 02"
+    FEATURE: './spec/features/categories/tree_search_spec.rb[1:1:2]'
+'./spec/features/categories/tree_search_spec.rb[1:1:3]':
+  name: "Interact with TreeViewer  an admin 03"
+  environment_variables:
+    FEATURE_NAME: "Interact with TreeViewer  an admin 03"
+    FEATURE: './spec/features/categories/tree_search_spec.rb[1:1:3]'
 './spec/features/groups/create-group_spec.rb[1:1:1:1:1]':
   name: "Creating groups a bunch of groups, users and some admins exist; an system admin via the UI 01"
   environment_variables:
