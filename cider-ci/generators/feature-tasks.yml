@@ -358,6 +358,11 @@
   environment_variables:
     FEATURE_NAME: "Manage inventory-pools a inventory-pool manager via API 01"
     FEATURE: './spec/features/inventory-pools/create_spec.rb[1:2:2:1]'
+'./spec/features/inventory-pools/deactivation_spec.rb[1:1:1]':
+  name: "Manage inventory-pools an admin via the UI 02"
+  environment_variables:
+    FEATURE_NAME: "Manage inventory-pools an admin via the UI 02"
+    FEATURE: './spec/features/inventory-pools/deactivation_spec.rb[1:1:1]'
 './spec/features/inventory-pools/delegations/add_remove_delete_spec.rb[1:1:1:1]':
   name: "Add, remove, delete delegations within a pool  two pools, and some delegations in various states exist an admin via the UI 01"
   environment_variables:
