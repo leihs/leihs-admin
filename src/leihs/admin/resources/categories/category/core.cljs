@@ -140,7 +140,8 @@
      (if (not @show-category-tree*)
        [:> Button {:on-click #(reset! show-category-tree* true)} "Add parent category"]
        [:> UI/Components.TreeView
-        {:onSelected #(do (reset! show-category-tree* false)
+        {:data (clj->js @categories-data*)
+         :onSelected #(do (reset! show-category-tree* false)
                           (swap! form-data* update :parents
                                  (fnil (fn [parents]
                                          (->> (conj parents

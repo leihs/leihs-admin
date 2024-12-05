@@ -14,17 +14,17 @@
 (def data* (reagent/atom nil))
 
 (defn patch []
-  (js/console.debug (dissoc (conj @data* @image/data*) :metadata))
-  #_(let [route (path :room {:room-id @core/id*})]
-      (go (when (some->
-                 {:url route
-                  :method :patch
-                  :json-params  (conj @data* @image/data*)
-                  :chan (async/chan)}
-                 http-client/request :chan <!
-                 http-client/filter-success!)
-            (swap! core/cache* assoc @core/path* @data*)
-            (search-params/delete-from-url "action")))))
+  #_(js/console.debug (dissoc (conj @data* @image/data*) :metadata))
+  (let [route (path :room {:room-id @core/id*})]
+    (go (when (some->
+               {:url route
+                :method :patch
+                :json-params  (conj @data* @image/data*)
+                :chan (async/chan)}
+               http-client/request :chan <!
+               http-client/filter-success!)
+          (swap! core/cache* assoc @core/path* @data*)
+          (search-params/delete-from-url "action")))))
 
 (def open?*
   (reaction

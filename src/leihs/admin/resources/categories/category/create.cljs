@@ -19,17 +19,17 @@
    (swap! image/data* update :thumbnail dissoc :url)))
 
 (defn create []
-  (js/console.debug (conj @data* @without-url*))
-  #_(go (when-let [id (some->
-                       {:url (path :categores)
-                        :method :post
-                        :json-params  (conj @data* @without-url*)
-                        :chan (async/chan)}
-                       http-client/request :chan <!
-                       http-client/filter-success!
-                       :body :id)]
-          (accountant/navigate!
-           (path :category {:category-id id})))))
+  #_(js/console.debug (conj @data* @without-url*))
+  (go (when-let [id (some->
+                     {:url (path :categores)
+                      :method :post
+                      :json-params  (conj @data* @without-url*)
+                      :chan (async/chan)}
+                     http-client/request :chan <!
+                     http-client/filter-success!
+                     :body :id)]
+        (accountant/navigate!
+         (path :category {:category-id id})))))
 
 (def open?*
   (reaction
