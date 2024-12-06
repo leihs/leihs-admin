@@ -9,7 +9,8 @@
    [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
    [next.jdbc.sql :refer [insert! query]
-    :rename {query jdbc-query, insert! jdbc-insert!}]))
+    :rename {query jdbc-query, insert! jdbc-insert!}]
+   [taoensso.timbre :refer [debug spy]]))
 
 (defn term-filter [tree request]
   (if-let [term (-> request :query-params-raw :term presence)]
@@ -59,11 +60,12 @@
                          :width (:width thumbnail)
                          :height (:height thumbnail)
                          :parent_id (:id image-row)
-                         :thumbnail true}))
+                         :thumbnail true})))
 
-        (doseq [parent (:parents data)]
-          (jdbc-insert! tx :model_group_links
-                        {:child_id id, :parent_id (:category_id parent)})))
+      (doseq [parent (:parents data)]
+        (jdbc-insert! tx :model_group_links
+                      (spy {:child_id id, :parent_id (:id parent),
+                            :label (:label parent)})))
 
       {:status 201, :body category})
     {:status 422

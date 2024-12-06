@@ -15,7 +15,7 @@
 
 (defn patch []
   #_(js/console.debug (dissoc (conj @data* @image/data*) :metadata))
-  (let [route (path :room {:room-id @core/id*})]
+  (let [route (path :category {:category-id @core/id*})]
     (go (when (some->
                {:url route
                 :method :patch

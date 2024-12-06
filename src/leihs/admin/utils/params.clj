@@ -4,15 +4,16 @@
    [ring.util.codec :as codec]
    [taoensso.timbre :refer [debug spy]]))
 
-(defn cast-ids-to-uuids [m]
-  (->> m
-       (map (fn [[k v]]
-              [k (try (if (vector? v)
-                        (map #(java.util.UUID/fromString %) v)
-                        (java.util.UUID/fromString v))
-                      ; Some IDs are not of type UUID (e.g. authentication_system).
-                      (catch Exception _ v))]))
-       (into {})))
+(defn cast-ids-to-uuids [x]
+  (cond
+    (vector? x) (vec (map cast-ids-to-uuids x))
+    (map? x) (->> x
+                  (map (fn [[k v]] [k (cast-ids-to-uuids v)]))
+                  (into {}))
+    (string? x) (try (java.util.UUID/fromString x)
+                     ; Some IDs are not of type UUID (e.g. authentication_system).
+                     (catch Exception _ x))
+    :else x))
 
 (defn url-decode [m]
   (->> m

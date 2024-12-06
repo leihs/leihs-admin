@@ -9,7 +9,8 @@
    [leihs.admin.resources.categories.tree :refer [tree convert-tree-path roots]]
    [next.jdbc.sql :refer [delete! insert! query update!]
     :rename {query jdbc-query, insert! jdbc-insert!
-             update! jdbc-update! delete! jdbc-delete!}]))
+             update! jdbc-update! delete! jdbc-delete!}]
+   [taoensso.timbre :refer [debug spy]]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -59,40 +60,41 @@
 
 (defn patch
   [{{id :category-id} :route-params tx :tx data :body :as request}]
-  (when (get-one tx id)
-    (jdbc-update! tx :model_groups
-                  (select-keys data [:name])
-                  ["type = 'Category' AND id = ?" id])
+  (if (get-one tx id)
+    (do (jdbc-update! tx :model_groups
+                      (select-keys data [:name])
+                      ["type = 'Category' AND id = ?" id])
 
-    (let [image (not-empty (:image data)),
-          thumbnail (:thumbnail data)]
-      (jdbc-delete! tx :images ["target_id = ?" id])
-      (when image
-        (let [target-type "ModelGroup"
-              image-row (jdbc-insert! tx :images
-                                      {:target_id id
-                                       :target_type target-type
-                                       :content (:data image)
-                                       :content_type (:content_type image)
-                                       :width (:width image)
-                                       :height (:height image)
-                                       :thumbnail false})]
-          (jdbc-insert! tx :images
-                        {:target_id id
-                         :target_type target-type
-                         :content (:data thumbnail)
-                         :content_type (:content_type thumbnail)
-                         :width (:width thumbnail)
-                         :height (:height thumbnail)
-                         :parent_id (:id image-row)
-                         :thumbnail true}))))
+        (let [image (not-empty (:image data)),
+              thumbnail (:thumbnail data)]
+          (jdbc-delete! tx :images ["target_id = ?" id])
+          (when image
+            (let [target-type "ModelGroup"
+                  image-row (jdbc-insert! tx :images
+                                          {:target_id id
+                                           :target_type target-type
+                                           :content (:data image)
+                                           :content_type (:content_type image)
+                                           :width (:width image)
+                                           :height (:height image)
+                                           :thumbnail false})]
+              (jdbc-insert! tx :images
+                            {:target_id id
+                             :target_type target-type
+                             :content (:data thumbnail)
+                             :content_type (:content_type thumbnail)
+                             :width (:width thumbnail)
+                             :height (:height thumbnail)
+                             :parent_id (:id image-row)
+                             :thumbnail true}))))
 
-    (jdbc-delete! tx :model_group_links ["child_id = ?" id])
-    (doseq [parent (:parents data)]
-      (jdbc-insert! tx :model_group_links
-                    {:child_id id, :parent_id (:category_id parent)})))
-
-  {:status 204})
+        (jdbc-delete! tx :model_group_links ["child_id = ?" id])
+        (doseq [parent (:parents data)]
+          (jdbc-insert! tx :model_group_links
+                        {:child_id id, :parent_id (:category_id parent),
+                         :label (:label parent)}))
+        {:status 200, :body (get-one tx id)})
+    {:status 404}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

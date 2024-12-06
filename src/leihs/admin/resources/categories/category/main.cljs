@@ -58,7 +58,7 @@
 
                        (if (:label parent)
 
-                         [:span (:label parent) " "
+                         [:span (:name parent) " "
                           [:span {:class-name "badge badge-info"} (:label parent)]]
                          (:name parent))])])]]]
 
