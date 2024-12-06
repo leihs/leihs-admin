@@ -13,6 +13,8 @@
    [react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]))
 
+(def defaults {:is_active true})
+
 (defonce data* (reagent/atom nil))
 
 (defn create []
@@ -56,7 +58,7 @@
 
 (def open*
   (reaction
-   (reset! data* nil)
+   (reset! data* defaults)
    (->> (:query-params @routing/state*)
         :action
         (= "add"))))
