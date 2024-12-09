@@ -4,16 +4,15 @@ require "pry"
 feature "Interact with TreeViewer ", type: :feature do
   before :each do
     @admin = FactoryBot.create :admin
-    @parent_category = FactoryBot.create(:model_group, name: "Parent Category")
-    @child_category = FactoryBot.create(:model_group, name: "Child Category")
-    @nthchild_category = FactoryBot.create(:model_group, name: "Nth Category")
-    FactoryBot.create(:model_group_link, parent: @parent_category, child: @child_category)
-    FactoryBot.create(:model_group_link, parent: @child_category, child: @nthchild_category)
+    parent_category = FactoryBot.create(:model_group, name: "Parent Category")
+    child_category = FactoryBot.create(:model_group, name: "Child Category")
+    nthchild_category = FactoryBot.create(:model_group, name: "Nth Category")
+    FactoryBot.create(:model_group_link, parent: parent_category, child: child_category)
+    FactoryBot.create(:model_group_link, parent: child_category, child: nthchild_category)
 
-    # Create more parent-child relationships using Faker
     5.times do
       child = FactoryBot.create(:model_group, name: Faker::Commerce.product_name)
-      FactoryBot.create(:model_group_link, parent: @parent_category, child: child)
+      FactoryBot.create(:model_group_link, parent: parent_category, child: child)
     end
 
     5.times do
@@ -29,7 +28,8 @@ feature "Interact with TreeViewer ", type: :feature do
     }
 
     scenario "is unfolding specific category" do
-      visit "/admin/categories/"
+      visit "/admin/"
+      click_on "Categories"
 
       expect(page).to have_content("Parent Category")
 
@@ -45,7 +45,8 @@ feature "Interact with TreeViewer ", type: :feature do
     end
 
     scenario "is opening and closing all categories" do
-      visit "/admin/categories/"
+      visit "/admin/"
+      click_on "Categories"
 
       click_on "open all"
 
@@ -61,7 +62,8 @@ feature "Interact with TreeViewer ", type: :feature do
     end
 
     scenario "is searching for category" do
-      visit "/admin/categories/"
+      visit "/admin/"
+      click_on "Categories"
 
       within("ul.tree") do
         expect(page).to have_selector("a", count: 6)
