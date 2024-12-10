@@ -242,7 +242,6 @@ function TreeView({ data = folder, onSelected = null }) {
         data={filteredNodes}
         className={s['list']}
         expandedIds={expandedIds}
-        onLoadData={_ => console.debug('data loaded')}
         nodeRenderer={({ element, getNodeProps, level, isExpanded, handleSelect }) => (
           <TreeElement
             searchTerm={searchTerm}

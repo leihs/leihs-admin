@@ -11,13 +11,13 @@
 
 (defn post []
   (go (when (some->
-             {:url (path :room (-> @routing/state* :route-params))
+             {:url (path :category (-> @routing/state* :route-params))
               :method :delete
               :chan (async/chan)}
              http-client/request :chan <!
              http-client/filter-success!)
         (search-params/delete-from-url "action")
-        (accountant/navigate! (path :rooms)))))
+        (accountant/navigate! (path :categories)))))
 
 (def open?*
   (reaction

@@ -13,8 +13,30 @@
 
 (def data* (reagent/atom nil))
 
+(defn remove-duplicates [data]
+  (->> data
+       (group-by :id)
+       (vals)
+       (map first)
+       vec))
+
+(defn map-data [data]
+  {:id (:category_id data)
+   :name (:name data)
+   :parents (->> (:parents data)
+                 (map (fn [el]
+                        (let [parent (last (butlast el))
+                              category (last el)
+                              label (-> category :metadata :label)]
+                          (-> parent
+                              (assoc :id (:category_id parent))
+                              (assoc :label label)
+                              (dissoc :category_id)
+                              (dissoc :metadata)))))
+                 (remove-duplicates))})
+
 (defn patch []
-  #_(js/console.debug (dissoc (conj @data* @image/data*) :metadata))
+  (js/console.debug (conj @data* @image/data*))
   (let [route (path :category {:category-id @core/id*})]
     (go (when (some->
                {:url route
@@ -28,7 +50,7 @@
 
 (def open?*
   (reaction
-   (reset! data* @core/data*)
+   (reset! data* (map-data @core/data*))
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))

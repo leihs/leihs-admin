@@ -19,7 +19,7 @@
    (swap! image/data* update :thumbnail dissoc :url)))
 
 (defn create []
-  #_(js/console.debug (conj @data* @without-url*))
+  (js/console.debug (conj @data* @without-url*))
   (go (when-let [id (some->
                      {:url (path :categores)
                       :method :post

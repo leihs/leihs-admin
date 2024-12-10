@@ -53,15 +53,23 @@
 
 ;;; form ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn parent-category [form-data* parent]
+(defn resolve-parent-paths [category_id]
   (let [tree @categories-data*
-        parent-tree (first (tree-filter/deep-filter #(= (:category_id %)
-                                                        (:id parent))
-                                                    (:children tree)))
-        path (str/join " <- " (map :name (if (vector? parent)
-                                           parent
-                                           (tree-path/convert-tree-path parent-tree))))]
+        parent-paths (tree-filter/deep-filter #(= (:category_id %)
+                                                  category_id)
+                                              (:children tree))]
+    (mapv tree-path/convert-tree-path parent-paths)))
 
+(defn handle-label-change [event category form-data* index]
+  (let [value (.. event -target -value)
+        updated (assoc-in category [:metadata :label] value)]
+
+    (swap! form-data*
+           update-in [:parents index]
+           #(assoc % (dec (count %)) updated))))
+
+(defn parent-category [form-data* parent index]
+  (let [category (last parent)]
     [:> Card {:class-name "mb-3"}
      [:> Container {:class-name "p-2"}
       [:button {:type "button"
@@ -69,18 +77,18 @@
                 :style {:z-index "9999"
                         :position "absolute"
                         :right "0.5rem"}
-                :on-click #(swap! form-data* update
-                                  :parents
+                :on-click #(swap! form-data*
+                                  update :parents
                                   (fn [parents]
-                                    (filter (fn [element] (not= (:id element)
-                                                                (:id parent)))
-                                            parents)))} [icons/delete]]
+                                    (remove (fn [p] (= p (nth parents index))) parents)))}
+       [icons/delete]]
+
       [:> Row
-       [:> Col (if (:thumbnail_url parent)
+       [:> Col (if (-> parent :thumbnail_url)
                  [:img  {:style {:object-fit "contain"
                                  :aspect-ratio "1/1"
                                  :display "flex"}
-                         :src (:thumbnail_url parent)}]
+                         :src (-> parent :thumbnail_url)}]
 
                  [:div {:style {:font-size "0.5rem"
                                 :aspect-ratio "1/1"
@@ -89,21 +97,17 @@
                                 :justify-content "center"}
                         :class-name "border rounded"} [:span "no picture"]])]
        [:> Col {:sm 10}
-        [:p {:class-name "mr-3"} (if (not (str/blank? path)) path (:name parent))]
+        [:p {:class-name "mr-3"} (:name parent)]
         [:> Form.Group
 
          [:input.form-control
           {:id "label"
            :type "text"
            :placeholder "Enter Label"
-           :value (or (:label parent) "")
-           :onChange #(swap! form-data* update
-                             :parents
-                             (fn [parents]
-                               (map (fn [el]
-                                      (if (= (:id parent) (:id el))
-                                        (assoc el :label (.. % -target -value))                                                                    el))
-                                    parents)))}]]]]]]))
+           :value (or (-> parent :label) "")
+           :onChange #(swap! form-data*
+                             assoc-in [:parents index :label]
+                             (.. % -target -value))}]]]]]]))
 
 (defonce show-category-tree* (reagent/atom false))
 
@@ -133,26 +137,23 @@
         [:> Form.Label {:class-name "h5 mb-0"} "Parent assignments"]
         [:> Form.Text  "Selected Parent Categories"]])
 
-     (for [parent (:parents @form-data*)]
-       ^{:key (:id parent)}
-       [parent-category form-data* parent])
+     (for [[index parent] (map-indexed vector (:parents @form-data*))]
+       ^{:key index}
+       [parent-category form-data* parent index])
 
      (if (not @show-category-tree*)
        [:> Button {:on-click #(reset! show-category-tree* true)} "Add parent category"]
        [:> UI/Components.TreeView
         {:data (clj->js @categories-data*)
          :onSelected #(do (reset! show-category-tree* false)
-                          (swap! form-data* update :parents
-                                 (fnil (fn [parents]
-                                         (->> (conj parents
-                                                    {:id (.. % -metadata -id)
-                                                     :name (.. % -metadata -name)
-                                                     :thumbnail_url (.. % -metadata -thumbnail_url)})
-
-                                              (group-by :id)
-                                              (vals)
-                                              (map first)
-                                              (vec))) [])))}])]]])
+                          (swap! form-data*
+                                 update :parents
+                                 (fn [parents]
+                                   (vec (conj parents
+                                              {:id (.. % -metadata -id)
+                                               :name (.. % -metadata -name)
+                                               :label ""
+                                               :thumbnail_url (.. % -metadata -thumbnail_url)})))))}])]]])
 
 ;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

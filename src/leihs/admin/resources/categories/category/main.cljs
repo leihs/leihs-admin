@@ -51,8 +51,10 @@
       [:tr.parents
        [:td [:strong "Parents"] [:small " (metadata:parents)"]]
        [:td [:ul (for [path (parents-labels (-> @core/data* :parents))]
+                   ^{:key (str path)}
                    [:li
                     (for [parent path]
+                      ^{:key (:index parent)}
                       [:span
                        (when (> (:index parent) 0) " <- ")
 
