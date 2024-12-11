@@ -23,6 +23,7 @@
 (defn map-data [data]
   {:id (:category_id data)
    :name (:name data)
+   :image (-> data :metadata :image_url)
    :parents (->> (:parents data)
                  (map (fn [el]
                         (let [parent (last (butlast el))

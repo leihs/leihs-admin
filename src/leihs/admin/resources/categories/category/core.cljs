@@ -60,54 +60,45 @@
                                               (:children tree))]
     (mapv tree-path/convert-tree-path parent-paths)))
 
-(defn handle-label-change [event category form-data* index]
-  (let [value (.. event -target -value)
-        updated (assoc-in category [:metadata :label] value)]
-
-    (swap! form-data*
-           update-in [:parents index]
-           #(assoc % (dec (count %)) updated))))
-
 (defn parent-category [form-data* parent index]
-  (let [category (last parent)]
-    [:> Card {:class-name "mb-3"}
-     [:> Container {:class-name "p-2"}
-      [:button {:type "button"
-                :class-name "close"
-                :style {:z-index "9999"
-                        :position "absolute"
-                        :right "0.5rem"}
-                :on-click #(swap! form-data*
-                                  update :parents
-                                  (fn [parents]
-                                    (remove (fn [p] (= p (nth parents index))) parents)))}
-       [icons/delete]]
+  [:> Card {:class-name "mb-3"}
+   [:> Container {:class-name "p-2"}
+    [:button {:type "button"
+              :class-name "close"
+              :style {:z-index "9999"
+                      :position "absolute"
+                      :right "0.5rem"}
+              :on-click #(swap! form-data*
+                                update :parents
+                                (fn [parents]
+                                  (remove (fn [p] (= p (nth parents index))) parents)))}
+     [icons/delete]]
 
-      [:> Row
-       [:> Col (if (-> parent :thumbnail_url)
-                 [:img  {:style {:object-fit "contain"
-                                 :aspect-ratio "1/1"
-                                 :display "flex"}
-                         :src (-> parent :thumbnail_url)}]
+    [:> Row
+     [:> Col (if (-> parent :thumbnail_url)
+               [:img  {:style {:object-fit "contain"
+                               :aspect-ratio "1/1"
+                               :display "flex"}
+                       :src (-> parent :thumbnail_url)}]
 
-                 [:div {:style {:font-size "0.5rem"
-                                :aspect-ratio "1/1"
-                                :display "flex"
-                                :align-items "center"
-                                :justify-content "center"}
-                        :class-name "border rounded"} [:span "no picture"]])]
-       [:> Col {:sm 10}
-        [:p {:class-name "mr-3"} (:name parent)]
-        [:> Form.Group
+               [:div {:style {:font-size "0.5rem"
+                              :aspect-ratio "1/1"
+                              :display "flex"
+                              :align-items "center"
+                              :justify-content "center"}
+                      :class-name "border rounded"} [:span "no picture"]])]
+     [:> Col {:sm 10}
+      [:p {:class-name "mr-3"} (:name parent)]
+      [:> Form.Group
 
-         [:input.form-control
-          {:id "label"
-           :type "text"
-           :placeholder "Enter Label"
-           :value (or (-> parent :label) "")
-           :onChange #(swap! form-data*
-                             assoc-in [:parents index :label]
-                             (.. % -target -value))}]]]]]]))
+       [:input.form-control
+        {:id "label"
+         :type "text"
+         :placeholder "Enter Label"
+         :value (or (-> parent :label) "")
+         :onChange #(swap! form-data*
+                           assoc-in [:parents index :label]
+                           (.. % -target -value))}]]]]]])
 
 (defonce show-category-tree* (reagent/atom false))
 

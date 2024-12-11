@@ -142,7 +142,11 @@
    {:component-did-mount
     (fn []
       (when @inital-data*
-        (swap! data* assoc :image {:url (-> @inital-data* :metadata :image_url)})))
+        (swap! data*
+               assoc :image
+               {:url (if (:metadata @inital-data*)
+                       (-> @inital-data* :metadata :image_url)
+                       (:image @inital-data*))})))
 
     :reagent-render
     (fn []
