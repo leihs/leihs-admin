@@ -35,7 +35,8 @@
           (search-params/delete-from-url "action")))))
 
 (defn add-new-holiday-comp []
-  (let [new-holiday (reagent/atom {:inventory_pool_id (:id @pool-core/data*)})
+  (let [holiday-template {:inventory_pool_id (:id @pool-core/data*)}
+        new-holiday (reagent/atom holiday-template)
         end-date-before-start-date? (reagent/atom false)]
     (fn []
       (let [today-min (-> (new js/Date) .toISOString (.split "T") first)
@@ -53,7 +54,7 @@
                                                  (assoc @new-holiday
                                                         :new true
                                                         :id (str (random-uuid))))
-                                          (reset! new-holiday nil))}
+                                          (reset! new-holiday holiday-template))}
           [:div.form-group.mb-2.mr-2.w-50
            [:input.form-control.w-100 {:type "text" :placeholder "Name"
                                        :value (:name @new-holiday)

@@ -189,6 +189,12 @@ feature 'Manage inventory-pools', type: :feature do
               find("tr", text: "New Holiday 2").click_on 'Delete'
 
               find("tr", text: @holiday_1.name).click_on 'Delete'
+
+              find("input[type='text']").set "New Holiday 3"
+              fill_in "start-date", with: (Date.tomorrow + 2).iso8601
+              fill_in "end-date", with: (Date.tomorrow + 3).iso8601
+              click_on 'Add'
+
               click_on 'Save'
             end
             wait_until {current_path == @holidays_path}
@@ -197,9 +203,10 @@ feature 'Manage inventory-pools', type: :feature do
             end
             within('.modal') do
               within("tbody") do
-                expect(all("tr").count).to eq 2
+                expect(all("tr").count).to eq 3
                 expect(find("tr", text: "New Holiday 1")).to be_present
                 expect(find("tr", text: @holiday_2.name)).to be_present
+                expect(find("tr", text: "New Holiday 3")).to be_present
               end
             end
           end
