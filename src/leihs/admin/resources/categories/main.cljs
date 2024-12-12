@@ -9,10 +9,9 @@
    [leihs.admin.resources.categories.category.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
+   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
-   [react-bootstrap :refer [Button]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def current-query-parameters*
@@ -32,7 +31,7 @@
 
 (defn fetch []
   (http-client/route-cached-fetch
-   core/categories-cache* {:route @fetch-route*
+   core/categories-cache* {:route (path :categories)
                            :reload true}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

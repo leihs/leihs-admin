@@ -6,6 +6,8 @@
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.image :as image]
+   [leihs.admin.resources.categories.main :as categories-main]
+   [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
@@ -52,6 +54,7 @@
 (def open?*
   (reaction
    (reset! data* (map-data @core/data*))
+   (when (empty? @core/categories-data*) (categories-main/fetch))
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))
@@ -66,7 +69,10 @@
                                 "action")}
     [:> Modal.Title "Edit Category"]]
    [:> Modal.Body
-    [core/form patch data*]]
+
+    (if (empty? @core/categories-data*)
+      [wait-component]
+      [core/form patch data*])]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url
