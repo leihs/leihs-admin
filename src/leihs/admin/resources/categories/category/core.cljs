@@ -51,7 +51,7 @@
                       http-client/filter-success!
                       :body :models))))
 
-;;; form ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; helper ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn resolve-parent-paths [category_id]
   (let [tree @categories-data*
@@ -60,7 +60,35 @@
                                               (:children tree))]
     (mapv tree-path/convert-tree-path parent-paths)))
 
+(defn parents-labels [parents]
+  (for [parent parents]
+    (map-indexed (fn [idx el]
+                   {:index idx
+                    :name (:name el)
+                    :label (-> el :metadata :label)})
+                 parent)))
+
+(defn parent-paths-list [parents & {:keys [unstyled]
+                                    :or {unstyled false}}]
+  [:ul {:class-name (when unstyled "list-unstyled")}
+   (for [path (parents-labels parents)]
+     ^{:key (str path)}
+     [:li
+      (for [parent path]
+        ^{:key (:index parent)}
+        [:span
+         (when (> (:index parent) 0) " <- ")
+
+         (if (:label parent)
+
+           [:span (:name parent) " "
+            [:span {:class-name "badge badge-info"} (:label parent)]]
+           (:name parent))])])])
+
+;;; form ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn parent-category [form-data* parent index]
+
   [:> Card {:class-name "mb-3"}
    [:> Container {:class-name "p-2"}
     [:button {:type "button"
@@ -88,7 +116,7 @@
                               :justify-content "center"}
                       :class-name "border rounded"} [:span "no picture"]])]
      [:> Col {:sm 10}
-      [:p {:class-name "mr-3"} (:name parent)]
+      [parent-paths-list (resolve-parent-paths (:id parent)) {:unstyled true}]
       [:> Form.Group
 
        [:input.form-control
@@ -141,10 +169,10 @@
                                  update :parents
                                  (fn [parents]
                                    (vec (conj parents
-                                              {:id (.. % -metadata -id)
-                                               :name (.. % -metadata -name)
+                                              {:id  (.. % -metadata -id)
+                                               :name  (.. % -metadata -name)
                                                :label ""
-                                               :thumbnail_url (.. % -metadata -thumbnail_url)})))))}])]]])
+                                               :thumbnail_url  (.. ^js % -metadata -thumbnail_url)})))))}])]]])
 
 ;;; debug ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

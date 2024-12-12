@@ -1,42 +1,15 @@
 (ns leihs.admin.resources.categories.category.main
   (:require
-   [clojure.string :as str]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.delete :as delete]
    [leihs.admin.resources.categories.category.edit :as edit]
    [leihs.admin.resources.categories.category.models.main :as models-main]
+   [leihs.admin.resources.categories.main :as categories-main]
    [leihs.admin.utils.misc :refer [wait-component]]
-   [leihs.core.routing.front :as routing]
-   [react-bootstrap :refer [OverlayTrigger Tooltip]]))
-
-(defn path-from-parents [parents]
-  (for [parent parents]
-    (let [parent-paths (map #(:name %) parent)
-          labels (map #(or (-> % :metadata :label) "") parent)
-          parents-labes (map (fn [el]
-                               {:name (:name el)
-                                :label (-> el :metadata :label)})
-                             parent)
-          combined (map (fn [p l] (if
-                                   (empty? l)
-                                    p
-                                    l))
-                        parent-paths labels)]
-
-      (js/console.debug (str/join parents-labes))
-      (str/join " <- " combined))))
-
-(defn parents-labels [parents]
-  (for [parent parents]
-    (map-indexed (fn [idx el]
-                   {:index idx
-                    :name (:name el)
-                    :label (-> el :metadata :label)})
-                 parent)))
+   [leihs.core.routing.front :as routing]))
 
 (defn info-table []
   [:<>
@@ -50,19 +23,7 @@
        [:td (str (:name @core/data*))]]
       [:tr.parents
        [:td [:strong "Parents"] [:small " (metadata:parents)"]]
-       [:td [:ul (for [path (parents-labels (-> @core/data* :parents))]
-                   ^{:key (str path)}
-                   [:li
-                    (for [parent path]
-                      ^{:key (:index parent)}
-                      [:span
-                       (when (> (:index parent) 0) " <- ")
-
-                       (if (:label parent)
-
-                         [:span (:name parent) " "
-                          [:span {:class-name "badge badge-info"} (:label parent)]]
-                         (:name parent))])])]]]
+       [:td [core/parent-paths-list (-> @core/data* :parents)]]]
 
       [:tr.image
        [:td [:strong "Image"] [:small " (metadata:image_url)"]]
@@ -79,6 +40,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-mount (fn []
+                  (when (empty? @core/categories-data*) (categories-main/fetch))
                   (core/fetch-models)
                   (core/fetch))}]
 

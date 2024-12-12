@@ -1,12 +1,10 @@
 (ns leihs.admin.resources.categories.category.edit
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.image :as image]
-   [leihs.admin.resources.categories.main :as categories-main]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
@@ -54,7 +52,6 @@
 (def open?*
   (reaction
    (reset! data* (map-data @core/data*))
-   (when (empty? @core/categories-data*) (categories-main/fetch))
    (->> (:query-params @routing/state*)
         :action
         (= "edit"))))
@@ -69,10 +66,7 @@
                                 "action")}
     [:> Modal.Title "Edit Category"]]
    [:> Modal.Body
-
-    (if (empty? @core/categories-data*)
-      [wait-component]
-      [core/form patch data*])]
+    [core/form patch data*]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url
