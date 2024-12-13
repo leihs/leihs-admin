@@ -91,7 +91,7 @@
         (jdbc-delete! tx :model_group_links ["child_id = ?" id])
         (doseq [parent (:parents data)]
           (jdbc-insert! tx :model_group_links
-                        {:child_id id, :parent_id (:category_id parent),
+                        {:child_id id, :parent_id (:id parent),
                          :label (:label parent)}))
         {:status 200, :body (get-one tx id)})
     {:status 404}))
