@@ -9,7 +9,8 @@
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
-   [reagent.core :as reagent :refer [reaction]]))
+   [reagent.core :as reagent :refer [reaction]]
+   [taoensso.timbre :as timbre :refer [debug spy]]))
 
 (def data* (reagent/atom nil))
 
@@ -19,7 +20,7 @@
    (swap! image/data* update :thumbnail dissoc :url)))
 
 (defn create []
-  (js/console.debug (conj @data* @without-url*))
+  (debug (conj @data* @without-url*))
   (go (when-let [id (some->
                      {:url (path :categores)
                       :method :post

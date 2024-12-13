@@ -64,9 +64,8 @@
     (do (jdbc-update! tx :model_groups
                       (select-keys data [:name])
                       ["type = 'Category' AND id = ?" id])
-
-        (let [image (not-empty (:image data)),
-              thumbnail (:thumbnail data)]
+        (let [image (-> data :image :data not-empty),
+              thumbnail (-> data :thumbnail :data not-empty)]
           (jdbc-delete! tx :images ["target_id = ?" id])
           (when image
             (let [target-type "ModelGroup"
@@ -93,7 +92,7 @@
           (jdbc-insert! tx :model_group_links
                         {:child_id id, :parent_id (:id parent),
                          :label (:label parent)}))
-        {:status 200, :body (get-one tx id)})
+        {:status 200, :body (spy (get-one tx id))})
     {:status 404}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

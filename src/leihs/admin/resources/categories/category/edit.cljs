@@ -9,7 +9,8 @@
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
-   [reagent.core :as reagent :refer [reaction]]))
+   [reagent.core :as reagent :refer [reaction]]
+   [taoensso.timbre :as timbre :refer [debug info spy]]))
 
 (def data* (reagent/atom nil))
 
@@ -37,7 +38,7 @@
                  (remove-duplicates))})
 
 (defn patch []
-  (js/console.debug (conj @data* @image/data*))
+  (debug (conj @data* @image/data*))
   (let [route (path :category {:category-id @core/id*})]
     (go (when (some->
                {:url route
