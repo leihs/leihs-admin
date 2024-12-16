@@ -63,6 +63,21 @@
   environment_variables:
     FEATURE_NAME: "Managing Buildings: an admin via the UI searching for a building 01"
     FEATURE: './spec/features/buildings/listing_spec.rb[1:1:2:1]'
+'./spec/features/categories/create_spec.rb[1:1:1]':
+  name: "Manage Categories  an admin via the UI 01"
+  environment_variables:
+    FEATURE_NAME: "Manage Categories  an admin via the UI 01"
+    FEATURE: './spec/features/categories/create_spec.rb[1:1:1]'
+'./spec/features/categories/delete_spec.rb[1:1:1]':
+  name: "Manage Categories  an admin 01"
+  environment_variables:
+    FEATURE_NAME: "Manage Categories  an admin 01"
+    FEATURE: './spec/features/categories/delete_spec.rb[1:1:1]'
+'./spec/features/categories/edit_spec.rb[1:1:1]':
+  name: "Manage categories  an admin via the UI 01"
+  environment_variables:
+    FEATURE_NAME: "Manage categories  an admin via the UI 01"
+    FEATURE: './spec/features/categories/edit_spec.rb[1:1:1]'
 './spec/features/categories/tree_search_spec.rb[1:1:1]':
   name: "Interact with TreeViewer  an admin 01"
   environment_variables:
