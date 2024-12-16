@@ -85,7 +85,7 @@ feature "Interact with TreeViewer ", type: :feature do
         expect(page).to have_selector("strong u", text: "Nth")
       end
 
-      click_on "button-addon2"
+      click_on "reset-tree"
 
       within("ul.tree") do
         expect(page).to have_selector("a", count: 6)

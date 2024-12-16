@@ -14,6 +14,7 @@ feature "Manage Categories ", type: :feature do
   end
 
   let(:name) { Faker::Company.name }
+  let(:label) { Faker::Company.name }
 
   context "an admin via the UI " do
     before(:each) {
@@ -29,7 +30,6 @@ feature "Manage Categories ", type: :feature do
       fill_in "name", with: name
 
       click_on "Add parent category"
-      binding.pry
 
       within(".modal") do
         all("li", text: "Parent Category").last.click
@@ -39,17 +39,24 @@ feature "Manage Categories ", type: :feature do
         click_on "Select"
       end
 
+      fill_in "label", with: label
+      attach_file("user-image", "./spec/data/anon.jpg")
       click_on "Save"
 
-      wait_until { all(".modal").empty? }
-      wait_until { !page.has_content? "Add Building" }
-      @building_path = current_path
-
+      expect(page).to have_content("Parent Category <- Child Category <- #{name}")
       expect(page.text).to have_content name
+      expect(page.text).to have_content label
+      within ".category" do
+        expect(page).to have_css("img[src]")
+      end
 
       within("aside nav") do
-        click_on("Buildings")
+        click_on("Categories")
       end
+
+      find('input[aria-label="Category search field"]').set(name)
+      find('input[aria-label="Category search field"]').send_keys(:enter)
+      expect(page.text).to have_content label
     end
   end
 end

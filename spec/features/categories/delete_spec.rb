@@ -21,22 +21,25 @@ feature "Manage Categories ", type: :feature do
     scenario "deleting a category" do
       visit "/admin/"
       click_on "Categories"
+      all("li", text: "Parent Category").last.click
+      expect(page).to have_content("Child Category")
 
-      @buildings.each { |building| expect(page).to have_content building.name }
+      all("li", text: "Child Category").last.click
+      expect(page).to have_content("Child Category")
+      click_on "Child Category"
 
-      click_on @buildings.first.name
-      @building_path = current_path
+      expect(page).to have_content("Delete")
 
       click_on "Delete" # delete page
       within ".modal" do
         click_on "Delete" # submit / confirm
       end
 
-      wait_until { current_path == "/admin/buildings/" }
+      expect(page).to have_content("Parent Category")
+      click_on "reset-tree"
+      click_on "open all"
 
-      @buildings.drop(1).each { |building| expect(page).to have_content building.name }
-
-      expect(page).not_to have_content @buildings.first.name
+      expect(page).not_to have_content("Child Category")
     end
   end
 end

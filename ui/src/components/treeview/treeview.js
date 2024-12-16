@@ -221,7 +221,7 @@ function TreeView({ data = folder, onSelected = null }) {
               onKeyDown={e => expand(e)}
             />
             <div className="input-group-append">
-              <button className="btn btn-secondary" type="button" id="button-addon2" onClick={() => reset()}>
+              <button className="btn btn-secondary" type="button" id="reset-tree" onClick={() => reset()}>
                 <FontAwesomeIcon className="mx-1" icon={faX} />
               </button>
             </div>

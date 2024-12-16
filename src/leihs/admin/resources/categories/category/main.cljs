@@ -48,7 +48,7 @@
      [:div.my-5
       [wait-component]]
 
-     [:article.room
+     [:article.category
       [header]
       [:section
        [info-table]

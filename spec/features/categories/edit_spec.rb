@@ -51,7 +51,7 @@ feature "Manage categories ", type: :feature do
       expect(page).to have_content label
 
       within("aside nav") do
-        click_on "Buildings"
+        click_on "Categories"
       end
 
       all("li", text: "Parent Category").last.click
