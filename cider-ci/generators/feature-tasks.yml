@@ -73,6 +73,11 @@
   environment_variables:
     FEATURE_NAME: "Manage Categories  an admin 01"
     FEATURE: './spec/features/categories/delete_spec.rb[1:1:1]'
+'./spec/features/categories/delete_spec.rb[1:1:2]':
+  name: "Manage Categories  an admin 02"
+  environment_variables:
+    FEATURE_NAME: "Manage Categories  an admin 02"
+    FEATURE: './spec/features/categories/delete_spec.rb[1:1:2]'
 './spec/features/categories/edit_spec.rb[1:1:1]':
   name: "Manage categories  an admin via the UI 01"
   environment_variables:

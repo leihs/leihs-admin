@@ -8,6 +8,11 @@ feature "Manage Categories ", type: :feature do
     @parent_category = FactoryBot.create(:model_group, name: "Parent Category")
     child_category = FactoryBot.create(:model_group, name: "Child Category")
     nthchild_category = FactoryBot.create(:model_group, name: "Nth Category")
+    category_with_models = FactoryBot.create(:model_group, name: "Category with models")
+
+    model1 = FactoryBot.create(:leihs_model)
+
+    FactoryBot.create(:model_link, model_group: category_with_models, leihs_model: model1, quantity: 2)
 
     FactoryBot.create(:model_group_link, parent: @parent_category, child: child_category)
     FactoryBot.create(:model_group_link, parent: child_category, child: nthchild_category)
@@ -40,6 +45,15 @@ feature "Manage Categories ", type: :feature do
       click_on "open all"
 
       expect(page).not_to have_content("Child Category")
+    end
+
+    scenario "deleting category with models not possible" do
+      visit "/admin/"
+      click_on "Categories"
+      all("li", text: "Category with models").last.click
+
+      expect(page).to have_content("Category with models")
+      expect(page).not_to have_content("Delete")
     end
   end
 end
