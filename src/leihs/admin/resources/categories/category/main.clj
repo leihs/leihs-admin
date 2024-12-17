@@ -60,7 +60,7 @@
 
 (defn patch
   [{{id :category-id} :route-params tx :tx data :body :as request}]
-  (if (get-one tx id)
+  (if (-> (query id) sql-format (->> (jdbc-query tx)) first)
     (do (jdbc-update! tx :model_groups
                       (select-keys data [:name])
                       ["type = 'Category' AND id = ?" id])
@@ -89,10 +89,10 @@
 
         (jdbc-delete! tx :model_group_links ["child_id = ?" id])
         (doseq [parent (:parents data)]
-          (jdbc-insert! tx :model_group_links
-                        {:child_id id, :parent_id (:id parent),
-                         :label (:label parent)}))
-        {:status 200, :body (spy (get-one tx id))})
+          (jdbc-insert! tx :model_group_links {:child_id id,
+                                               :parent_id (:id parent),
+                                               :label (:label parent)}))
+        {:status 200})
     {:status 404}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
