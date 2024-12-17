@@ -64,10 +64,11 @@
     (do (jdbc-update! tx :model_groups
                       (select-keys data [:name])
                       ["type = 'Category' AND id = ?" id])
-        (let [image (-> data :image :data not-empty),
-              thumbnail (-> data :thumbnail :data not-empty)]
+        (let [image (-> data :image),
+              thumbnail (-> data :thumbnail)]
           (jdbc-delete! tx :images ["target_id = ?" id])
-          (when image
+          (when (and (-> image :data not-empty)
+                     (-> thumbnail :data not-empty))
             (let [target-type "ModelGroup"
                   image-row (jdbc-insert! tx :images
                                           {:target_id id

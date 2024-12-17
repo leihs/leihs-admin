@@ -64,8 +64,8 @@
 
       (doseq [parent (:parents data)]
         (jdbc-insert! tx :model_group_links
-                      (spy {:child_id id, :parent_id (:id parent),
-                            :label (:label parent)})))
+                      {:child_id id, :parent_id (:id parent),
+                       :label (:label parent)}))
 
       {:status 201, :body category})
     {:status 422
