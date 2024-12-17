@@ -23,7 +23,9 @@
                           (map :category_id (roots tx)))
                   []
                   (deep-filter #(= (:category_id %) (:category_id category))
-                               (tree tx :with-metadata true)))]
+                               (tree tx
+                                     :with-metadata true
+                                     :exclude [:image_url :thumbnail_url])))]
     (assoc category :parents (map convert-tree-path subtree))))
 
 (defn get-one [tx id]
@@ -36,10 +38,12 @@
 
 (comment
   (do (require '[leihs.core.db :as db])
-      (let [id #uuid "47c5389d-f98d-5bf1-8c6e-8fec37d907a0"]
-        #_(deep-filter #(= (:category_id %) id)
-                       (tree (db/get-ds) :with-metadata true))
-        (get-one (db/get-ds) id))))
+      (let [tx (db/get-ds)
+            id #uuid "47c5389d-f98d-5bf1-8c6e-8fec37d907a0"]
+        (tree tx
+              :with-metadata true
+              :exclude [:image_url :thumbnail_url])
+        #_(get-one (db/get-ds) id))))
 
 (defn get
   [{tx :tx {id :category-id} :route-params}]

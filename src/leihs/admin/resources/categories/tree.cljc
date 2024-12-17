@@ -9,9 +9,10 @@
 
 #?(:clj
    (defn roots
-     [tx & {:keys [with-metadata] :or {with-metadata false}}]
+     [tx & {:keys [with-metadata exclude] :or {with-metadata false}}]
      (-> base-query
-         (cond-> with-metadata (sql-add-metadata :label nil))
+         (cond-> with-metadata
+           (sql-add-metadata :label nil :exclude exclude))
          (sql/where
           [:not
            [:exists
@@ -19,13 +20,16 @@
                 (sql/from :model_group_links)
                 (sql/where [:= :model_group_links.child_id :model_groups.id]))]])
          sql-format
-         ; (sql-format :inline true)
          (->> (jdbc/query tx)))))
 
 #?(:clj
-   (defn tree [tx & {:keys [with-metadata] :or {with-metadata false}}]
-     (map #(descendents tx % :with-metadata with-metadata)
-          (roots tx :with-metadata with-metadata))))
+   (defn tree [tx & {:keys [with-metadata exclude] :or {with-metadata false}}]
+     (map #(descendents tx %
+                        :with-metadata with-metadata
+                        :exclude exclude)
+          (roots tx
+                 :with-metadata with-metadata
+                 :exclude exclude))))
 
 (defn convert-tree-path
   "Converts a tree path represented as a map into a tree path

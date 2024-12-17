@@ -26,6 +26,7 @@
    :name (:name data)
    :image (-> data :metadata :image_url)
    :parents (->> (:parents data)
+                 spy
                  (map (fn [el]
                         (let [parent (last (butlast el))
                               category (last el)
