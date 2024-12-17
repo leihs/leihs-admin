@@ -58,35 +58,50 @@
 
 ;;; update category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn- delete-image-with-thumb! [tx id]
+  (jdbc-delete! tx :images ["target_id = ?" id]))
+
+(defn- insert-image-with-thumb! [tx id image thumbnail]
+  (let [target-type "ModelGroup"
+        image-row (jdbc-insert! tx :images
+                                {:target_id id
+                                 :target_type target-type
+                                 :content (:data image)
+                                 :content_type (:content_type image)
+                                 :width (:width image)
+                                 :height (:height image)
+                                 :thumbnail false})]
+    (jdbc-insert! tx :images
+                  {:target_id id
+                   :target_type target-type
+                   :content (:data thumbnail)
+                   :content_type (:content_type thumbnail)
+                   :width (:width thumbnail)
+                   :height (:height thumbnail)
+                   :parent_id (:id image-row)
+                   :thumbnail true})))
+
 (defn patch
   [{{id :category-id} :route-params tx :tx data :body :as request}]
   (if (-> (query id) sql-format (->> (jdbc-query tx)) first)
     (do (jdbc-update! tx :model_groups
                       (select-keys data [:name])
                       ["type = 'Category' AND id = ?" id])
-        (let [image (-> data :image),
-              thumbnail (-> data :thumbnail)]
-          (jdbc-delete! tx :images ["target_id = ?" id])
-          (when (and (-> image :data not-empty)
-                     (-> thumbnail :data not-empty))
-            (let [target-type "ModelGroup"
-                  image-row (jdbc-insert! tx :images
-                                          {:target_id id
-                                           :target_type target-type
-                                           :content (:data image)
-                                           :content_type (:content_type image)
-                                           :width (:width image)
-                                           :height (:height image)
-                                           :thumbnail false})]
-              (jdbc-insert! tx :images
-                            {:target_id id
-                             :target_type target-type
-                             :content (:data thumbnail)
-                             :content_type (:content_type thumbnail)
-                             :width (:width thumbnail)
-                             :height (:height thumbnail)
-                             :parent_id (:id image-row)
-                             :thumbnail true}))))
+
+        (let [target-type "ModelGroup"
+              image-content (:image data)
+              thumb-content (:thumbnail data)]
+          (cond 
+            ; image removed in FE
+            (and (not (:thumbnail data))
+                 (not (-> data :image :url)))
+            (delete-image-with-thumb! tx id)
+            ; image changed in FE
+            (and (-> data :image :data) (-> data :thumbnail :data))
+            (do (delete-image-with-thumb! tx id)
+                (insert-image-with-thumb! tx id (:image data) (:thumbnail data)))
+            ; image unchanged in FE
+            :else (debug "image unchanged")))
 
         (jdbc-delete! tx :model_group_links ["child_id = ?" id])
         (doseq [parent (:parents data)]
