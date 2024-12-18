@@ -7,9 +7,7 @@
    [leihs.admin.resources.categories.filter :refer [deep-filter]]
    [leihs.admin.resources.categories.shared :refer [base-query sql-add-metadata]]
    [leihs.admin.resources.categories.tree :refer [tree convert-tree-path roots]]
-   [next.jdbc.sql :refer [delete! insert! query update!]
-    :rename {query jdbc-query, insert! jdbc-insert!
-             update! jdbc-update! delete! jdbc-delete!}]
+   [next.jdbc.sql :as jdbc]
    [taoensso.timbre :refer [debug spy]]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,7 +30,7 @@
   (-> id query
       (sql-add-metadata :label nil)
       sql-format
-      (->> (jdbc-query tx))
+      (->> (jdbc/query tx))
       first
       (->> (merge-parents tx))))
 
@@ -54,7 +52,7 @@
 (defn delete
   [{tx :tx {id :category-id} :route-params}]
   (assert id)
-  (if (= id (:id (jdbc-delete! tx :model_groups
+  (if (= id (:id (jdbc/delete! tx :model_groups
                                ["type = 'Category' AND id = ?" id]
                                {:return-keys true})))
     {:status 204}
@@ -63,11 +61,11 @@
 ;;; update category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- delete-image-with-thumb! [tx id]
-  (jdbc-delete! tx :images ["target_id = ?" id]))
+  (jdbc/delete! tx :images ["target_id = ?" id]))
 
 (defn- insert-image-with-thumb! [tx id image thumbnail]
   (let [target-type "ModelGroup"
-        image-row (jdbc-insert! tx :images
+        image-row (jdbc/insert! tx :images
                                 {:target_id id
                                  :target_type target-type
                                  :content (:data image)
@@ -75,7 +73,7 @@
                                  :width (:width image)
                                  :height (:height image)
                                  :thumbnail false})]
-    (jdbc-insert! tx :images
+    (jdbc/insert! tx :images
                   {:target_id id
                    :target_type target-type
                    :content (:data thumbnail)
@@ -87,8 +85,8 @@
 
 (defn patch
   [{{id :category-id} :route-params tx :tx data :body :as request}]
-  (if (-> (query id) sql-format (->> (jdbc-query tx)) first)
-    (do (jdbc-update! tx :model_groups
+  (if (-> (query id) sql-format (->> (jdbc/query tx)) first)
+    (do (jdbc/update! tx :model_groups
                       (select-keys data [:name])
                       ["type = 'Category' AND id = ?" id])
 
@@ -107,12 +105,12 @@
             ; image unchanged in FE
             :else (debug "image unchanged")))
 
-        (jdbc-delete! tx :model_group_links ["child_id = ?" id])
+        (jdbc/delete! tx :model_group_links ["child_id = ?" id])
         (doseq [parent (:parents data)]
-          (jdbc-insert! tx :model_group_links {:child_id id,
+          (jdbc/insert! tx :model_group_links {:child_id id,
                                                :parent_id (:id parent),
                                                :label (:label parent)}))
-        {:status 200})
+        {:status 200, :body {}})
     {:status 404}))
 
 ;;; routes and paths ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
