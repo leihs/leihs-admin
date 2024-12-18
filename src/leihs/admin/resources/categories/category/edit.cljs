@@ -39,7 +39,6 @@
                  (remove-duplicates))})
 
 (defn patch []
-  (debug (conj @data* @image/data*))
   (let [route (path :category {:category-id @core/id*})]
     (go (when (some->
                {:url route
@@ -48,7 +47,10 @@
                 :chan (async/chan)}
                http-client/request :chan <!
                http-client/filter-success!)
-          (swap! core/cache* assoc @core/path* @data*)
+          ;; somehow the transaction on PATCH fails 
+          ;; and therefore cannot return the new data
+          ;; thats why the data gets re-fetched
+          (core/fetch)
           (search-params/delete-from-url "action")))))
 
 (def open?*
