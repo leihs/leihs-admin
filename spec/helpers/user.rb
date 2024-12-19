@@ -8,7 +8,7 @@ module Helpers
       click_on "Login"
       fill_in "password", with: user.password
       click_on "Continue"
-      find(".fa-circle-user").click
+      find(".fa-user-circle").click
       expect(page).to have_content user.lastname
       visit "/admin/"
     end

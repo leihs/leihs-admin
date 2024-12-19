@@ -29,6 +29,7 @@ feature "Manage Categories ", type: :feature do
       all("li", text: "Parent Category").last.click
       expect(page).to have_content("Child Category")
 
+      binding.pry
       all("li", text: "Child Category").last.click
       expect(page).to have_content("Child Category")
       click_on "Child Category"
