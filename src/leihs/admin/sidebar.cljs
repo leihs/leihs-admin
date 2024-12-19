@@ -44,7 +44,11 @@
                               :children "Requests"
                               :authorizers [auth/system-admin-scopes?]}]}]}
            {:section-title "Configuration"
-            :items [{:icon solids/faTableList
+            :items [{:icon solids/faBarsStaggered
+                     :href "/admin/categories/"
+                     :children "Categories"
+                     :authorizers [auth/admin-scopes?]}
+                    {:icon solids/faTableList
                      :href "/admin/inventory-fields/"
                      :children "Fields"
                      :authorizers [auth/admin-scopes?]}

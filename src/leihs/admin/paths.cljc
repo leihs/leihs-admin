@@ -116,6 +116,19 @@
                   (leaf "/edit" :building-edit)
                   (leaf "/items" :building-items))))
 
+(def categories-paths
+  (branch "/categories"
+          (branch "/"
+                  (leaf "" :categories)
+                  (leaf "create" :categories-create))
+          (branch "/"
+                  (param :category-id)
+                  (leaf "" :category)
+                  (leaf "/delete" :category-delete)
+                  (leaf "/edit" :category-edit)
+                  (branch "/models"
+                          (leaf "" :category-models)))))
+
 (def rooms-paths
   (branch "/rooms"
           (branch "/"
@@ -148,6 +161,7 @@
                   (leaf "/debug" :debug)
                   audits/paths
                   buildings-paths
+                  categories-paths
                   groups-paths
                   inventory-fields-paths
                   inventory-pools/paths
