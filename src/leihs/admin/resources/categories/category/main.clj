@@ -93,7 +93,7 @@
         (let [target-type "ModelGroup"
               image-content (:image data)
               thumb-content (:thumbnail data)]
-          (cond 
+          (cond
             ; image removed in FE
             (and (not (:thumbnail data))
                  (not (-> data :image :url)))
