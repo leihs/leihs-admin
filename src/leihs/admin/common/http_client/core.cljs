@@ -10,7 +10,7 @@
             [leihs.core.core :refer [presence str]]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent]
-            [taoensso.timbre :refer [error]]))
+            [taoensso.timbre :refer [debug error]]))
 
 (def base-delay* (reagent/atom 0))
 
@@ -63,6 +63,7 @@
   (when (:success response) response))
 
 (defn filter-success! [response]
+  (debug "filter success")
   (if (:success response)
     response
     (throw (ex-info "Response is not success." response))))

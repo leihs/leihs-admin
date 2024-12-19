@@ -35,6 +35,7 @@
                     :inventory-fields
                     :buildings
                     :rooms
+                    :categories
                     :suppliers
                     :mail-templates
                     :authentication-systems])
@@ -184,7 +185,7 @@
         (conj {:name (capitalize-and-replace handler)
                :resolver nil}
               new-entry)
-        (conj {:resolver handler})))))
+        (conj {:resolver handler} new-entry)))))
 
 (defn watcher
   "This function creates a Reagent component that manages the history of navigation events.

@@ -39,7 +39,7 @@ feature 'Initial admin and password sign-in', type: :feature do
     expect(page).to have_content 'admin@example.com'
 
     # sign-out
-    find('.fa-user-circle').click
+    find('.fa-circle-user').click
     click_on 'Logout'
     expect(page).not_to have_content 'admin@example.com'
 
