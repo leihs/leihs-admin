@@ -17,7 +17,7 @@
   (reaction
    (path (:handler-key @routing/state*)
          (:route-params @routing/state*)
-         (dissoc (:query-params @routing/state*) :action))))
+         (dissoc (:query-params-raw @routing/state*) :action))))
 
 (defn humanize-datetime [ref_dt dt add-suffix]
   [:span (date-fns/formatDistance
