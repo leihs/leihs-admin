@@ -132,7 +132,12 @@
         [:p {:style {:margin-top "1em"}}
          [:a.btn.btn-sm.btn-dark
           {:href "#"
-           :on-click #(reset! data* nil)}
+           :on-click (fn []
+                       (-> js/document
+                           (.getElementById "user-image")
+                           (.-value)
+                           (set! ""))
+                       (reset! data* nil))}
           [:i.fas.fa-times] " Remove image "]])]]]])
 
 (defn component

@@ -119,7 +119,12 @@
         [:p {:style {:margin-top "1em"}}
          [:a.btn.btn-sm.btn-dark
           {:href "#"
-           :on-click #(swap! data* assoc :img256_url nil :img32_url nil :img_digest nil)}
+           :on-click (fn []
+                       (-> js/document
+                           (.getElementById "user-image")
+                           (.-value)
+                           (set! ""))
+                       (swap! data* assoc :img256_url nil :img32_url nil :img_digest nil))}
           [:i.fas.fa-times] " Remove image "]])]]]])
 
 (defn image-component [data*]
