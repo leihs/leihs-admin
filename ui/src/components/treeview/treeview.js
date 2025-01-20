@@ -57,6 +57,8 @@ const folder = {
 }
 
 function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, isExpanded, onSelected }) {
+  const metadata = element.metadata || {}
+
   function handleClick(event) {
     handleSelect(event)
     onSelected(element)
@@ -93,8 +95,8 @@ function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, i
             </>
           )}
         </div>
-        {element?.metadata?.thumbnail_url ? (
-          <img src={element.metadata.thumbnail_url} width="32" height="32" />
+        {metadata.thumbnail_url ? (
+          <img src={metadata.thumbnail_url} width="32" height="32" />
         ) : (
           <NoImageSVG className={s['thumbnail']} />
         )}
@@ -102,13 +104,13 @@ function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, i
         {onSelected ? (
           <span className="ml-3">{highlightText(element.name, searchTerm)} </span>
         ) : (
-          <a className={cx('ml-3')} role="link" href={`/admin/categories/${element.metadata.id}`}>
-            {highlightText(element.metadata.label || element.name, searchTerm)}
+          <a className={cx('ml-3')} role="link" href={`/admin/categories/${metadata.id}`}>
+            {highlightText(metadata.label || element.name, searchTerm)}
 
-            {element.metadata.label && (
+            {metadata.label && (
               <>
-                <FontAwesomeIcon className="ml-2" icon={faCircleInfo} id={`id-${element.metadata.id}${element.id}`} />
-                <UncontrolledTooltip placement="top" target={`id-${element.metadata.id}${element.id}`}>
+                <FontAwesomeIcon className="ml-2" icon={faCircleInfo} id={`id-${metadata.id}${element.id}`} />
+                <UncontrolledTooltip placement="top" target={`id-${metadata.id}${element.id}`}>
                   This is the label for category: {element.name}
                 </UncontrolledTooltip>
               </>
@@ -124,8 +126,8 @@ function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, i
             Select
           </button>
         ) : (
-          <span className={cx('ml-auto mr-4', element.metadata.models_count === 0 && 'text-danger')}>
-            {element.metadata.models_count} Modelle
+          <span className={cx('ml-auto mr-4', metadata.models_count === 0 && 'text-danger')}>
+            {metadata.models_count} Modelle
           </span>
         )}
       </div>
