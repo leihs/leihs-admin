@@ -14,6 +14,7 @@
 ; TODO stuff in this namespace should be moved removed completely
 
 (def fetch-route*
+  "The without any modal actions in query params"
   (reaction
    (path (:handler-key @routing/state*)
          (:route-params @routing/state*)

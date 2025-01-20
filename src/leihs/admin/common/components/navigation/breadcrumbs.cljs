@@ -160,6 +160,26 @@
           nil
           resolvers))
 
+(defn- clean-url
+  "This function takes a URL string and removes modal actions query params from it, if present.
+
+  Parameters:
+  - `url`: The URL string to be cleaned.
+
+  Returns:
+  - A string that is the cleaned version of the input URL."
+  [url]
+  (let [params-to-remove #{"action=add" "action=edit" "action=delete"}
+        [base-url query-string] (clojure.string/split url #"\?" 2)]
+    (if query-string
+      (let [filtered-query (->> (clojure.string/split query-string #"&")
+                                (remove #(params-to-remove %))
+                                (clojure.string/join "&"))]
+        (if (clojure.string/blank? filtered-query)
+          base-url
+          (str base-url "?" filtered-query)))
+      url)))
+
 (defn- next-entry
   "This function checks if the current hanlder-key of the route is 
   matching agains one of the matchers in the resolver-keys map.
@@ -172,7 +192,7 @@
   Returns:
   - A map containing the name, URL, resolver, and handler of the next state."
   [state]
-  (let [new-entry {:url (:route state)
+  (let [new-entry {:url (clean-url (:route state))
                    :path (:path state)
                    :handler (:handler-key state)}
         handler (:handler-key state)

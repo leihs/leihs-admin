@@ -9,7 +9,7 @@
    [leihs.admin.resources.categories.category.create :as create]
    [leihs.admin.resources.inventory-pools.shared :as shared]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.core.json :as json]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
@@ -31,8 +31,7 @@
 
 (defn fetch []
   (http-client/route-cached-fetch
-   core/categories-cache* {:route (path :categories)
-                           :reload true}))
+   core/categories-cache* {:route @fetch-route*}))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

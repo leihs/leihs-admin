@@ -1,7 +1,9 @@
 (ns leihs.admin.resources.categories.category.main
   (:require
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
+
    [leihs.admin.common.components.table :as table]
+   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.delete :as delete]
@@ -10,6 +12,11 @@
    [leihs.admin.resources.categories.main :as categories-main]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
+
+(defn fetch-categories []
+  (http-client/route-cached-fetch
+   core/categories-cache* {:route (path :categories)
+                           :reload true}))
 
 (defn info-table []
   [:<>
@@ -40,7 +47,7 @@
   [:<>
    [routing/hidden-state-component
     {:did-mount (fn []
-                  (when (empty? @core/categories-data*) (categories-main/fetch))
+                  (when (empty? @core/categories-data*) fetch-categories)
                   (core/fetch-models)
                   (core/fetch))}]
 
