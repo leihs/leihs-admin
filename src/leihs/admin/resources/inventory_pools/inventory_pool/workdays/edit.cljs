@@ -55,6 +55,15 @@
                         [:max_visits (core/DAYS day)]
                         (-> % .-target .-value presence))}]])
 
+(defn day-info-comp [day]
+  (let [day-info-key (-> day name (str "_info") keyword)]
+    [:input.form-control
+     {:type "text"
+      :value (day-info-key @data*)
+      :on-change #(swap! data*
+                         assoc day-info-key
+                         (-> % .-target .-value presence))}]))
+
 (defn form []
   (if-not data*
     [wait-component]
@@ -64,11 +73,17 @@
                            (patch))}
      [table/container
       {:borders false
-       :header [:tr [:th "Day"] [:th "Open/Closed"] [:th "Max. Allowed Visits"]]
+       :style {:width "100%"}
+       :header [:tr
+                [:th "Day"]
+                [:th "Open/Closed"]
+                [:th {:style {:width "50%"}} "Hours Info"]
+                [:th "Max Visits"]]
        :body (doall (for [day (keys core/DAYS)]
                       [:tr {:key (name day)}
                        [:td (capitalize (name day))]
                        [:td [opened-closed-comp day]]
+                       [:td (day-info-comp day)]
                        [:td [max-visits-comp day]]]))}]]))
 
 (def open*

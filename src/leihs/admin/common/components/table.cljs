@@ -38,13 +38,14 @@
    items])
 
 (defn container
-  [& {:keys [className header body footer actions borders]
+  [& {:keys [className header body footer actions borders style]
       :or {className nil
            header nil
            body nil
            footer nil
            actions nil
-           borders true}}]
+           borders true
+           style nil}}]
   [:section
    [:<> actions]
    (when true
@@ -52,6 +53,7 @@
    [:> Table {:striped true
               :bordered false
               :borderless true
+              :style style
               :className (str "m-0 " className)}
     [:thead
      header]

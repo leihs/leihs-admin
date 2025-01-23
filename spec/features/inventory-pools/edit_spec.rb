@@ -12,6 +12,7 @@ feature 'Manage inventory-pools', type: :feature do
   let(:automatic_suspension_reason) { Faker::Markdown.sandwich }
   let(:borrow_reservation_advance_days) { 1 }
   let(:borrow_maximum_reservation_duration) { 22 }
+  let(:hours_info) { Faker::Lorem.sentence }
 
   context 'an admin and several pools ' do
 
@@ -146,6 +147,7 @@ feature 'Manage inventory-pools', type: :feature do
               weekdays.each do |day|
                 within("tr", text: day) do
                   click_on_toggle "#{day.downcase}-switch"
+                  find("input[type='text']").set hours_info
                   find("input[type='number']").set 100
                 end
               end
@@ -159,6 +161,7 @@ feature 'Manage inventory-pools', type: :feature do
               weekdays.each do |day|
                 within("tr", text: day) do
                   expect(find("input##{day.downcase}-switch", visible: false)).to be_checked
+                  expect(find("input[type='text']").value).to eq hours_info
                   expect(find("input[type='number']").value).to eq 100.to_s
                 end
               end

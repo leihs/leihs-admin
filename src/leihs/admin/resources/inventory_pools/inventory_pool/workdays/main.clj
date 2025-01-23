@@ -14,7 +14,13 @@
               :thursday
               :friday
               :saturday
-              :sunday
+              :monday_info
+              :tuesday_info
+              :wednesday_info
+              :thursday_info
+              :friday_info
+              :saturday_info
+              :sunday_info
               :max_visits})
 
 (defn get-workdays
