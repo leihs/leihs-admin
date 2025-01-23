@@ -19,11 +19,18 @@
       [:h3 "Workdays"]
       [table/container
        {:borders false
-        :header [:tr [:th "Day"] [:th "Opened"] [:th "Max. Allowed Visits"]]
+        :style {:width "100%"}
+        :header [:tr
+                 [:th "Day"]
+                 [:th "Opened"]
+                 [:th {:style {:width "40%"}} "Hours Info"]
+                 [:th "Max Visits"]]
         :body (doall (for [day (keys core/DAYS)]
                        [:tr {:key day}
                         [:td (capitalize (name day))]
                         [:td (toggle-component (day @core/data*))]
+                        (let [day-info-key (-> day name (str "_info") keyword)]
+                          [:td {:id day-info-key} (day-info-key @core/data*)])
                         [:td (or ((core/DAYS day) (@core/data* :max_visits))
                                  "unlimited")]]))}]
       [edit/button]
