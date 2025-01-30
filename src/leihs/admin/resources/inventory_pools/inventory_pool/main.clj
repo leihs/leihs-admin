@@ -17,6 +17,7 @@
 
 (def base-fields #{:id
                    :is_active
+                   :contact
                    :description
                    :email
                    :name

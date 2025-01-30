@@ -40,9 +40,17 @@
        [property-td "Short Name" "shortname"
         "Prefix for auto-generated inventory codes"]
        [:td.shortname (:shortname @core/data*)]]
+      [:tr.contact
+       [property-td "Contact" "contact"
+        "Visible for customers in the borrow app and available in the mail templates"]
+       [:td.contact
+        [:div {:style {:white-space "break-spaces",
+                       :overflow-y "auto"
+                       :height "100px"}}
+         (:contact @core/data*)]]]
       [:tr.description
        [property-td "Description" "description"
-        "Visible for customers in the borrow app"]
+        "Visible for customers in the borrow app and available in the mail templates"]
        [:td.description
         [:div {:style {:white-space "break-spaces",
                        :overflow-y "auto"
@@ -53,7 +61,8 @@
         [:span [:i "from_address"] " for emails send in the name of this pool"]]
        [:td.email (:email @core/data*)]]
       [:tr.email-signature
-       [property-td "Email Signature" "email_signature"]
+       [property-td "Email Signature" "email_signature"
+        [:span "Available in the mail templates"]]
        [:td.email-signature
         {:style {:white-space "break-spaces"}}
         (:email_signature @core/data*)]]

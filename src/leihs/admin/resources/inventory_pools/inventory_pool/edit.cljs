@@ -46,6 +46,10 @@
      :label "Short name"
      :disabled is-editing
      :required true]]
+   [form-components/input-component data* [:contact]
+    :label "Contact"
+    :element :textarea
+    :rows 3]
    [form-components/input-component data* [:description]
     :label "Description"
     :element :textarea
