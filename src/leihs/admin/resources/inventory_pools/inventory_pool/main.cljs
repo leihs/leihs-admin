@@ -52,7 +52,9 @@
        [property-td "Description" "description"
         "Visible for customers in the borrow app and available in the mail templates"]
        [:td.description
-        [:div {:style {:white-space "break-spaces",
+        [:div {:class-name ""
+               :style {:word-break "break-word"
+                       :white-space "break-spaces",
                        :overflow-y "auto"
                        :height "200px"}}
          (:description @core/data*)]]]
