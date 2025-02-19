@@ -34,20 +34,16 @@
           (core/fetch)
           (search-params/delete-from-url "action")))))
 
+(defn to-iso-8601 [date]
+  (-> date .toISOString (.split "T") first))
+
 (defn add-new-holiday-comp []
   (let [holiday-template {:inventory_pool_id (:id @pool-core/data*)}
         new-holiday (reagent/atom holiday-template)
         end-date-before-start-date? (reagent/atom false)]
     (fn []
-      (let [today-min (-> (new js/Date) .toISOString (.split "T") first)
-            validate-dates! #(reset! end-date-before-start-date?
-                                     (and (:end_date @new-holiday)
-                                          (:start_date @new-holiday)
-                                          (< (js/Date. (:end_date @new-holiday))
-                                             (js/Date. (:start_date @new-holiday)))))]
+      (let [today (-> (new js/Date) to-iso-8601)]
         [:<>
-         (when @end-date-before-start-date?
-           [:div.alert.alert-danger "End date cannot be before start date."])
          [:form.form-inline {:on-submit (fn [e]
                                           (.preventDefault e)
                                           (swap! data* conj
@@ -66,22 +62,20 @@
            [:input.form-control {:type "date" ;:placeholder "From"
                                  :id "start-date"
                                  :value (:start_date @new-holiday)
-                                 :min today-min
+                                 :min today
                                  :required true
                                  :on-change #(do (swap! new-holiday
                                                         assoc :start_date
-                                                        (-> % .-target .-value))
-                                                 (validate-dates!))}]]
+                                                        (-> % .-target .-value)))}]]
           [:div.form-group.mb-2.mr-2
            [:input.form-control {:type "date" ;:placeholder "To"
                                  :id "end-date"
                                  :value (:end_date @new-holiday)
-                                 :min today-min
+                                 :min today
                                  :required true
                                  :on-change #(do (swap! new-holiday
                                                         assoc :end_date
-                                                        (-> % .-target .-value))
-                                                 (validate-dates!))}]]
+                                                        (-> % .-target .-value)))}]]
           [:> Button {:type "submit"
                       :className "btn-info mb-2"
                       :disabled @end-date-before-start-date?}
