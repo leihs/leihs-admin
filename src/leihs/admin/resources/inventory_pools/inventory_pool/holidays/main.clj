@@ -22,7 +22,7 @@
              (sql/from :holidays)
              (sql/where [:= :inventory_pool_id inventory-pool-id])
              (sql/where [:>= :end_date :current_date])
-             (sql/order-by :end_date)
+             (sql/order-by :start_date :end_date)
              sql-format
              (->> (jdbc-query tx)
                   (map #(-> %
