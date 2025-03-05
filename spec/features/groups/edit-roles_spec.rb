@@ -1,30 +1,29 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Editing roles ', type: :feature do
-  context 'some admins, a bunch of users and a bunch of groups exist' do
+feature "Editing roles ", type: :feature do
+  context "some admins, a bunch of users and a bunch of groups exist" do
     before :each do
       @admins = 3.times.map { FactoryBot.create :admin }
-      @system_admins = 3.times.map { FactoryBot.create :system_admin}
+      @system_admins = 3.times.map { FactoryBot.create :system_admin }
       @user = FactoryBot.create :user
-      @pool =  FactoryBot.create :inventory_pool
+      @pool = FactoryBot.create :inventory_pool
       @users = 15.times.map { FactoryBot.create :user }
-      @group =  FactoryBot.create :group
+      @group = FactoryBot.create :group
 
       FactoryBot.create :group_access_right, group_id: @group.id,
-        inventory_pool_id: @pool.id, role: 'customer'
+        inventory_pool_id: @pool.id, role: "customer"
     end
 
-
-    context 'an system-admin via the UI' do
+    context "an system-admin via the UI" do
       before :each do
         @admin = @system_admins.sample
         sign_in_as @admin
       end
 
-      scenario 'edits a system-admin protected group ' do
-        visit '/admin/'
-        click_on 'Groups'
+      scenario "edits a system-admin protected group " do
+        visit "/admin/"
+        click_on "Groups"
         click_on @group.name
 
         within find("table tbody tr", text: @pool.name) do
@@ -34,7 +33,7 @@ feature 'Editing roles ', type: :feature do
         expect(page).to have_selector(".modal")
 
         expect(page).to have_css(
-          '.modal .fade.alert.alert-danger', 
+          ".modal .fade.alert.alert-danger",
           text: "Users will be affected!"
         )
 
@@ -47,7 +46,7 @@ feature 'Editing roles ', type: :feature do
         within("table tbody tr", text: @pool.name) do
           click_on "Edit"
         end
-        wait_until{ not all(".modal").empty? }
+        wait_until { !all(".modal").empty? }
         uncheck :customer
         click_on "Save"
         expect(GroupAccessRight.find(inventory_pool_id: @pool[:id], group_id: @group[:id])).to be_nil

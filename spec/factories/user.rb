@@ -1,4 +1,4 @@
-require 'json'
+require "json"
 class User < Sequel::Model
   attr_accessor :password
 
@@ -8,7 +8,7 @@ end
 FactoryBot.modify do
   factory :user do
     extended_info do
-      { foo: 'bar' }.to_json
+      {foo: "bar"}.to_json
     end
   end
 end

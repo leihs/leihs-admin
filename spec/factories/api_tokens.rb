@@ -1,4 +1,4 @@
-require 'digest'
+require "digest"
 
 class ApiToken < Sequel::Model(:api_tokens)
   set_primary_key :id
@@ -15,14 +15,14 @@ FactoryBot.define do
     }
 
     factory :admin_api_token do
-      scope_read {true}
-      scope_write {true}
-      scope_admin_read {true}
-      scope_admin_write {true}
+      scope_read { true }
+      scope_write { true }
+      scope_admin_read { true }
+      scope_admin_write { true }
 
       factory :system_admin_api_token do
-        scope_system_admin_read {true}
-        scope_system_admin_write {true}
+        scope_system_admin_read { true }
+        scope_system_admin_write { true }
       end
     end
   end

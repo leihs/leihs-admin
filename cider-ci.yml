@@ -1,8 +1,6 @@
 include: container-build/cider-ci.yml
 
-
 jobs:
-
   admin-build-uberjar:
     name: Build admin uberjar
     run_when: &ON_BRANCH_UPDATE
@@ -13,15 +11,13 @@ jobs:
     context:
       task_defaults: &ADMIN_TASK_DEFAULTS
         environment_variables:
-          CI: "true"
-          LEIHS_ADMIN_DIR: "{{CIDER_CI_WORKING_DIR}}"
-          LEIHS_DATABASE_DIR: "{{LEIHS_ADMIN_DIR}}/database"
-          DIST_ADMIN_IMAGE_NAME: "leihs-admin"
-          DIST_VERSION_NAME: "trial-{{CIDER_CI_TRIAL_ID}}"
+          CI: 'true'
+          LEIHS_ADMIN_DIR: '{{CIDER_CI_WORKING_DIR}}'
+          LEIHS_DATABASE_DIR: '{{LEIHS_ADMIN_DIR}}/database'
+          DIST_ADMIN_IMAGE_NAME: 'leihs-admin'
+          DIST_VERSION_NAME: 'trial-{{CIDER_CI_TRIAL_ID}}'
       tasks:
         admin-build-uberjar: { include: cider-ci/task-components/uberjar.yml }
-
-
 
   check-feature-tasks:
     name: Check if feature tasks are up to date
@@ -60,7 +56,7 @@ jobs:
               ./ui/bin/lint
 
   lint:
-    name: "Linting"
+    name: 'Linting'
     description: |
       Code checks: static checks and metrics: complexity, duplication, and format,
         also other consistency checks.
@@ -84,6 +80,14 @@ jobs:
                 set -euo pipefail
                 ./bin/cljfmt check
 
+        standardrb-lint:
+          scripts:
+            test:
+              body: |
+                #!/usr/bin/env bash
+                set -euo pipefail
+                ./bin/standardrb
+
   good-to-merge:
     name: ⚑ Good To Merge
     description: |
@@ -93,7 +97,7 @@ jobs:
     include: cider-ci/good-to-merge_job-context.yml
 
   merged-to-master:
-    name: "Merged to master"
+    name: 'Merged to master'
     priority: 999
     depends_on:
       master branch matches:
@@ -108,4 +112,4 @@ jobs:
         merged-to-master:
           scripts:
             test:
-              body: "exit 0"
+              body: 'exit 0'

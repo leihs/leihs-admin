@@ -1,20 +1,19 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Misc Settings' do
-
-  context 'a plain admin exist' do
+feature "Misc Settings" do
+  context "a plain admin exist" do
     before :each do
       @plain_admin = FactoryBot.create :admin
     end
 
-    context 'a plain_admin' do
-      before(:each){@user = @plain_admin}
+    context "a plain_admin" do
+      before(:each) { @user = @plain_admin }
 
-      context 'via the UI' do
-        before(:each){sign_in_as @user}
+      context "via the UI" do
+        before(:each) { sign_in_as @user }
 
-        scenario 'updates the Miscellaneous-Settings' do
+        scenario "updates the Miscellaneous-Settings" do
           within "aside nav" do
             click_on "Settings"
             click_on "Miscellaneous"
@@ -34,37 +33,35 @@ feature 'Misc Settings' do
           check "lending_terms_acceptance_required_for_order"
           fill_in "lending_terms_url", with: "https://example.org/fileadmin/leihs-terms-2000-01-01.pdf"
           fill_in "home_page_image_url", with: "https://example.org/image.jpg"
-          
+
           click_on "Save"
           sleep 0.5
-          wait_until{ all(".modal").empty? }
+          wait_until { all(".modal").empty? }
           visit current_url
           wait_until { page.has_content? "logo_url" }
-          expect(page.text).to have_content 'https://my-server/leihs-logo.png'
+          expect(page.text).to have_content "https://my-server/leihs-logo.png"
           expect(page.text).to have_content "https://my-server/leihs-docs"
-          expect(page.text).to have_content 'Me'
-          expect(page.text).to have_content 'My Header ???'
-          expect(page.text).to have_content 'Berlin'
-          expect(page.text).to have_content 'CHF'
-          expect(page.text).to have_content '21'
-          within 'tr .include-customer-email-in-contracts' do 
-            expect(page.text).to have_content 'true'
+          expect(page.text).to have_content "Me"
+          expect(page.text).to have_content "My Header ???"
+          expect(page.text).to have_content "Berlin"
+          expect(page.text).to have_content "CHF"
+          expect(page.text).to have_content "21"
+          within "tr .include-customer-email-in-contracts" do
+            expect(page.text).to have_content "true"
           end
-          within 'tr .lending-terms-acceptance-required-for-order' do 
-            expect(page.text).to have_content 'true'
+          within "tr .lending-terms-acceptance-required-for-order" do
+            expect(page.text).to have_content "true"
           end
-          within 'tr .show-contact-details-on-customer-order' do 
-            expect(page.text).to have_content 'false'
+          within "tr .show-contact-details-on-customer-order" do
+            expect(page.text).to have_content "false"
           end
-          expect(page.text).to have_content 'Your awesome Lending Desk'
-          expect(page.text).to have_content 'https://example.org/fileadmin/leihs-terms-2000-01-01.pdf'
-          expect(page.text).to have_content 'https://example.org/image.jpg'
+          expect(page.text).to have_content "Your awesome Lending Desk"
+          expect(page.text).to have_content "https://example.org/fileadmin/leihs-terms-2000-01-01.pdf"
+          expect(page.text).to have_content "https://example.org/image.jpg"
         end
       end
 
-
-      context 'via the API' do
-
+      context "via the API" do
         before :each do
           @http_client = plain_faraday_client
           @api_token = FactoryBot.create :system_admin_api_token,
@@ -74,8 +71,7 @@ feature 'Misc Settings' do
           @http_client.headers["Content-Type"] = "application/json"
         end
 
-        scenario 'updating a single property via PATCH works' do
-
+        scenario "updating a single property via PATCH works" do
           get = @http_client.get "/admin/settings/misc/"
           expect(get).to be_success
           expect(get.body["show_contact_details_on_customer_order"]).to be false
@@ -87,11 +83,8 @@ feature 'Misc Settings' do
           get = @http_client.get "/admin/settings/misc/"
           expect(get).to be_success
           expect(get.body["show_contact_details_on_customer_order"]).to be true
-
         end
-
       end
-
     end
   end
 end

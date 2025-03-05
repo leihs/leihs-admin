@@ -1,22 +1,21 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'System and Security-Settings' do
-
-  context 'a system_admin and a plain admin exist' do
+feature "System and Security-Settings" do
+  context "a system_admin and a plain admin exist" do
     before :each do
       @system_admin = FactoryBot.create :system_admin
       @plain_admin = FactoryBot.create :admin
     end
 
-    context 'a system_admin' do
-      before(:each){@user = @system_admin}
+    context "a system_admin" do
+      before(:each) { @user = @system_admin }
 
-      context 'via the UI' do
-        before(:each){sign_in_as @user}
+      context "via the UI" do
+        before(:each) { sign_in_as @user }
 
-        scenario 'updates the System and Security-Settings' do
-          within 'aside nav' do
+        scenario "updates the System and Security-Settings" do
+          within "aside nav" do
             click_on "Settings"
             click_on "System and Security"
           end
@@ -29,25 +28,23 @@ feature 'System and Security-Settings' do
           uncheck "public_image_caching_enabled"
           click_on "Save"
           sleep 0.5
-          wait_until{ all(".modal").empty? }
+          wait_until { all(".modal").empty? }
           visit current_url
           wait_until { page.has_content? "Base URL" }
-          expect(page.text).to have_content '3600'
-          within find('tr', text: "Sessions Force Secure") do
-            expect(page.text).to have_content 'true'
+          expect(page.text).to have_content "3600"
+          within find("tr", text: "Sessions Force Secure") do
+            expect(page.text).to have_content "true"
           end
-          within find('tr', text: "Sessions Force Uniqueness") do
-            expect(page.text).to have_content 'true'
+          within find("tr", text: "Sessions Force Uniqueness") do
+            expect(page.text).to have_content "true"
           end
-          within find('tr', text: "Public Image Caching Enabled ") do
-            expect(page.text).to have_content 'false'
+          within find("tr", text: "Public Image Caching Enabled ") do
+            expect(page.text).to have_content "false"
           end
         end
       end
 
-
-      context 'via the API' do
-
+      context "via the API" do
         before :each do
           @http_client = plain_faraday_client
           @api_token = FactoryBot.create :system_admin_api_token,
@@ -57,15 +54,13 @@ feature 'System and Security-Settings' do
           @http_client.headers["Content-Type"] = "application/json"
         end
 
-        scenario 'updating a single property via PATCH works' do
-
+        scenario "updating a single property via PATCH works" do
           get = @http_client.get "/admin/settings/syssec/"
           expect(get).to be_success
           expect(get.body["sessions_force_uniqueness"]).to be false
           expect(get.body["public_image_caching_enabled"]).to be true
 
-
-          patch = @http_client.patch "/admin/settings/syssec/", 
+          patch = @http_client.patch "/admin/settings/syssec/",
             {sessions_force_uniqueness: true,
              public_image_caching_enabled: false}.to_json
           expect(patch).to be_success
@@ -76,28 +71,23 @@ feature 'System and Security-Settings' do
           expect(get).to be_success
           expect(get.body["sessions_force_uniqueness"]).to be true
           expect(patch.body["public_image_caching_enabled"]).to be false
-
         end
-
       end
-
     end
 
-    context 'a plain leihs_admin (not system_admin)' do
-      before(:each){@user = @plain_admin}
+    context "a plain leihs_admin (not system_admin)" do
+      before(:each) { @user = @plain_admin }
 
-      context 'via the UI' do
-        before(:each){sign_in_as @user}
+      context "via the UI" do
+        before(:each) { sign_in_as @user }
 
-        scenario 'does not have access to the System and Security-Settings' do
+        scenario "does not have access to the System and Security-Settings" do
           click_on "Settings"
           expect(all("a", text: "System and Security")).to be_empty
         end
-
       end
 
-      context 'via the API' do
-
+      context "via the API" do
         before :each do
           @http_client = plain_faraday_client
           @api_token = FactoryBot.create :system_admin_api_token,
@@ -107,16 +97,16 @@ feature 'System and Security-Settings' do
           @http_client.headers["Content-Type"] = "application/json"
         end
 
-        scenario 'getting the System and Security-settings is forbidden ' do
+        scenario "getting the System and Security-settings is forbidden " do
           get = @http_client.get "/admin/settings/syssec/"
           expect(get).not_to be_success
-          expect(get.status).to be== 403
+          expect(get.status).to be == 403
         end
 
-        scenario 'updating the System and Security-settings is forbidden' do
+        scenario "updating the System and Security-settings is forbidden" do
           patch = @http_client.patch "/admin/settings/syssec/", {sessions_force_uniqueness: true}.to_json
           expect(patch).not_to be_success
-          expect(patch.status).to be== 403
+          expect(patch.status).to be == 403
         end
       end
     end

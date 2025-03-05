@@ -1,10 +1,8 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Patch a user via the API', type: :feature do
-
-  context 'an admin user with api token and a regular user exist' do
-
+feature "Patch a user via the API", type: :feature do
+  context "an admin user with api token and a regular user exist" do
     let :http_client do
       plain_faraday_client
     end
@@ -21,20 +19,11 @@ feature 'Patch a user via the API', type: :feature do
       @user = FactoryBot.create :user
     end
 
-
-    scenario 'patching the user properties works and returns the updated properties' do
-
+    scenario "patching the user properties works and returns the updated properties" do
       resp = http_client.patch("/admin/users/#{@user.id}", {firstname: "Max"}.to_json)
 
-      expect(resp.status).to be== 200
-      expect(resp.body["firstname"]).to be== 'Max'
-
+      expect(resp.status).to be == 200
+      expect(resp.body["firstname"]).to be == "Max"
     end
-
   end
-
 end
-
-
-
-

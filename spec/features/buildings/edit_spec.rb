@@ -1,9 +1,8 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Manage buildings', type: :feature do
-
-  let(:name) { Faker::Company.name}
+feature "Manage buildings", type: :feature do
+  let(:name) { Faker::Company.name }
   let(:code) { Faker::Lorem.characters(number: 3).upcase }
 
   before :each do
@@ -19,20 +18,20 @@ feature 'Manage buildings', type: :feature do
   end
 
   context "an admin via the UI" do
-    before(:each){ sign_in_as @admin }
+    before(:each) { sign_in_as @admin }
 
-    scenario 'edits a building' do
-      visit '/admin/'
-      click_on 'Buildings'
+    scenario "edits a building" do
+      visit "/admin/"
+      click_on "Buildings"
       click_on @building.name
       @building_path = current_path
 
-      click_on 'Edit'
-      fill_in 'name', with: name
-      fill_in 'code', with: code
-      click_on 'Save'
+      click_on "Edit"
+      fill_in "name", with: name
+      fill_in "code", with: code
+      click_on "Save"
       wait_until { all(".modal").empty? }
-      wait_until {current_path == @building_path}
+      wait_until { current_path == @building_path }
       wait_until { all(".wait-component").empty? }
 
       input_values = all("input").map(&:value).join(" ")
@@ -43,10 +42,8 @@ feature 'Manage buildings', type: :feature do
         click_on "Buildings"
       end
 
-      wait_until { current_path ==  "/admin/buildings/" }
+      wait_until { current_path == "/admin/buildings/" }
       expect(page).to have_content name
     end
-
   end
-
 end

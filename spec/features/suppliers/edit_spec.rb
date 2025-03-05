@@ -1,9 +1,8 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Manage suppliers', type: :feature do
-
-  let(:name) { Faker::Company.name}
+feature "Manage suppliers", type: :feature do
+  let(:name) { Faker::Company.name }
   let(:note) { Faker::Markdown.sandwich }
 
   before :each do
@@ -22,12 +21,12 @@ feature 'Manage suppliers', type: :feature do
   end
 
   context "an admin via the UI" do
-    before(:each){ sign_in_as @admin }
+    before(:each) { sign_in_as @admin }
 
-    scenario 'edits a supplier' do
-      visit '/admin/'
-      within 'aside nav' do
-        click_on 'Suppliers'
+    scenario "edits a supplier" do
+      visit "/admin/"
+      within "aside nav" do
+        click_on "Suppliers"
       end
       click_on @supplier.name
       @supplier_path = current_path
@@ -46,12 +45,12 @@ feature 'Manage suppliers', type: :feature do
         end
       end
 
-      click_on 'Edit'
-      fill_in 'name', with: name
-      fill_in 'note', with: note
-      click_on 'Save'
+      click_on "Edit"
+      fill_in "name", with: name
+      fill_in "note", with: note
+      click_on "Save"
       wait_until { all(".modal").empty? }
-      wait_until {current_path == @supplier_path}
+      wait_until { current_path == @supplier_path }
       wait_until { all(".wait-component").empty? }
 
       expect(page.text).to have_content name
@@ -61,10 +60,8 @@ feature 'Manage suppliers', type: :feature do
         click_on "Suppliers"
       end
 
-      wait_until { current_path ==  "/admin/suppliers/" }
+      wait_until { current_path == "/admin/suppliers/" }
       expect(page).to have_content name
     end
-
   end
-
 end

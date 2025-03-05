@@ -1,4 +1,4 @@
-class EntitlementGroup< Sequel::Model(:entitlement_groups)
+class EntitlementGroup < Sequel::Model(:entitlement_groups)
 end
 
 FactoryBot.define do

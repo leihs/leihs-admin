@@ -1,29 +1,29 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Manage rooms', type: :feature do
+feature "Manage rooms", type: :feature do
   before :each do
     @admin = FactoryBot.create :admin
     @buildings = 10.times.map { FactoryBot.create(:building) }
     @building = @buildings.sample
   end
 
-  let(:name) { Faker::Company.name}
+  let(:name) { Faker::Company.name }
   let(:description) { Faker::Markdown.sandwich }
 
-  context 'an admin via the UI' do
-    before(:each){ sign_in_as @admin }
+  context "an admin via the UI" do
+    before(:each) { sign_in_as @admin }
 
-    scenario ' creates a new room ' do
-      click_on 'Rooms'
-      expect(all("a, button", text: 'Add Room')).not_to be_empty
-      click_on_first 'Add Room'
-      fill_in 'name', with: name
-      fill_in 'description', with: description
-      within('.modal') do 
-        select(@building.name, from: 'building')
+    scenario " creates a new room " do
+      click_on "Rooms"
+      expect(all("a, button", text: "Add Room")).not_to be_empty
+      click_on_first "Add Room"
+      fill_in "name", with: name
+      fill_in "description", with: description
+      within(".modal") do
+        select(@building.name, from: "building")
       end
-      click_on 'Save'
+      click_on "Save"
       wait_until { all(".modal").empty? }
       @room_path = current_path
       expect(page.text).to have_content name

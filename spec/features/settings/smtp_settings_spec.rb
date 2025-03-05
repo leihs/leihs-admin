@@ -1,22 +1,21 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'SMTP-Settings' do
-
-  context 'a system_admin and a plain admin exist' do
+feature "SMTP-Settings" do
+  context "a system_admin and a plain admin exist" do
     before :each do
       @system_admin = FactoryBot.create :system_admin
       @plain_admin = FactoryBot.create :admin
     end
 
-    context 'a system_admin' do
-      before(:each){@user = @system_admin}
+    context "a system_admin" do
+      before(:each) { @user = @system_admin }
 
-      context 'via the UI' do
-        before(:each){sign_in_as @user}
+      context "via the UI" do
+        before(:each) { sign_in_as @user }
 
-        scenario 'updates the SMTP-Settings' do
-          within 'aside nav' do 
+        scenario "updates the SMTP-Settings" do
+          within "aside nav" do
             click_on "Settings"
             click_on "SMTP"
           end
@@ -36,33 +35,30 @@ feature 'SMTP-Settings' do
           check "enable_starttls_auto"
           click_on "Save"
           sleep 0.5
-          wait_until{ all(".modal").empty? }
+          wait_until { all(".modal").empty? }
           wait_until { page.has_content? "Domain Name" }
 
-          within find('tr', text: "Sending Emails Enabled") do
-            expect(page.text).to have_content 'true'
+          within find("tr", text: "Sending Emails Enabled") do
+            expect(page.text).to have_content "true"
           end
 
-          expect(page.text).to have_content '2525'
-          expect(page.text).to have_content 'my-smtp-host'
-          expect(page.text).to have_content 'my-domain'
-          expect(page.text).to have_content 'noryply@my-domain'
-          expect(page.text).to have_content 'smtp-sender@my-domain'
-          expect(page.text).to have_content 'smtp-user'
-          expect(page.text).to have_content 'smtp-password'
-          expect(page.text).to have_content 'CRAM-MD5'
-          expect(page.text).to have_content 'peer'
+          expect(page.text).to have_content "2525"
+          expect(page.text).to have_content "my-smtp-host"
+          expect(page.text).to have_content "my-domain"
+          expect(page.text).to have_content "noryply@my-domain"
+          expect(page.text).to have_content "smtp-sender@my-domain"
+          expect(page.text).to have_content "smtp-user"
+          expect(page.text).to have_content "smtp-password"
+          expect(page.text).to have_content "CRAM-MD5"
+          expect(page.text).to have_content "peer"
 
-          within find('tr', text: "Enable Starttls Auto") do
-            expect(page.text).to have_content 'true'
+          within find("tr", text: "Enable Starttls Auto") do
+            expect(page.text).to have_content "true"
           end
         end
-
       end
 
-
-      context 'via the API' do
-
+      context "via the API" do
         before :each do
           @http_client = plain_faraday_client
           @api_token = FactoryBot.create :system_admin_api_token,
@@ -72,8 +68,7 @@ feature 'SMTP-Settings' do
           @http_client.headers["Content-Type"] = "application/json"
         end
 
-        scenario 'updating a single property via PATCH works' do
-
+        scenario "updating a single property via PATCH works" do
           get = @http_client.get "/admin/settings/smtp/"
           expect(get).to be_success
           expect(get.body["enabled"]).to be false
@@ -85,28 +80,23 @@ feature 'SMTP-Settings' do
           get = @http_client.get "/admin/settings/smtp/"
           expect(get).to be_success
           expect(get.body["enabled"]).to be true
-
         end
-
       end
-
     end
 
-    context 'a plain leihs_admin (not system_admin)' do
-      before(:each){@user = @plain_admin}
+    context "a plain leihs_admin (not system_admin)" do
+      before(:each) { @user = @plain_admin }
 
-      context 'via the UI' do
-        before(:each){sign_in_as @user}
+      context "via the UI" do
+        before(:each) { sign_in_as @user }
 
-        scenario 'does not have access to the SMTP-Settings' do
+        scenario "does not have access to the SMTP-Settings" do
           click_on "Settings"
           expect(all("a", text: "SMTP")).to be_empty
         end
-
       end
 
-      context 'via the API' do
-
+      context "via the API" do
         before :each do
           @http_client = plain_faraday_client
           @api_token = FactoryBot.create :system_admin_api_token,
@@ -116,16 +106,16 @@ feature 'SMTP-Settings' do
           @http_client.headers["Content-Type"] = "application/json"
         end
 
-        scenario 'getting the SMTP-settings is forbidden ' do
+        scenario "getting the SMTP-settings is forbidden " do
           get = @http_client.get "/admin/settings/smtp/"
           expect(get).not_to be_success
-          expect(get.status).to be== 403
+          expect(get.status).to be == 403
         end
 
-        scenario 'updating the SMTP-settings is forbidden' do
+        scenario "updating the SMTP-settings is forbidden" do
           patch = @http_client.patch "/admin/settings/smtp/", {enabled: true}.to_json
           expect(patch).not_to be_success
-          expect(patch.status).to be== 403
+          expect(patch.status).to be == 403
         end
       end
     end

@@ -1,6 +1,6 @@
 class LeihsModel < Sequel::Model(:models)
   def name
-    [product, version].compact.join(' ')
+    [product, version].compact.join(" ")
   end
 end
 

@@ -1,8 +1,7 @@
-require 'spec_helper'
-require 'pry'
+require "spec_helper"
+require "pry"
 
-feature 'Create inventory-fields', type: :feature do
-
+feature "Create inventory-fields", type: :feature do
   before :each do
     @admin = FactoryBot.create(:admin, password: "password")
     @fields = Field.all
@@ -12,23 +11,23 @@ feature 'Create inventory-fields', type: :feature do
   let(:attribute) { Faker::Lorem.words(number: 2).join("_") }
 
   context "an admin via the UI" do
-    before(:each){ sign_in_as @admin }
+    before(:each) { sign_in_as @admin }
 
-    scenario 'creates a dynamic field' do
-      visit '/admin/'
+    scenario "creates a dynamic field" do
+      visit "/admin/"
       within find("aside nav", match: :first) do
         click_on "Fields"
       end
-      click_on_first 'Add Field'
+      click_on_first "Add Field"
 
       find("input#active").click
-      fill_in 'Label', with: label
+      fill_in "Label", with: label
       find(:xpath, "//input[@id='data:attribute']").set attribute
       find(:xpath, "//input[@id='data:forPackage']").click
       find(:xpath, "//input[@id='data:permissions:owner']").click
       select("inventory_manager", from: "Minimum role required for view")
 
-      within '.modal' do
+      within ".modal" do
         select("License", from: "Target")
         select("Checkbox", from: "Type")
       end
@@ -44,12 +43,12 @@ feature 'Create inventory-fields', type: :feature do
       find(".form-group", text: "data:type").all(".col-5 input")[1].set label_2
       find(".form-group", text: "data:type").all(".col-4 input")[1].set value_2
 
-      click_on 'Save'
+      click_on "Save"
 
       wait_until { all(".modal").empty? }
       wait_until { all(".wait-component").empty? }
 
-      click_on 'Edit'
+      click_on "Edit"
 
       expect(find("input#active")).to be_checked
       expect(find(:xpath, "//input[@id='data:label']").value).to eq label
@@ -65,9 +64,8 @@ feature 'Create inventory-fields', type: :feature do
       expect(find(".form-group", text: "data:type").all(".col-5 input")[1].value).to eq label_2
       expect(find(".form-group", text: "data:type").all(".col-4 input")[1].value).to eq value_2
 
+      click_on "Save"
 
-      click_on 'Save'
-      
       wait_until { all(".modal").empty? }
       wait_until { all(".wait-component").empty? }
 
@@ -75,7 +73,7 @@ feature 'Create inventory-fields', type: :feature do
         click_on "Fields"
       end
 
-      wait_until { current_path ==  "/admin/inventory-fields/" }
+      wait_until { current_path == "/admin/inventory-fields/" }
       expect(page).to have_content label
 
       expect(DisabledField.where(field_id: "properties_#{attribute}").count)
