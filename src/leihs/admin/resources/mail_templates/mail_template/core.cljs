@@ -32,6 +32,7 @@
    [:li [:code :email_signature]],
    [:li [:code :inventory_pool.name]],
    [:li [:code :inventory_pool.contact]],
+   [:li [:code :inventory_pool.description]],
    [:li [:code :inventory_pool.workdays]],
    [:li [:code :inventory_pool.holidays]],
    [:li [:code :inventory_pool.email_signature]],
@@ -51,9 +52,9 @@
    [:li [:code :email_signature]],
    [:li [:code :inventory_pool.name]],
    [:li [:code :inventory_pool.contact]],
+   [:li [:code :inventory_pool.description]],
    [:li [:code :inventory_pool.workdays]],
    [:li [:code :inventory_pool.holidays]],
-   [:li [:code :inventory_pool.description]],
    [:li [:code :inventory_pool.email_signature]],
    [:li [:code :quantity]],
    [:li [:code :reservations]
