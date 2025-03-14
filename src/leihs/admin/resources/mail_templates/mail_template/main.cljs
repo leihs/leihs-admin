@@ -27,11 +27,14 @@
      [:tr.format
       [:td "Format" [:small " (format)"]]
       [:td.format (:format data)]]
+     [:tr.subject
+      [:td "Subject" [:small " (subject)"]]
+      [:td.subject (:subject data)]]
      [:tr.body {:style {:white-space "break-spaces"}}
       [:td "Body" [:small " (body)"]]
       [:td.body (:body data)]]
      [:tr.variables {:style {:white-space "break-spaces"}}
-      [:td "Variables" [:small " (variables)"]]
+      [:td "Body variables"]
       [:td.variables
        (global-core/template-variables)]]]}])
 

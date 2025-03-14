@@ -37,8 +37,15 @@
    [:> Col {:md 12 :lg 8}
     [:> Form {:id "mail-template-form"
               :on-submit (fn [e] (.preventDefault e) (action))}
+     [:> Form.Group {:control-id "subject"}
+      [:> Form.Label [:strong "Subject"]]
+      [:input.form-control
+       {:id "subject"
+        :required true
+        :value (or (:subject @data*) "")
+        :onChange (fn [e] (swap! data* assoc :subject (-> e .-target .-value)))}]]
      [:> Form.Group {:control-id "body"}
-      [:> Form.Label "Mail Body"]
+      [:> Form.Label [:strong "Body"]]
       [:textarea.form-control
        {:id "body"
         :rows 30
@@ -46,7 +53,7 @@
         :value (or (:body @data*) "")
         :onChange (fn [e] (swap! data* assoc :body (-> e .-target .-value)))}]]]]
    [:> Col
-    [:div "Variables"
+    [:div [:strong "Body variables"]
      (global-core/template-variables)]]])
 
 (defn debug-component []
