@@ -73,17 +73,20 @@
     nil))
 
 (defn form [action data*]
-  [:> Row
-   [:> Col {:md 12 :lg 8}
-    [:> Form {:id "mail-template-form"
-              :on-submit (fn [e] (.preventDefault e) (action))}
+  [:> Form {:id "mail-template-form"
+            :on-submit (fn [e] (.preventDefault e) (action))}
+   [:> Row {:className "form-group"}
+    [:> Col {:md 12 :lg 8}
      [:> Form.Group {:control-id "subject"}
       [:> Form.Label [:strong "Subject"]]
       [:input.form-control
        {:id "subject"
         :required true
         :value (or (:subject @data*) "")
-        :onChange (fn [e] (swap! data* assoc :subject (-> e .-target .-value)))}]]
+        :onChange (fn [e] (swap! data* assoc :subject (-> e .-target .-value)))}]]]
+    [:> Col [:strong "No available subject variables"]]]
+   [:> Row
+    [:> Col {:md 12 :lg 8}
      [:> Form.Group {:control-id "body"}
       [:> Form.Label [:strong "Body"]]
       [:textarea.form-control
@@ -91,10 +94,10 @@
         :rows 30
         :required true
         :value (or (:body @data*) "")
-        :onChange (fn [e] (swap! data* assoc :body (-> e .-target .-value)))}]]]]
-   [:> Col
-    [:div [:strong "Body variables"]
-     (template-variables)]]])
+        :onChange (fn [e] (swap! data* assoc :body (-> e .-target .-value)))}]]]
+    [:> Col
+     [:div [:strong "Body variables"]
+      (template-variables)]]]])
 
 (defn debug-component []
   (when (:debug @state/global-state*)
