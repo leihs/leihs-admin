@@ -9,7 +9,7 @@ gemfile do
   source 'https://rubygems.org'
   gem 'git', '= 2.1.1', require: false
   gem 'pry', '= 0.14.1'
-  gem 'activesupport', '= 5.2.4.5'
+  gem 'activesupport', '~> 7'
 end
 
 require 'active_support/all'

@@ -9,6 +9,7 @@ source $PROJECT_DIR/bin/env/project.sh
 source $PROJECT_DIR/bin/env/asdf-helper.bash
 
 asdf-update-plugin
+gem install bundler
 bundle install --quiet
 
 # vi: ft=sh
