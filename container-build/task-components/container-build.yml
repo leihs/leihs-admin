@@ -70,7 +70,7 @@ scripts:
       incus info "$CONTAINER_NAME"
 
       # enable for debugging; keeps the container running for a while
-      # sleep 1000
+      sleep 1000
 
       until incus delete --force "$CONTAINER_NAME"; do sleep 10; done
       incus list
