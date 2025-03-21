@@ -51,7 +51,8 @@
       {:id switch-id
        :name (name day-ord-proc-key)
        :type :checkbox
-       :checked (day-ord-proc-key @data*)
+       :checked (or (day @data*) (day-ord-proc-key @data*))
+       :disabled (day @data*)
        :on-change #(swap! data* update day-ord-proc-key not)
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
