@@ -15,6 +15,13 @@
               :friday
               :saturday
               :sunday
+              :monday_orders_processing
+              :tuesday_orders_processing
+              :wednesday_orders_processing
+              :thursday_orders_processing
+              :friday_orders_processing
+              :saturday_orders_processing
+              :sunday_orders_processing
               :monday_info
               :tuesday_info
               :wednesday_info
