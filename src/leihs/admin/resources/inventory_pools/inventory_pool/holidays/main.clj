@@ -14,6 +14,7 @@
               :name
               :start_date
               :end_date
+              :orders_processing
               :inventory_pool_id})
 
 (defn get-holidays
@@ -48,8 +49,7 @@
   [{{inventory-pool-id :inventory-pool-id} :route-params
     tx :tx data :body}]
   (let [data2 (->> data
-                   (map #(update % :inventory_pool_id uuid))
-                   (filter-holidays inventory-pool-id))]
+                   (map #(update % :inventory_pool_id uuid)))]
     (doseq [holiday data2]
       (if (:delete holiday)
         (jdbc-delete! tx :holidays {:id (uuid (:id holiday))})
