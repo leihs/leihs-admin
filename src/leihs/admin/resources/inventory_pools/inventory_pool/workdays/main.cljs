@@ -36,5 +36,6 @@
                           [:td {:id day-info-key} (day-info-key @core/data*)])
                         [:td (or ((core/DAYS day) (@core/data* :max_visits))
                                  "unlimited")]]))}]
+      [:div.mb-3 [:i "* If activated, orders can be processed on a particular day."]]
       [edit/button]
       [edit/dialog]])])

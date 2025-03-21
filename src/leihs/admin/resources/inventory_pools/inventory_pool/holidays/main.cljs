@@ -31,5 +31,6 @@
                         [:td (:start_date holiday)]
                         [:td (:end_date holiday)]
                         [:td (toggle-component (:orders_processing holiday))]]))}]
-      [edit/button]
+      [:div.mb-3 [:i "* If activated, orders can be processed during a particular holiday."]]
+      [:div.mb-3 [edit/button]]
       [edit/dialog]])])

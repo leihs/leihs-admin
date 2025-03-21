@@ -168,7 +168,9 @@
    [:> Modal.Header {:close-button true
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Holidays"]]
-   [:> Modal.Body [form]]
+   [:> Modal.Body
+    [form]
+    [:div.mb-3 [:i "* If activated, orders can be processed during a particular holiday."]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}

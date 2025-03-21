@@ -117,7 +117,8 @@
                      :onHide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Workdays"]]
    [:> Modal.Body
-    [form]]
+    [form]
+    [:div.mb-3 [:i "* If activated, orders can be processed on a particular day."]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}
