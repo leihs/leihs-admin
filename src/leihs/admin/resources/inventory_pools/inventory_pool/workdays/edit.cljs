@@ -17,6 +17,8 @@
    [reagent.core :as reagent :refer [reaction]]))
 
 (defonce data* (reagent/atom nil))
+(comment (-> @data*
+             (select-keys [:saturday :saturday_orders_processing])))
 
 (defn patch []
   (let [workdays-route (path :inventory-pool-workdays
@@ -32,14 +34,31 @@
           (search-params/delete-from-url "action")))))
 
 (defn opened-closed-comp [day]
-  (let [switch-id (str (name day) "-switch")]
+  (let [switch-id (str (name day) "-switch")
+        day-ord-proc-key (-> (name day) (str "_orders_processing") keyword)]
     [:div.custom-control.custom-switch
      [:input.custom-control-input
       {:id switch-id
        :name (name day)
        :type :checkbox
        :checked (day @data*)
-       :on-change #(swap! data* update day not)
+       :on-change #(do (swap! data* update day not)
+                       (when (day @data*)
+                         (swap! data* assoc day-ord-proc-key true)))
+       :tab-index constants/TAB-INDEX}]
+     [:label.custom-control-label {:for switch-id}]]))
+
+(defn orders-processed-comp [day]
+  (let [switch-id (str (name day) "-orders-processed-switch")
+        day-ord-proc-key (-> (name day) (str "_orders_processing") keyword)]
+    [:div.custom-control.custom-switch
+     [:input.custom-control-input
+      {:id switch-id
+       :name (name day-ord-proc-key)
+       :type :checkbox
+       :checked (day-ord-proc-key @data*)
+       :disabled (day @data*)
+       :on-change #(swap! data* update day-ord-proc-key not)
        :tab-index constants/TAB-INDEX}]
      [:label.custom-control-label {:for switch-id}]]))
 
@@ -77,12 +96,14 @@
        :header [:tr
                 [:th "Day"]
                 [:th "Open/Closed"]
+                [:th "Orders processed *"]
                 [:th {:style {:width "50%"}} "Hours Info"]
                 [:th "Max Visits"]]
        :body (doall (for [day (keys core/DAYS)]
                       [:tr {:key (name day)}
                        [:td (capitalize (name day))]
                        [:td [opened-closed-comp day]]
+                       [:td [orders-processed-comp day]]
                        [:td (day-info-comp day)]
                        [:td [max-visits-comp day]]]))}]]))
 
@@ -101,7 +122,8 @@
                      :onHide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Workdays"]]
    [:> Modal.Body
-    [form]]
+    [form]
+    [:div.mb-3 [:i "* If activated, orders can be processed on a particular day."]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}

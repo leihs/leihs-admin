@@ -23,15 +23,19 @@
         :header [:tr
                  [:th "Day"]
                  [:th "Opened"]
+                 [:th "Orders processed *"]
                  [:th {:style {:width "40%"}} "Hours Info"]
                  [:th "Max Visits"]]
         :body (doall (for [day (keys core/DAYS)]
                        [:tr {:key day}
                         [:td (capitalize (name day))]
                         [:td (toggle-component (day @core/data*))]
+                        [:td (toggle-component ((-> (name day) (str "_orders_processing") keyword)
+                                                @core/data*))]
                         (let [day-info-key (-> day name (str "_info") keyword)]
                           [:td {:id day-info-key} (day-info-key @core/data*)])
                         [:td (or ((core/DAYS day) (@core/data* :max_visits))
                                  "unlimited")]]))}]
+      [:div.mb-3 [:i "* If activated, orders can be processed on a particular day."]]
       [edit/button]
       [edit/dialog]])])
