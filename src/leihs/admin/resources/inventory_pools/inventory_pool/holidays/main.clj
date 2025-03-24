@@ -14,6 +14,7 @@
               :name
               :start_date
               :end_date
+              :orders_processing
               :inventory_pool_id})
 
 (defn get-holidays

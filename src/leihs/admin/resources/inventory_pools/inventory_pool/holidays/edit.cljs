@@ -2,6 +2,7 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [com.rpl.specter :as s]
+   [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
@@ -11,6 +12,7 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.constants :as constants]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -38,7 +40,8 @@
   (-> date .toISOString (.split "T") first))
 
 (defn add-new-holiday-comp []
-  (let [holiday-template {:inventory_pool_id (:id @pool-core/data*)}
+  (let [holiday-template {:inventory_pool_id (:id @pool-core/data*),
+                          :orders_processing false}
         new-holiday (reagent/atom holiday-template)
         end-date-before-start-date? (reagent/atom false)]
     (fn []
@@ -51,7 +54,7 @@
                                                         :new true
                                                         :id (str (random-uuid))))
                                           (reset! new-holiday holiday-template))}
-          [:div.form-group.mb-2.mr-2.w-50
+          [:div.form-group.mb-2.mr-2 {:style {:width "45%"}}
            [:input.form-control.w-100 {:type "text" :placeholder "Name"
                                        :value (:name @new-holiday)
                                        :required true
@@ -76,6 +79,19 @@
                                  :on-change #(do (swap! new-holiday
                                                         assoc :end_date
                                                         (-> % .-target .-value)))}]]
+
+          [:div.form-group.mb-2.mr-2
+           (let [switch-id "new-orders-processed-switch"]
+             [:div.custom-control.custom-switch
+              [:input.custom-control-input
+               {:id switch-id
+                :name :orders_processing
+                :type :checkbox
+                :checked (:orders_processing @new-holiday)
+                :on-change #(swap! new-holiday update :orders_processing not)
+                :tab-index constants/TAB-INDEX}]
+              [:label.custom-control-label {:for switch-id}]])]
+
           [:> Button {:type "submit"
                       :className "btn-info mb-2"
                       :disabled @end-date-before-start-date?}
@@ -86,6 +102,7 @@
    [:td (cond->> (:name holiday) (:delete holiday) (vector :s))]
    [:td (cond->> (:start_date holiday) (:delete holiday) (vector :s))]
    [:td (cond->> (:end_date holiday) (:delete holiday) (vector :s))]
+   [:td (toggle-component (:orders_processing holiday))]
    [:td
     (let [specter-path [s/ALL #(= (:id %) (:id holiday))]]
       (if (:delete holiday)
@@ -119,7 +136,12 @@
                             (patch))}
       [table/container
        {:borders false
-        :header [:tr [:th "Day"] [:th "From"] [:th "To"] [:th]]
+        :header [:tr
+                 [:th "Day"]
+                 [:th "From"]
+                 [:th "To"]
+                 [:th "Orders processed *"]
+                 [:th]]
         :body
         (doall (for [holiday @data*]
                  [:tr {:key (:id holiday)
@@ -146,7 +168,9 @@
    [:> Modal.Header {:close-button true
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Holidays"]]
-   [:> Modal.Body [form]]
+   [:> Modal.Body
+    [form]
+    [:div.mb-3 [:i "* If activated, orders can be processed during a particular holiday."]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}
