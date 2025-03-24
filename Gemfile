@@ -8,4 +8,3 @@ gem "faraday_middleware"
 gem "pry-nav"
 gem "rexml"
 gem "selenium-webdriver", "~> 3.14"
-gem "standard", group: [:development, :test]
