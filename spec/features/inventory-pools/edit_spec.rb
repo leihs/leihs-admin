@@ -74,7 +74,14 @@ feature "Manage inventory-pools", type: :feature do
             thursday: false,
             friday: false,
             saturday: false,
-            sunday: false)
+            sunday: false,
+            monday_orders_processing: false,
+            tuesday_orders_processing: false,
+            wednesday_orders_processing: false,
+            thursday_orders_processing: false,
+            friday_orders_processing: false,
+            saturday_orders_processing: false,
+            sunday_orders_processing: false)
         @holiday_1 = FactoryBot.create :holiday, inventory_pool: @pool
         @holiday_2 = FactoryBot.create :holiday, inventory_pool: @pool
         FactoryBot.create :access_right, user: @manager,
@@ -142,7 +149,14 @@ feature "Manage inventory-pools", type: :feature do
             within(".modal") do
               weekdays.each do |day|
                 within("tr", text: day) do
-                  click_on_toggle "#{day.downcase}-switch"
+                  case day
+                  when "Monday"
+                    # do nothing
+                  when "Tuesday"
+                    click_on_toggle "#{day.downcase}-orders-processed-switch"
+                  else
+                    click_on_toggle "#{day.downcase}-switch"
+                  end
                   find("input[type='text']").set hours_info
                   find("input[type='number']").set 100
                 end
@@ -156,7 +170,19 @@ feature "Manage inventory-pools", type: :feature do
             within(".modal") do
               weekdays.each do |day|
                 within("tr", text: day) do
-                  expect(find("input##{day.downcase}-switch", visible: false)).to be_checked
+                  case day
+                  when "Monday"
+                    expect(find("input##{day.downcase}-switch", visible: false)).not_to be_checked
+                    expect(find("input##{day.downcase}-orders-processed-switch", visible: false)).not_to be_checked
+                  when "Tuesday"
+                    expect(find("input##{day.downcase}-switch", visible: false)).not_to be_checked
+                    expect(find("input##{day.downcase}-orders-processed-switch", visible: false)).to be_checked
+                  else
+                    expect(find("input##{day.downcase}-switch", visible: false)).to be_checked
+                    opt = find("input##{day.downcase}-orders-processed-switch", visible: false)
+                    expect(opt).to be_checked
+                    expect(opt).to be_disabled
+                  end
                   expect(find("input[type='text']").value).to eq hours_info
                   expect(find("input[type='number']").value).to eq 100.to_s
                 end
@@ -192,6 +218,7 @@ feature "Manage inventory-pools", type: :feature do
               find("input[type='text']").set "New Holiday 3"
               fill_in "start-date", with: (Date.tomorrow + 2).iso8601
               fill_in "end-date", with: (Date.tomorrow + 3).iso8601
+              click_on_toggle "new-orders-processed-switch"
               click_on "Add"
 
               click_on "Save"
@@ -205,7 +232,9 @@ feature "Manage inventory-pools", type: :feature do
                 expect(all("tr").count).to eq 3
                 expect(find("tr", text: "New Holiday 1")).to be_present
                 expect(find("tr", text: @holiday_2.name)).to be_present
-                expect(find("tr", text: "New Holiday 3")).to be_present
+                holiday_3 = find("tr", text: "New Holiday 3")
+                expect(holiday_3).to be_present
+                expect(holiday_3).to have_selector(".fa-toggle-on")
               end
             end
           end
