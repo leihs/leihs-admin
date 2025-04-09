@@ -96,16 +96,16 @@
        :header [:tr
                 [:th "Day"]
                 [:th "Open/Closed"]
-                [:th "Orders processed *"]
-                [:th {:style {:width "50%"}} "Hours Info"]
-                [:th "Max Visits"]]
+                [:th "Orders processed*"]
+                [:th "Hours Info"]
+                [:th {:class-name "text-nowrap"} "Max Visits"]]
        :body (doall (for [day (keys core/DAYS)]
                       [:tr {:key (name day)}
                        [:td (capitalize (name day))]
                        [:td [opened-closed-comp day]]
                        [:td [orders-processed-comp day]]
-                       [:td (day-info-comp day)]
-                       [:td [max-visits-comp day]]]))}]]))
+                       [:td  (day-info-comp day)]
+                       [:td {:style {:width "15%"}} [max-visits-comp day]]]))}]]))
 
 (def open*
   (reaction

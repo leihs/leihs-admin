@@ -23,7 +23,7 @@
         :header [:tr
                  [:th "Day"]
                  [:th "Opened"]
-                 [:th "Orders processed *"]
+                 [:th "Orders processed*"]
                  [:th {:style {:width "40%"}} "Hours Info"]
                  [:th "Max Visits"]]
         :body (doall (for [day (keys core/DAYS)]

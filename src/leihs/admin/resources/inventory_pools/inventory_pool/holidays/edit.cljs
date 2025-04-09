@@ -47,40 +47,57 @@
     (fn []
       (let [today (-> (new js/Date) to-iso-8601)]
         [:<>
-         [:form.form-inline {:on-submit (fn [e]
-                                          (.preventDefault e)
-                                          (swap! data* conj
-                                                 (assoc @new-holiday
-                                                        :new true
-                                                        :id (str (random-uuid))))
-                                          (reset! new-holiday holiday-template))}
-          [:div.form-group.mb-2.mr-2 {:style {:width "45%"}}
+         [:form.form-inline.align-items-end {:on-submit (fn [e]
+                                                          (.preventDefault e)
+                                                          (swap! data* conj
+                                                                 (assoc @new-holiday
+                                                                        :new true
+                                                                        :id (str (random-uuid))))
+                                                          (reset! new-holiday holiday-template))}
+          [:div.form-group.mb-2.mr-2 {:style {:width "30%"}}
+
+           [:label {:class-name "font-weight-bold mb-2"
+                    :for "name"} "Name"]
            [:input.form-control.w-100 {:type "text" :placeholder "Name"
                                        :value (:name @new-holiday)
                                        :required true
                                        :on-change #(swap! new-holiday
                                                           assoc :name
                                                           (-> % .-target .-value))}]]
-          [:div.form-group.mb-2.mr-2
-           [:input.form-control {:type "date" ;:placeholder "From"
-                                 :id "start-date"
-                                 :value (:start_date @new-holiday)
-                                 :min today
-                                 :required true
-                                 :on-change #(do (swap! new-holiday
-                                                        assoc :start_date
-                                                        (-> % .-target .-value)))}]]
-          [:div.form-group.mb-2.mr-2
-           [:input.form-control {:type "date" ;:placeholder "To"
-                                 :id "end-date"
-                                 :value (:end_date @new-holiday)
-                                 :min today
-                                 :required true
-                                 :on-change #(do (swap! new-holiday
-                                                        assoc :end_date
-                                                        (-> % .-target .-value)))}]]
+          [:div.form-group.mb-2.mr-2.flex-column.align-items-start
+           {:style {:width "20%"}}
 
-          [:div.form-group.mb-2.mr-2
+           [:label {:class-name "font-weight-bold mb-2"
+                    :for "start-date"} "From"]
+           [:input.form-control.w-100 {:type "date" ;:placeholder "From"
+                                       :id "start-date"
+                                       :value (:start_date @new-holiday)
+                                       :min today
+                                       :required true
+                                       :on-change #(do (swap! new-holiday
+                                                              assoc :start_date
+                                                              (-> % .-target .-value)))}]]
+
+          [:div.form-group.mb-2.mr-2.flex-column.align-items-start
+           {:style {:width "20%"}}
+
+           [:label {:class-name "font-weight-bold mb-2"
+                    :for "end-date"} "To"]
+           [:input.form-control.w-100 {:type "date" ;:placeholder "To"
+                                       :id "end-date"
+                                       :value (:end_date @new-holiday)
+                                       :min today
+                                       :required true
+                                       :on-change #(do (swap! new-holiday
+                                                              assoc :end_date
+                                                              (-> % .-target .-value)))}]]
+
+          [:div.form-group.mb-2.mr-2.flex-column.align-items-start
+           {:style {:width "15%"}}
+
+           [:label {:class-name "font-weight-bold mb-4"
+                    :for "switch-id"} "Orders processed*"]
+
            (let [switch-id "new-orders-processed-switch"]
              [:div.custom-control.custom-switch
               [:input.custom-control-input
@@ -93,7 +110,7 @@
               [:label.custom-control-label {:for switch-id}]])]
 
           [:> Button {:type "submit"
-                      :className "btn-info mb-2"
+                      :className "btn-info mb-2 ml-3"
                       :disabled @end-date-before-start-date?}
            "Add"]]]))))
 
@@ -137,11 +154,11 @@
       [table/container
        {:borders false
         :header [:tr
-                 [:th "Day"]
-                 [:th "From"]
-                 [:th "To"]
-                 [:th "Orders processed *"]
-                 [:th]]
+                 [:th {:style {:width "30%"}}]
+                 [:th {:style {:width "20%"}}]
+                 [:th {:style {:width "20%"}}]
+                 [:th {:style {:width "15%"}}]
+                 [:th {:style {:width "10%"}}]]
         :body
         (doall (for [holiday @data*]
                  [:tr {:key (:id holiday)
