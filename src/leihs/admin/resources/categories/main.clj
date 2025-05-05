@@ -4,10 +4,10 @@
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.categories.category.main :as category]
-   [leihs.admin.resources.categories.filter :as filter]
-   [leihs.admin.resources.categories.tree :refer [tree]]
    [leihs.core.core :refer [presence]]
    [leihs.core.db :as db]
+   [leihs.core.resources.categories.filter :as filter]
+   [leihs.core.resources.categories.tree :refer [tree]]
    [next.jdbc.sql :refer [insert! query]
     :rename {query jdbc-query, insert! jdbc-insert!}]
    [taoensso.timbre :refer [debug spy]]))

@@ -4,9 +4,9 @@
    [better-cond.core :as b]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.admin.resources.categories.filter :refer [deep-filter]]
-   [leihs.admin.resources.categories.shared :refer [base-query sql-add-metadata]]
-   [leihs.admin.resources.categories.tree :refer [tree convert-tree-path roots]]
+   [leihs.core.resources.categories.filter :refer [deep-filter]]
+   [leihs.core.resources.categories.shared :refer [base-query sql-add-metadata]]
+   [leihs.core.resources.categories.tree :refer [tree convert-tree-path roots]]
    [next.jdbc.sql :as jdbc]
    [taoensso.timbre :refer [debug spy]]))
 

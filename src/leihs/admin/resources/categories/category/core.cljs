@@ -8,10 +8,10 @@
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.image :as image]
-   [leihs.admin.resources.categories.filter :as tree-filter]
-   [leihs.admin.resources.categories.tree :as tree-path]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
+   [leihs.core.resources.categories.filter :as tree-filter]
+   [leihs.core.resources.categories.tree :as tree-path]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Form InputGroup Row Col Button Container Card]]
    [reagent.core :as reagent :refer [reaction]]))
