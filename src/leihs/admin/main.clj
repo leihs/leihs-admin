@@ -7,6 +7,7 @@
    [environ.core :refer [env]]
    [leihs.admin.run :as run]
    [leihs.core.logging]
+   [leihs.core.reload :as reload]
    [leihs.core.repl :as repl]
    [logbug.thrown :as thrown]
    [taoensso.timbre :refer [info]])
@@ -40,13 +41,10 @@
            "-------------------------------------------------------------------"])]
        flatten (clojure.string/join \newline)))
 
-(defonce args* (atom nil))
-
-(defn main []
+(defn main [args]
   (leihs.core.logging/init)
   (spec/check-asserts true)
-  (let [args @args*
-        {:keys [options arguments
+  (let [{:keys [options arguments
                 errors summary]} (cli/parse-opts
                                   args cli-options :in-order true)
         cmd (some-> arguments first keyword)
@@ -60,11 +58,11 @@
               :run (run/main options (rest arguments))
               (print-summary)))))
 
-; dynamic restart on require
-(when @args* (main))
-
 (defn -main [& args]
-  (reset! args* args)
-  (main))
+  (reset! reload/args* args)
+  (main args))
+
+; dynamic restart on require
+(when @reload/args* (main @reload/args*))
 
 ;(main)
