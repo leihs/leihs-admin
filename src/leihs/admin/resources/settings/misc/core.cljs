@@ -2,6 +2,7 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.http-client.core :as http-client]
+   [leihs.core.core :refer [presence]]
    [react-bootstrap :as react-bootstrap :refer [Col Form Row]]
    [reagent.core :as reagent]))
 
@@ -174,6 +175,6 @@
        {:type "text"
         :id "home_page_image_url"
         :value (or (:home_page_image_url @data*) "")
-        :onChange #(swap! data* assoc :home_page_image_url (-> % .-target .-value))}]
+        :onChange #(swap! data* assoc :home_page_image_url (-> % .-target .-value presence))}]
       [:> Form.Text {:className "text-muted"}
        "Absolute URL of the image to display on the home page (max 2000 characters). If left empty then the default image is used."]]]]])
