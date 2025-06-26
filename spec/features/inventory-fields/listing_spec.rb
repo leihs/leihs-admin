@@ -24,7 +24,7 @@ feature "Managing inventory-fields:", type: :feature do
 
     describe "searching for a room " do
       before :each do
-        @search_field = @fields.sample
+        @search_field = @fields.find { |f| f.id == "is_borrowable" }
         @other_fields = @fields - [@search_field]
       end
 
