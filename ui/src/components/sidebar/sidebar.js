@@ -4,6 +4,7 @@ import cx from 'classnames'
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SidebarProvider, useSidebar } from './context'
+import { v4 as uuidv4 } from 'uuid'
 
 function Sidebar({ children, className }) {
   const [open, setOpen] = useState(false)
@@ -108,7 +109,7 @@ function Group({ icon = null, title = '', children, className }) {
   const [open, setOpen] = useState(false)
   const [hasItems, setHasItems] = useState(true)
   const ref = useRef(null)
-  const id = crypto.randomUUID()
+  const id = uuidv4()
   const { active } = useSidebar()
 
   function handleOpen() {
