@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [str])
   (:require
    [accountant.core :as accountant]
-   [cljs.core.async :refer [<! go timeout]]
    [clojure.core.match :refer [match]]
    [clojure.string :as string]
    [leihs.admin.common.icons :as icons]
@@ -12,6 +11,8 @@
    [leihs.core.defaults :as defaults]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent]))
+
+(def DURATION_DEBOUNCE 250)
 
 (defn container [children]
   [:section.my-5.bg-light.p-3
@@ -26,7 +27,8 @@
            label "LABEL"
            prepend nil
            prepend-args []}}]
-  (let [value* (reagent/atom "")]
+  (let [value* (reagent/atom "")
+        timeout-id (atom nil)]
     (fn [& _]
       [:div.form-group.my-2
        {:class (->> classes (map str) (string/join " "))}
@@ -44,15 +46,19 @@
            :on-change (fn [e]
                         (let [newval (or (some-> e .-target .-value presence) "")]
                           (reset! value* newval)
-                          (go (<! (timeout 500))
-                              (when (= @value* newval)
-                                (accountant/navigate!
-                                 (path (:handler-key @routing/state*)
-                                       (:route-params @routing/state*)
-                                       (merge {}
-                                              (:query-params-raw @routing/state*)
-                                              {:page 1
-                                               query-params-key newval})))))))}
+                          (when @timeout-id
+                            (js/clearTimeout @timeout-id))
+                          (reset! timeout-id
+                                  (js/setTimeout
+                                   (fn []
+                                     (accountant/navigate!
+                                      (path (:handler-key @routing/state*)
+                                            (:route-params @routing/state*)
+                                            (merge {}
+                                                   (:query-params-raw @routing/state*)
+                                                   {:page 1
+                                                    query-params-key newval}))))
+                                   DURATION_DEBOUNCE))))}
           input-options)]
         [:div.input-group-append
          [:button.btn.btn-secondary
@@ -193,5 +199,3 @@
                               {}))))}
      [:i.fas.fa-times]
      " Reset "]]])
-
-

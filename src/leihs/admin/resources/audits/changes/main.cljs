@@ -3,6 +3,7 @@
    [accountant.core :as accountant]
    [cljs.pprint :refer [pprint]]
    [clojure.string :refer [join]]
+   [goog.functions :as gfun]
    [leihs.admin.common.components :as components]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
@@ -78,6 +79,56 @@
                      (map (fn [op] [op op])))]
       ^{:key n} [:option {:value v} n])]])
 
+(defn start-date-filter [start-date update-range!]
+  [:div.form-group.m-2
+   [:label {:for "start-date"}
+    [:span "Start date " [:small.text-monospace "(start-date)"]]]
+   [:input#start-date.form-control
+    {:type "date"
+     :value @start-date
+     :on-change #(update-range! :start (.. % -target -value))}]])
+
+(defn end-date-filter [end-date update-range!]
+  [:div.form-group.m-2
+   [:label {:for "end-date"}
+    [:span "End date " [:small.text-monospace "(end-date)"]]]
+   [:input#end-date.form-control
+    {:type "date"
+     :value @end-date
+     :on-change #(update-range! :end (.. % -target -value))}]])
+
+(defn time-range-filter-component []
+  (let [query-params (merge default-query-params
+                            (:query-params-raw @routing/state*))
+        fmt-date #(subs (.toISOString %) 0 10)
+        today (js/Date.)
+        one-week-ago (doto (js/Date. (.getTime today))
+                       (.setDate (- (.getDate today) 7)))
+        start-date (reagent/atom (or (not-empty (:start-date query-params))
+                                     (fmt-date one-week-ago)))
+        end-date   (reagent/atom (or (not-empty (:end-date query-params))
+                                     (fmt-date today)))
+        ensure-valid-range! (fn []
+                              (when (> (.getTime (js/Date. @start-date))
+                                       (.getTime (js/Date. @end-date)))
+                                (reset! start-date
+                                        (fmt-date (doto (js/Date. (.getTime (js/Date. @end-date)))
+                                                    (.setDate (- (.getDate (js/Date. @end-date)) 7)))))
+                                (js/console.warn "⚠ adjusted start-date ->" @start-date)))
+        update-range! (fn [k v]
+                        (reset! (case k :start start-date :end end-date) v)
+                        (ensure-valid-range!)
+                        (accountant/navigate!
+                         (page-path-for-query-params
+                          {:page 1
+                           :start-date @start-date
+                           :end-date @end-date})))
+        debounced-update-range! (gfun/debounce update-range! filter/DURATION_DEBOUNCE)]
+    (fn []
+      [:div.d-flex.flex-wrap
+       [start-date-filter start-date debounced-update-range!]
+       [end-date-filter end-date debounced-update-range!]])))
+
 (defn filter-component []
   [filter/container
    [:<>
@@ -94,6 +145,7 @@
      :query-params-key :pkey]
     [table-filter-component]
     [tg-op-filter-component]
+    [time-range-filter-component]
     [filter/form-per-page]
     [filter/reset :default-query-params default-query-params]]])
 

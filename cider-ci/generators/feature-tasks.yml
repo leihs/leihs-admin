@@ -9,10 +9,20 @@
     FEATURE_NAME: "Audits as an system admin after I edited a user 02"
     FEATURE: './spec/features/audits/core_spec.rb[1:1:1:2]'
 './spec/features/audits/user_requests_spec.rb[1:1]':
-  name: "User's requests 01"
+  name: "User's audited requests 01"
   environment_variables:
-    FEATURE_NAME: "User's requests 01"
+    FEATURE_NAME: "User's audited requests 01"
     FEATURE: './spec/features/audits/user_requests_spec.rb[1:1]'
+'./spec/features/audits/user_requests_spec.rb[1:2]':
+  name: "User's audited requests 02"
+  environment_variables:
+    FEATURE_NAME: "User's audited requests 02"
+    FEATURE: './spec/features/audits/user_requests_spec.rb[1:2]'
+'./spec/features/audits/user_requests_spec.rb[1:3]':
+  name: "User's audited requests 03"
+  environment_variables:
+    FEATURE_NAME: "User's audited requests 03"
+    FEATURE: './spec/features/audits/user_requests_spec.rb[1:3]'
 './spec/features/breadcrumbs/inventory_pools_spec.rb[1:1:1:1]':
   name: "Breadcrumbs  an admin and a pool an system admin via the UI 01"
   environment_variables:

@@ -7,6 +7,8 @@
    :pkey ""
    :table ""
    :term ""
+   :start-date ""
+   :end-date ""
    :tg-op ""
    :per-page defaults/PER-PAGE})
 

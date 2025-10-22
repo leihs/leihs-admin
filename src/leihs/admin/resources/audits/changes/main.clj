@@ -1,6 +1,8 @@
 (ns leihs.admin.resources.audits.changes.main
   (:refer-clojure :exclude [str keyword])
   (:require
+   [clj-time.format :as fmt]
+   [clojure.string :as str]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.admin.resources.audits.changes.shared :refer [default-query-params]]
@@ -10,15 +12,11 @@
                                                 set-per-page-and-offset]]
    [leihs.core.uuid :refer [uuid]]
    [next.jdbc :as jdbc]
-   [next.jdbc.sql :refer [query] :rename {query jdbc-query}]))
-
-(defn audited-changes-meta
-  [{tx :tx :as request}]
-  {:body
-   {:tables
-    (->> ["SELECT DISTINCT table_name FROM audited_changes"]
-         (jdbc-query tx)
-         (map :table_name))}})
+   [next.jdbc.sql :refer [query] :rename {query jdbc-query}]
+   [taoensso.timbre :refer [error debug]])
+  (:import
+   (java.sql Timestamp)
+   (org.joda.time DateTime DateTimeZone)))
 
 (def request-sub
   (-> (sql/select [:audited_requests.id :request_id])
@@ -61,6 +59,40 @@
         (sql/where [(keyword "@@") :audited_changes.changed term]))
     query))
 
+(defn filter-by-time-range
+  [query {{start-date :start-date end-date :end-date} :query-params}]
+  (try
+    (let [presence #(when (and % (not (str/blank? %))) %)
+          formatters [(fmt/formatter "yyyy-MM-dd")]
+          parse-date (fn [v]
+                       (cond
+                         (instance? DateTime v) v
+                         (string? v) (let [s (presence v)]
+                                       (when s
+                                         (some (fn [f]
+                                                 (try
+                                                   (fmt/parse f s)
+                                                   (catch Exception _ nil)))
+                                               formatters)))
+                         :else nil))
+
+          now (DateTime/now DateTimeZone/UTC)
+          default-start (.minusDays now 7)
+          start-date (or (parse-date start-date) default-start)
+          end-date (or (parse-date end-date) now)
+          start-ts (-> start-date (.withZone DateTimeZone/UTC) (.withTime 0 0 0 0))
+          end-ts (-> end-date (.withZone DateTimeZone/UTC) (.withTime 23 59 59 999))
+          [start-ts end-ts] (if (.isAfter start-ts end-ts)
+                              [start-ts now]
+                              [start-ts end-ts])
+          start-sql (Timestamp. (.getMillis start-ts))
+          end-sql (Timestamp. (.getMillis end-ts))]
+      (sql/where query [:between :audited_changes.created_at start-sql end-sql]))
+    (catch Exception e
+      (error "Exception in filter-by-time-range:" (.getMessage e))
+      (debug e)
+      query)))
+
 (defn filter-by-table
   [query {{table-name :table} :query-params :as request}]
   (if-not (presence table-name)
@@ -102,6 +134,7 @@
     :changes (-> changes-base-query
                  (set-per-page-and-offset request)
                  (filter-by-search-term request)
+                 (filter-by-time-range request)
                  (filter-by-txid request)
                  (filter-by-request-id request)
                  (filter-by-pkey request)
@@ -113,6 +146,7 @@
 (comment
   (-> changes-base-query
       (filter-by-search-term {})
+      (filter-by-time-range {})
       (filter-by-txid {})
       (filter-by-request-id {})
       (filter-by-pkey {})
