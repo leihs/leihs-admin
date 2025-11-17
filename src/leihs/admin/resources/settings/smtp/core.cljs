@@ -20,9 +20,11 @@
     :on-submit (fn [e]
                  (.preventDefault e)
                  (action))}
-   [:div.my-3
+   [:div.mb-4
     [form-components/checkbox-component data* [:enabled]
      :label "Sending Emails Enabled"]]
+
+   [:h4.mb-3 "SMTP Settings"]
    [:> Row
     [:> Col
      [form-components/input-component data* [:port]
@@ -54,4 +56,25 @@
     [:> Col
      [form-components/input-component data* [:openssl_verify_mode]]]
     [:> Col
-     [form-components/checkbox-component data* [:enable_starttls_auto]]]]])
+     [form-components/checkbox-component data* [:enable_starttls_auto]]]]
+
+   [:hr.my-4]
+   [:h4.mb-3 "Microsoft 365 OAuth Settings"]
+
+   [:div.my-3
+    [form-components/checkbox-component data* [:ms365_enabled]
+     :label "Microsoft 365 OAuth Enabled"]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_client_id]
+      :label "Client ID"]]
+    [:> Col
+     [form-components/input-component data* [:ms365_tenant_id]
+      :label "Tenant ID"]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_client_secret]
+      :type :password
+      :label "Client Secret"]]]])
