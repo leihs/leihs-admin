@@ -8,5 +8,8 @@
           (leaf "languages/" :languages-settings)
           (leaf "system-and-security/" :system-and-security-settings)
           (leaf "misc/" :misc-settings)
-          (leaf "smtp/" :smtp-settings)
+          (branch "smtp/"
+                  (leaf "" :smtp-settings)
+                  (leaf "emails" :smtp-emails)
+                  (leaf "test-email" :smtp-test-email))
           (leaf "syssec/" :syssec-settings)))

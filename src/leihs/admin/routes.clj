@@ -242,6 +242,10 @@
                           :authorizers [auth/admin-scopes?]}
           :smtp-settings {:handler smtp-settings/routes
                           :authorizers [auth/system-admin-scopes?]}
+          :smtp-emails {:handler smtp-settings/get-emails
+                        :authorizers [auth/system-admin-scopes?]}
+          :smtp-test-email {:handler smtp-settings/send-test-email
+                            :authorizers [auth/system-admin-scopes?]}
           :syssec-settings {:handler syssec-settings/routes
                             :authorizers [auth/system-admin-scopes?]}
 
