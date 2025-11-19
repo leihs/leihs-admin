@@ -144,10 +144,12 @@
                [:th "To"]
                [:th "Subject"]
                [:th "Status"]
+               [:th "Attempts"]
+               [:th "Message"]
                [:th "Created"]]
       :body
       (if (empty? (:emails @emails-data*))
-        [:<> [:tr [:td {:col-span 5 :class "text-center"} "No emails found"]]]
+        [:<> [:tr [:td {:col-span 7 :class "text-center"} "No emails found"]]]
         [:<>
          (for [email (:emails @emails-data*)]
            [:tr {:key (:id email)}
@@ -157,6 +159,8 @@
             [:td (if (= 0 (:code email))
                    [:span.badge.bg-success "Sent"]
                    [:span.badge.bg-danger "Failed"])]
+            [:td (:trials email)]
+            [:td (:message email)]
             [:td (str (:created_at email))]])])}]))
 
 (defn pagination-controls []
@@ -184,6 +188,8 @@
 (defn emails-list []
   [:div
    [:h4.mb-3 "Email History"]
+   [:div.alert.alert-info
+    "Emails are processed asynchronously with automatic retry attempts. Refresh the page to see updated status."]
    [emails-table]
    [pagination-controls]])
 
