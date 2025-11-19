@@ -1,11 +1,8 @@
 (ns leihs.admin.resources.settings.smtp.main
   (:require
-   [clojure.string :as str]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
-   [leihs.admin.paths :refer [path]]
    [leihs.admin.utils.jdbc :as utils-jdbc]
-   [next.jdbc :as jdbc]
    [next.jdbc.sql :refer [query insert!] :rename {query jdbc-query insert! jdbc-insert!}]))
 
 (defn get-smtp-settings [{tx :tx}]
@@ -37,16 +34,14 @@
     {:body {:emails emails
             :total total-count}}))
 
-(defn send-test-email [{tx :tx data :body}]
+(defn send-test-email [{tx :tx data :body {user-id :id} :authenticated-entity}]
   (let [email-record (-> data
                          (select-keys [:from_address :to_address :subject :body])
-                         (assoc :user_id nil
+                         (assoc :user_id (:id user-id)
                                 :inventory_pool_id nil))]
     (jdbc-insert! tx :emails email-record)
     {:body {:message "Test email queued for sending"}
      :status 201}))
-
-(def smtp-settings-path (path :smtp-settings))
 
 (defn routes [request]
   (case (:request-method request)

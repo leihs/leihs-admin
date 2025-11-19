@@ -1,5 +1,6 @@
 (ns leihs.admin.resources.settings.smtp.main
   (:require
+   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<!]]
    [cljs.pprint :refer [pprint]]
    [clojure.contrib.inflect :refer [pluralize-noun]]
@@ -87,7 +88,7 @@
                                  :chan (async/chan)})))]
       (if (:success response)
         (reset! test-email-result* {:status :success
-                                    :message "Test email sent successfully!"})
+                                    :message "Test email enqueued for sending. Refresh this page to see its status."})
         (reset! test-email-result* {:status :error
                                     :message (or (-> response :body :message)
                                                  "Failed to send test email")})))))
@@ -189,7 +190,7 @@
   [:div
    [:h4.mb-3 "Email History"]
    [:div.alert.alert-info
-    "Emails are processed asynchronously with automatic retry attempts. Refresh the page to see updated status."]
+    "Emails are processed asynchronously with automatic retry attempts. Refresh this page to see updated status."]
    [emails-table]
    [pagination-controls]])
 
@@ -208,7 +209,10 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount #(core/fetch)}]
+    {:did-mount (fn []
+                  (core/fetch)
+                  (when (= (-> @routing/state* :query-params-raw :tab) "test-history")
+                    (fetch-emails)))}]
 
    (if-not @core/data*
      [:div.my-5
@@ -217,15 +221,19 @@
       [:header.my-5
        [:h1 [icons/paper-plane] " Email Settings"]]
 
-      [:> Tabs {:className "mt-4"
-                :defaultActiveKey "settings"
-                :transition false
-                :onSelect (fn [key]
-                            (when (= key "test-history")
-                              (fetch-emails)))}
-       [:> Tab {:eventKey "settings" :title "Settings"}
-        [settings-tab]]
-       [:> Tab {:eventKey "test-history" :title "Test & History"}
-        [test-history-tab]]]
+      (let [active-tab (or (-> @routing/state* :query-params-raw :tab)
+                           "settings")]
+        [:> Tabs {:key active-tab
+                  :className "mt-4"
+                  :activeKey active-tab
+                  :transition false
+                  :onSelect (fn [key]
+                              (accountant/navigate! (str (path :smtp-settings) "?tab=" key))
+                              (when (= key "test-history")
+                                (fetch-emails)))}
+         [:> Tab {:eventKey "settings" :title "Settings"}
+          [settings-tab]]
+         [:> Tab {:eventKey "test-history" :title "Test & History"}
+          [test-history-tab]]])
 
       [debug-component]])])
