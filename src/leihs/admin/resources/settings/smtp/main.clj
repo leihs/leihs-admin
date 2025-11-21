@@ -37,7 +37,7 @@
 (defn send-test-email [{tx :tx data :body {user-id :id} :authenticated-entity}]
   (let [email-record (-> data
                          (select-keys [:from_address :to_address :subject :body])
-                         (assoc :user_id (:id user-id)
+                         (assoc :user_id user-id
                                 :inventory_pool_id nil))]
     (jdbc-insert! tx :emails email-record)
     {:body {:message "Test email queued for sending"}

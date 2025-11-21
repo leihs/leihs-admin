@@ -8,7 +8,7 @@
    [leihs.admin.utils.jdbc :as utils-jdbc]
    [next.jdbc.sql :refer [query] :rename {query jdbc-query}]
    [ring.util.response :as response]
-   [taoensso.timbre :refer [error info]]))
+   [taoensso.timbre :refer [debug error info]]))
 
 (defn- get-ms365-settings [tx]
   (-> (sql/select :ms365_tenant_id :ms365_client_id :ms365_client_secret)
@@ -16,18 +16,22 @@
       sql-format
       (->> (jdbc-query tx) first)))
 
-(defn- exchange-code-for-tokens [code redirect-uri {:keys [ms365_tenant_id ms365_client_id ms365_client_secret]}]
-  (let [token-url (str "https://login.microsoftonline.com/" ms365_tenant_id "/oauth2/v2.0/token")]
+(defn- exchange-code-for-tokens
+  [code redirect-uri {:keys [ms365_tenant_id ms365_client_id ms365_client_secret]}]
+  (let [token-url (str "https://login.microsoftonline.com/"
+                       ms365_tenant_id
+                       "/oauth2/v2.0/token")]
     (try
-      (let [response (http-client/post token-url
-                                       {:form-params {:client_id ms365_client_id
-                                                      :client_secret ms365_client_secret
-                                                      :code code
-                                                      :redirect_uri redirect-uri
-                                                      :grant_type "authorization_code"
-                                                      :scope "https://graph.microsoft.com/Mail.Send offline_access"}
-                                        :as :json})]
-        (:body response))
+     (let [response (http-client/post
+                     token-url
+                     {:form-params {:client_id ms365_client_id
+                                    :client_secret ms365_client_secret
+                                    :code code
+                                    :redirect_uri redirect-uri
+                                    :grant_type "authorization_code"
+                                    :scope "https://graph.microsoft.com/Mail.Send offline_access"}
+                      :as :json})]
+       (:body response))
       (catch Exception e
         (let [response-body (some-> e ex-data :body)]
           (error "Token exchange failed:" response-body)
@@ -47,7 +51,9 @@
     (if error-param
       (do
         (error "MS365 OAuth error:" error-param "-" error-desc)
-        (response/redirect (str (path :smtp-settings) "?tab=test-history&ms365_error=" error-param)))
+        (response/redirect (str (path :smtp-settings)
+                                "?tab=test-history&ms365_error="
+                                error-param)))
       (try
         (let [state (parse-state state-str)
               email-address (:email state)
@@ -58,7 +64,8 @@
               access-token (:access_token tokens)
               refresh-token (:refresh_token tokens)
               expires-in (:expires_in tokens)
-              expires-at (java.sql.Timestamp. (+ (System/currentTimeMillis) (* expires-in 1000)))]
+              expires-at (java.sql.Timestamp. (+ (System/currentTimeMillis)
+                                                 (* expires-in 1000)))]
           (info "MS365 OAuth successful for:" email-address)
           (utils-jdbc/insert-or-update! tx :ms365_mailboxes
                                         ["id = ?" email-address]
