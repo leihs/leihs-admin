@@ -52,6 +52,7 @@
    [leihs.admin.resources.settings.languages.main :as languages-settings]
    [leihs.admin.resources.settings.misc.main :as misc-settings]
    [leihs.admin.resources.settings.smtp.main :as smtp-settings]
+   [leihs.admin.resources.settings.smtp.ms365 :as smtp-ms365]
    [leihs.admin.resources.settings.syssec.main :as syssec-settings]
    [leihs.admin.resources.statistics.contracts :as statistics-contracts]
    [leihs.admin.resources.statistics.items :as statistics-items]
@@ -101,7 +102,8 @@
   (clojure.set/union
    core-routes/no-spa-handler-keys
    #{:redirect-to-root
-     :not-found}))
+     :not-found
+     :smtp-ms365-callback}))
 
 (defn own-user-admin-scopes? [request]
   (and (= (-> request :authenticated-entity :id)
@@ -246,6 +248,8 @@
                         :authorizers [auth/system-admin-scopes?]}
           :smtp-test-email {:handler smtp-settings/send-test-email
                             :authorizers [auth/system-admin-scopes?]}
+          :smtp-ms365-callback {:handler smtp-ms365/callback
+                                :authorizers [auth/system-admin-scopes?]}
           :syssec-settings {:handler syssec-settings/routes
                             :authorizers [auth/system-admin-scopes?]}
 

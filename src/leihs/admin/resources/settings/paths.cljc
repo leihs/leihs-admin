@@ -11,5 +11,6 @@
           (branch "smtp/"
                   (leaf "" :smtp-settings)
                   (leaf "emails" :smtp-emails)
-                  (leaf "test-email" :smtp-test-email))
+                  (leaf "test-email" :smtp-test-email)
+                  (leaf "ms365-callback" :smtp-ms365-callback))
           (leaf "syssec/" :syssec-settings)))
