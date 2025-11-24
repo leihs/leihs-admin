@@ -2,13 +2,14 @@
   (:refer-clojure :exclude [get])
   (:require
    [better-cond.core :as b]
+   [clojure.string :as str]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
    [leihs.core.resources.categories.filter :refer [deep-filter]]
    [leihs.core.resources.categories.shared :refer [base-query sql-add-metadata]]
    [leihs.core.resources.categories.tree :refer [tree convert-tree-path roots]]
    [next.jdbc.sql :as jdbc]
-   [taoensso.timbre :refer [debug spy]]))
+   [taoensso.timbre :refer [debug spy warn]]))
 
 ;;; category ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -63,13 +64,91 @@
 (defn- delete-image-with-thumb! [tx id]
   (jdbc/delete! tx :images ["target_id = ?" id]))
 
+(defn add-thumb-postfix [filename]
+  (let [[_ name ext] (re-matches #"(.+?)(\.[^.]+)$" filename)]
+    (str name "_thumb" ext)))
+
+;; MIME and filename normalization helpers
+(def mime-by-ext
+  {"jpg" "image/jpeg"
+   "jpeg" "image/jpeg"
+   "png" "image/png"
+   "gif" "image/gif"
+   "webp" "image/webp"
+   "svg" "image/svg+xml"
+   "bmp" "image/bmp"
+   "tif" "image/tiff"
+   "tiff" "image/tiff"})
+
+(def preferred-ext-by-mime
+  {"image/jpeg" "jpg"
+   "image/png" "png"
+   "image/gif" "gif"
+   "image/webp" "webp"
+   "image/svg+xml" "svg"
+   "image/bmp" "bmp"
+   "image/tiff" "tiff"})
+
+(defn filename-parts [filename]
+  (re-matches #"(.+?)(\.[^.]+)$" filename))
+
+(defn filename-ext [filename]
+  (some-> (filename-parts filename) (nth 2) (subs 1) str/lower-case))
+
+(defn normalize-filename-ext [filename preferred-ext]
+  (let [[_ base dot-ext] (filename-parts filename)
+        ext (when dot-ext (subs dot-ext 1))]
+    (cond
+      (and preferred-ext base dot-ext (not= (str/lower-case ext) preferred-ext))
+      (str base "." preferred-ext)
+      (and preferred-ext base (nil? dot-ext))
+      (str filename "." preferred-ext)
+      :else filename)))
+
+(defn data-url-mime [url]
+  (when (and url (string? url) (str/starts-with? url "data:"))
+    (let [meta (subs url 5)
+          before-comma (first (str/split meta #"," 2))
+          mime (first (str/split before-comma #";" 2))]
+      mime)))
+
+(defn normalize-image-filetype [img]
+  (let [url (:url img)
+        url-mime (data-url-mime url)
+        provided-mime (:content_type img)
+        filename (:filename img)
+        ext (when filename (some-> (filename-ext filename) str/lower-case))
+        expected-mime (or url-mime (and ext (mime-by-ext ext)) provided-mime "image/jpeg")
+        preferred-ext (and expected-mime (preferred-ext-by-mime expected-mime))
+        fixed-mime (or expected-mime provided-mime "image/jpeg")
+        fixed-filename (cond
+                         (and filename ext preferred-ext)
+                         (normalize-filename-ext filename preferred-ext)
+                         filename
+                         filename
+                         :else
+                         nil)]
+    (when (and url-mime provided-mime (not= url-mime provided-mime))
+      (warn "MIME mismatch between image.url and content_type"
+            {:url_mime url-mime :content_type provided-mime :filename filename}))
+    (when (and preferred-ext ext (not= preferred-ext (str/lower-case ext)))
+      (warn "Filename extension differs from MIME"
+            {:mime expected-mime :filename filename
+             :expected_ext preferred-ext :given_ext (str/lower-case ext)}))
+    (-> img
+        (assoc :content_type fixed-mime)
+        (assoc :filename fixed-filename))))
+
 (defn- insert-image-with-thumb! [tx id image thumbnail]
   (let [target-type "ModelGroup"
+        image (normalize-image-filetype image)
+        thumbnail (normalize-image-filetype thumbnail)
         image-row (jdbc/insert! tx :images
                                 {:target_id id
                                  :target_type target-type
                                  :content (:data image)
                                  :content_type (:content_type image)
+                                 :filename (:filename image)
                                  :width (:width image)
                                  :height (:height image)
                                  :thumbnail false})]
@@ -78,6 +157,7 @@
                    :target_type target-type
                    :content (:data thumbnail)
                    :content_type (:content_type thumbnail)
+                   :filename (add-thumb-postfix (:filename thumbnail))
                    :width (:width thumbnail)
                    :height (:height thumbnail)
                    :parent_id (:id image-row)

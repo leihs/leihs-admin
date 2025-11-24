@@ -43,22 +43,28 @@
     (let [id (:id category)]
       (when-let [image (not-empty (:image data))]
         (let [target-type "ModelGroup"
+              image* (category/normalize-image-filetype image)
+              thumb* (category/normalize-image-filetype (:thumbnail data))
+              parent-filename (:filename image*)
+              thumb-filename (some-> (:filename thumb*) category/add-thumb-postfix)
               image-row (jdbc-insert! tx :images
                                       {:target_id id
                                        :target_type target-type
-                                       :content (:data image)
-                                       :content_type (:content_type image)
-                                       :width (:width image)
-                                       :height (:height image)
+                                       :content (:data image*)
+                                       :content_type (:content_type image*)
+                                       :filename parent-filename
+                                       :width (:width image*)
+                                       :height (:height image*)
                                        :thumbnail false})
               thumbnail (:thumbnail data)]
           (jdbc-insert! tx :images
                         {:target_id id
                          :target_type target-type
-                         :content (:data thumbnail)
-                         :content_type (:content_type thumbnail)
-                         :width (:width thumbnail)
-                         :height (:height thumbnail)
+                         :content (:data thumb*)
+                         :content_type (:content_type thumb*)
+                         :filename thumb-filename
+                         :width (:width thumb*)
+                         :height (:height thumb*)
                          :parent_id (:id image-row)
                          :thumbnail true})))
 
