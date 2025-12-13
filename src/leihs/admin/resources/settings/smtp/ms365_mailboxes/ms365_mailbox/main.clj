@@ -20,9 +20,9 @@
 
 (defn delete-mailbox [{tx :tx {mailbox-id :mailbox-id} :route-params}]
   (let [deleted-id (:id (jdbc/execute-one!
-                          tx
-                          ["DELETE FROM ms365_mailboxes WHERE id = ?" mailbox-id]
-                          {:return-keys true}))]
+                         tx
+                         ["DELETE FROM ms365_mailboxes WHERE id = ?" mailbox-id]
+                         {:return-keys true}))]
     (if deleted-id
       {:status 204}
       {:status 404 :body "Mailbox not found"})))

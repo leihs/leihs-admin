@@ -14,8 +14,8 @@
    [leihs.admin.resources.settings.smtp.edit :as edit]
    [leihs.admin.resources.settings.smtp.ms365-mailboxes.main :as ms365-mailboxes]
    [leihs.admin.state :as state]
-   [leihs.admin.utils.search-params :as search-params]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Tab Tabs]]
    [reagent.core :as reagent]))
@@ -74,9 +74,9 @@
    [edit/dialog]])
 
 (defonce test-email-data* (reagent/atom {:from_address ""
-                                                      :to_address ""
-                                                      :subject "Test Email"
-                                                      :body "This is a test email."}))
+                                         :to_address ""
+                                         :subject "Test Email"
+                                         :body "This is a test email."}))
 
 (defonce test-email-result* (reagent/atom nil))
 
@@ -84,10 +84,10 @@
   (async/go
     (reset! test-email-result* {:status :sending})
     (let [response (<! (:chan (http-client/request
-                                {:method :post
-                                 :url (path :smtp-test-email)
-                                 :json-params @test-email-data*
-                                 :chan (async/chan)})))]
+                               {:method :post
+                                :url (path :smtp-test-email)
+                                :json-params @test-email-data*
+                                :chan (async/chan)})))]
       (if (:success response)
         (reset! test-email-result* {:status :success
                                     :message "Test email enqueued for sending. Refresh this page to see its status."})
@@ -131,9 +131,9 @@
   (async/go
     (let [offset (* @current-page* page-size)
           response (<! (:chan (http-client/request
-                                {:method :get
-                                 :url (str (path :smtp-emails) "?limit=" page-size "&offset=" offset)
-                                 :chan (async/chan)})))]
+                               {:method :get
+                                :url (str (path :smtp-emails) "?limit=" page-size "&offset=" offset)
+                                :chan (async/chan)})))]
       (when (:success response)
         (reset! emails-data* (:body response))))))
 

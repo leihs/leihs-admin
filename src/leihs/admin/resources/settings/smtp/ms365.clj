@@ -22,16 +22,16 @@
                        ms365_tenant_id
                        "/oauth2/v2.0/token")]
     (try
-     (let [response (http-client/post
-                     token-url
-                     {:form-params {:client_id ms365_client_id
-                                    :client_secret ms365_client_secret
-                                    :code code
-                                    :redirect_uri redirect-uri
-                                    :grant_type "authorization_code"
-                                    :scope "https://graph.microsoft.com/Mail.Send offline_access"}
-                      :as :json})]
-       (:body response))
+      (let [response (http-client/post
+                      token-url
+                      {:form-params {:client_id ms365_client_id
+                                     :client_secret ms365_client_secret
+                                     :code code
+                                     :redirect_uri redirect-uri
+                                     :grant_type "authorization_code"
+                                     :scope "https://graph.microsoft.com/Mail.Send offline_access"}
+                       :as :json})]
+        (:body response))
       (catch Exception e
         (let [response-body (some-> e ex-data :body)]
           (error "Token exchange failed:" response-body)
@@ -79,18 +79,18 @@
           (response/redirect (str (path :smtp-settings) "?tab=ms365-mailboxes&ms365_error=token_exchange_failed")))))))
 
 (comment
- (require '[ring.util.codec :as codec])
+  (require '[ring.util.codec :as codec])
 
- (let [tenant-id ":tenant-id"
-       client-id ":client-id"
-       email ":email"
-       redirect-uri "http://localhost:3220/admin/settings/smtp/ms365-callback"
-       scope "https://graph.microsoft.com/Mail.Send offline_access"
-       state (json/generate-string {:email email
-                                    :csrf "random-secure-token-stored-in-session"})]
-   (str "https://login.microsoftonline.com/" tenant-id "/oauth2/v2.0/authorize?"
-        "client_id=" client-id
-        "&response_type=code"
-        "&redirect_uri=" (codec/url-encode redirect-uri)
-        "&scope=" (codec/url-encode scope)
-        "&state=" (codec/url-encode state))))
+  (let [tenant-id ":tenant-id"
+        client-id ":client-id"
+        email ":email"
+        redirect-uri "http://localhost:3220/admin/settings/smtp/ms365-callback"
+        scope "https://graph.microsoft.com/Mail.Send offline_access"
+        state (json/generate-string {:email email
+                                     :csrf "random-secure-token-stored-in-session"})]
+    (str "https://login.microsoftonline.com/" tenant-id "/oauth2/v2.0/authorize?"
+         "client_id=" client-id
+         "&response_type=code"
+         "&redirect_uri=" (codec/url-encode redirect-uri)
+         "&scope=" (codec/url-encode scope)
+         "&state=" (codec/url-encode state))))

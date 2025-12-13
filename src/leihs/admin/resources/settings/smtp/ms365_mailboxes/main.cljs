@@ -14,9 +14,9 @@
 
 (defn fetch-mailboxes []
   (go (let [response (<! (:chan (http-client/request
-                                  {:method :get
-                                   :url (path :smtp-ms365-mailboxes)
-                                   :chan (async/chan)})))]
+                                 {:method :get
+                                  :url (path :smtp-ms365-mailboxes)
+                                  :chan (async/chan)})))]
         (when (:success response)
           (reset! mailboxes-data* (:body response))))))
 
@@ -49,10 +49,10 @@
 (defn delete-mailbox [mailbox-id]
   (when (js/confirm (str "Are you sure you want to delete mailbox '" mailbox-id "'?"))
     (go (let [response (<! (:chan (http-client/request
-                                    {:method :delete
-                                     :url (path :smtp-ms365-mailbox
+                                   {:method :delete
+                                    :url (path :smtp-ms365-mailbox
                                                {:mailbox-id mailbox-id})
-                                     :chan (async/chan)})))]
+                                    :chan (async/chan)})))]
           (when (:success response)
             (fetch-mailboxes))))))
 
@@ -80,8 +80,8 @@
             [:td (format-timestamp (:created_at mailbox))]
             [:td
              [:> Button {:variant "danger"
-                        :size "sm"
-                        :on-click #(delete-mailbox (:id mailbox))}
+                         :size "sm"
+                         :on-click #(delete-mailbox (:id mailbox))}
               [icons/delete] " Delete"]]])])}]))
 
 (defn page []

@@ -22,9 +22,9 @@
         tenant-id (:ms365_tenant_id smtp-settings)
         client-id (:ms365_client_id smtp-settings)
         external-base-url (-> @state/global-state*
-                             :server-state
-                             :settings
-                             :external_base_url)
+                              :server-state
+                              :settings
+                              :external_base_url)
         redirect-uri (str external-base-url (path :smtp-ms365-callback))
         scope "https://graph.microsoft.com/Mail.Send offline_access"
         ;; Create state with email (CSRF token could be added here)
