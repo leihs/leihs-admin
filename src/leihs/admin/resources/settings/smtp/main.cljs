@@ -12,7 +12,9 @@
    [leihs.admin.resources.settings.shared.components :refer [row]]
    [leihs.admin.resources.settings.smtp.core :as core]
    [leihs.admin.resources.settings.smtp.edit :as edit]
+   [leihs.admin.resources.settings.smtp.ms365-mailboxes.main :as ms365-mailboxes]
    [leihs.admin.state :as state]
+   [leihs.admin.utils.search-params :as search-params]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Tab Tabs]]
@@ -211,8 +213,10 @@
    [routing/hidden-state-component
     {:did-mount (fn []
                   (core/fetch)
-                  (when (= (-> @routing/state* :query-params-raw :tab) "test-history")
-                    (fetch-emails)))}]
+                  (let [tab (-> @routing/state* :query-params-raw :tab)]
+                    (cond
+                      (= tab "test-history") (fetch-emails)
+                      (= tab "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes))))}]
 
    (if-not @core/data*
      [:div.my-5
@@ -220,6 +224,24 @@
      [:article.settings-page.smtp
       [:header.my-5
        [:h1 [icons/paper-plane] " Email Settings"]]
+
+      (when (= (-> @routing/state* :query-params-raw :ms365_success) "true")
+        [:div.alert.alert-success.alert-dismissible.fade.show
+         {:role "alert"}
+         [:button.btn-close
+          {:type "button"
+           :aria-label "Close"
+           :on-click #(search-params/delete-from-url "ms365_success")}]
+         [:strong "Success! "] "Mailbox successfully authenticated."])
+
+      (when-let [error (-> @routing/state* :query-params-raw :ms365_error)]
+        [:div.alert.alert-danger.alert-dismissible.fade.show
+         {:role "alert"}
+         [:button.btn-close
+          {:type "button"
+           :aria-label "Close"
+           :on-click #(search-params/delete-from-url "ms365_error")}]
+         [:strong "OAuth Error: "] error])
 
       (let [active-tab (or (-> @routing/state* :query-params-raw :tab)
                            "settings")]
@@ -229,10 +251,13 @@
                   :transition false
                   :onSelect (fn [key]
                               (accountant/navigate! (str (path :smtp-settings) "?tab=" key))
-                              (when (= key "test-history")
-                                (fetch-emails)))}
+                              (cond
+                                (= key "test-history") (fetch-emails)
+                                (= key "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes)))}
          [:> Tab {:eventKey "settings" :title "Settings"}
           [settings-tab]]
+         [:> Tab {:eventKey "ms365-mailboxes" :title "MS365 Mailboxes"}
+          [ms365-mailboxes/page]]
          [:> Tab {:eventKey "test-history" :title "Test & History"}
           [test-history-tab]]])
 

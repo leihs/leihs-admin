@@ -52,7 +52,7 @@
       (do
         (error "MS365 OAuth error:" error-param "-" error-desc)
         (response/redirect (str (path :smtp-settings)
-                                "?tab=test-history&ms365_error="
+                                "?tab=ms365-mailboxes&ms365_error="
                                 error-param)))
       (try
         (let [state (parse-state state-str)
@@ -73,10 +73,10 @@
                                          :access_token access-token
                                          :refresh_token refresh-token
                                          :token_expires_at expires-at})
-          (response/redirect (str (path :smtp-settings) "?tab=test-history&ms365_success=true")))
+          (response/redirect (str (path :smtp-settings) "?tab=ms365-mailboxes&ms365_success=true")))
         (catch Exception e
           (error "MS365 OAuth callback failed:" (.getMessage e))
-          (response/redirect (str (path :smtp-settings) "?tab=test-history&ms365_error=token_exchange_failed")))))))
+          (response/redirect (str (path :smtp-settings) "?tab=ms365-mailboxes&ms365_error=token_exchange_failed")))))))
 
 (comment
  (require '[ring.util.codec :as codec])

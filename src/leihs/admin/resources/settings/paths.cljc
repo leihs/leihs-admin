@@ -1,6 +1,6 @@
 (ns leihs.admin.resources.settings.paths
   (:require
-   [bidi.verbose :refer [branch leaf]]))
+   [bidi.verbose :refer [branch leaf param]]))
 
 (def paths
   (branch "/settings/"
@@ -12,5 +12,10 @@
                   (leaf "" :smtp-settings)
                   (leaf "emails" :smtp-emails)
                   (leaf "test-email" :smtp-test-email)
-                  (leaf "ms365-callback" :smtp-ms365-callback))
+                  (leaf "ms365-callback" :smtp-ms365-callback)
+                  (branch "ms365-mailboxes"
+                          (leaf "/" :smtp-ms365-mailboxes)
+                          (branch "/"
+                                  (param [#"[^/]+" :mailbox-id])
+                                  (leaf "" :smtp-ms365-mailbox))))
           (leaf "syssec/" :syssec-settings)))

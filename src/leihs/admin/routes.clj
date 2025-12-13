@@ -53,6 +53,8 @@
    [leihs.admin.resources.settings.misc.main :as misc-settings]
    [leihs.admin.resources.settings.smtp.main :as smtp-settings]
    [leihs.admin.resources.settings.smtp.ms365 :as smtp-ms365]
+   [leihs.admin.resources.settings.smtp.ms365-mailboxes.main :as ms365-mailboxes]
+   [leihs.admin.resources.settings.smtp.ms365-mailboxes.ms365-mailbox.main :as ms365-mailbox]
    [leihs.admin.resources.settings.syssec.main :as syssec-settings]
    [leihs.admin.resources.statistics.contracts :as statistics-contracts]
    [leihs.admin.resources.statistics.items :as statistics-items]
@@ -250,6 +252,10 @@
                             :authorizers [auth/system-admin-scopes?]}
           :smtp-ms365-callback {:handler smtp-ms365/callback
                                 :authorizers [auth/system-admin-scopes?]}
+          :smtp-ms365-mailboxes {:handler ms365-mailboxes/routes
+                                 :authorizers [auth/system-admin-scopes?]}
+          :smtp-ms365-mailbox {:handler ms365-mailbox/routes
+                               :authorizers [auth/system-admin-scopes?]}
           :syssec-settings {:handler syssec-settings/routes
                             :authorizers [auth/system-admin-scopes?]}
 
