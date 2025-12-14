@@ -77,4 +77,22 @@
     [:> Col
      [form-components/input-component data* [:ms365_client_secret]
       :type :password
-      :label "Client Secret"]]]])
+      :label "Client Secret"]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_token_url]
+      :label "Token URL"
+      :placeholder "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+      :hint [:span (str "Microsoft OAuth token endpoint. Use "
+                        [:code "{tenant_id}"] "
+                        as placeholder. Replaced with respective value during sending of emails.")]]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_graph_send_url]
+      :label "Graph Send URL"
+      :placeholder "https://graph.microsoft.com/v1.0/users/{user_id}/sendMail"
+      :hint [:span (str "Microsoft Graph API endpoint for sending mail. Use "
+                        [:code "{user_id}"]
+                        " as placeholder. Replaced with respective value during sending of emails.")]]]]])

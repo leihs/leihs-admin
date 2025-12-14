@@ -63,7 +63,9 @@
       [row "MS365 Tenant ID" :ms365_tenant_id @core/data*]
       [:tr.ms365_client_secret
        [:td [:strong "MS365 Client Secret"] [:small " (ms365_client_secret)"]]
-       [:td.ms365_client_secret {:style {:filter "blur(7px)"}} (str (:ms365_client_secret @core/data*))]]]}]])
+       [:td.ms365_client_secret {:style {:filter "blur(7px)"}} (str (:ms365_client_secret @core/data*))]]
+      [row "MS365 Token URL" :ms365_token_url @core/data*]
+      [row "MS365 Graph Send URL" :ms365_graph_send_url @core/data*]]}]])
 
 (defn settings-tab []
   [:div.mt-4
