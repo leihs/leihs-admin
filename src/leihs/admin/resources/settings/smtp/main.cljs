@@ -59,6 +59,7 @@
      :body
      [:<>
       [row "MS365 OAuth Enabled" :ms365_enabled @core/data*]
+      [row "MS365 Auth Mode" :ms365_auth_mode @core/data*]
       [row "MS365 Client ID" :ms365_client_id @core/data*]
       [row "MS365 Tenant ID" :ms365_tenant_id @core/data*]
       [:tr.ms365_client_secret
@@ -258,8 +259,9 @@
                                 (= key "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes)))}
          [:> Tab {:eventKey "settings" :title "Settings"}
           [settings-tab]]
-         [:> Tab {:eventKey "ms365-mailboxes" :title "MS365 Mailboxes"}
-          [ms365-mailboxes/page]]
+         (when (= (:ms365_auth_mode @core/data*) "delegated")
+           [:> Tab {:eventKey "ms365-mailboxes" :title "MS365 Mailboxes"}
+            [ms365-mailboxes/page]])
          [:> Tab {:eventKey "test-history" :title "Test & History"}
           [test-history-tab]]])
 

@@ -65,6 +65,15 @@
     [form-components/checkbox-component data* [:ms365_enabled]
      :label "Microsoft 365 OAuth Enabled"]]
 
+   [:div.mb-3
+    [:label.form-label "MS365 Auth Mode"]
+    [:select.form-select
+     {:value (or (:ms365_auth_mode @data*) "delegated")
+      :on-change (fn [e]
+                   (swap! data* assoc :ms365_auth_mode (-> e .-target .-value)))}
+     [:option {:value "delegated"} "Delegated (OAuth per mailbox)"]
+     [:option {:value "rbac"} "Client Credentials (RBAC)"]]]
+
    [:> Row
     [:> Col
      [form-components/input-component data* [:ms365_client_id]
