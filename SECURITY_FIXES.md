@@ -2,7 +2,7 @@
 
 ## Overview
 
-Resolved 11 of 12 reported dependency vulnerabilities across Ruby (Gemfile.lock) and
+Resolved 13 of 17 reported dependency vulnerabilities across Ruby (Gemfile.lock) and
 Node.js (package-lock.json, ui/package-lock.json) dependency trees.
 
 ## Ruby Gems (Gemfile.lock)
@@ -23,6 +23,14 @@ Node.js (package-lock.json, ui/package-lock.json) dependency trees.
 | #119 | Moderate | CVE-2026-25765 | SSRF via protocol-relative URL host override in `build_exclusive_url` - user-supplied paths like `//evil.com/path` override the base URL host |
 
 **Fix:** `bundle update faraday --conservative`
+
+### nokogiri 1.18.10 -> 1.19.1
+
+| Issue | Severity | CVE | Description |
+|-------|----------|-----|-------------|
+| #3 | Moderate | GHSA-wx95-c6cv-8532 | Does not check the return value from `xmlC14NExecute`, contributing cause to ruby-saml vulnerability GHSA-x4h9-gwv3-r4m4 |
+
+**Fix:** `bundle update nokogiri --conservative`
 
 ## Node.js - ui/ (ui/package-lock.json)
 
@@ -65,6 +73,15 @@ dependency (via express/body-parser in webpack-dev-server).
 **Fix:** Added `"lodash": "^4.17.23"` to `overrides` in `ui/package.json`. lodash is a
 transitive dependency used by multiple packages.
 
+### @babel/runtime 7.0.0 -> 7.28.6 (via override)
+
+| Issue | Severity | CVE | Description |
+|-------|----------|-----|-------------|
+| #5 | Moderate | CVE-2025-27789 | Inefficient RegExp complexity in generated code with `.replace` when transpiling named capturing groups - quadratic complexity on specific replacement patterns |
+
+**Fix:** Added `"@babel/runtime": "^7.26.10"` to `overrides` in `ui/package.json`. The
+vulnerable 7.0.0 instances were pinned by `react-swipeable-views`.
+
 ## Node.js - root (package-lock.json)
 
 ### phin 2.9.3 -> 3.7.1 (via override)
@@ -83,16 +100,39 @@ jimp with an alternative image library in the future.
 
 | Issue | Severity | CVE | Description |
 |-------|----------|-----|-------------|
-| #114 | Low | CVE-2025-14505 | Risky ECDSA implementation - incorrect byte-length computation of `k` value (RFC 6979) with leading zeros can produce faulty signatures |
+| #4 | Low | CVE-2025-14505 | Risky ECDSA implementation - incorrect byte-length computation of `k` value (RFC 6979) with leading zeros can produce faulty signatures |
 
 **Status:** All versions through 6.6.1 are affected. No patched version has been released.
 elliptic is a transitive dependency in the root `package-lock.json` (via shadow-cljs
 crypto chain). Monitor for a release > 6.6.1.
 
+### minimatch 3.1.2 - no fix in 3.x line
+
+| Issue | Severity | CVE | Description |
+|-------|----------|-----|-------------|
+| #7 | High | - | ReDoS via repeated wildcards with non-matching literal in pattern - each `*` compiles to a `[^/]*?` regex group, causing O(4^N) backtracking |
+
+**Status:** 3.1.2 is the latest release in the 3.x line. The fix is only available in
+minimatch 10.x which has breaking API changes. All dev dependencies (eslint, glob, etc.)
+require `minimatch ^3.x` and cannot use 10.x. This is a dev-only dependency and the
+vulnerability requires a malicious glob pattern to be supplied to minimatch, so practical
+risk is very low.
+
+### ajv 6.12.6 - no fix in 6.x line
+
+| Issue | Severity | CVE | Description |
+|-------|----------|-----|-------------|
+| #6 | Moderate | CVE-2025-69873 | ReDoS when using `$data` option - malicious regex patterns injected via JSON Pointer cause catastrophic backtracking |
+
+**Status:** 6.12.6 is the latest 6.x release. The fix is in ajv 8.18.0 which has breaking
+API changes incompatible with packages that depend on `ajv ^6.x` (eslint, schema-utils,
+webpack). The vulnerability only applies when `$data: true` is explicitly enabled, which is
+not the default and is not used by eslint or webpack schema-utils. Practical risk is very low.
+
 ## Files Changed
 
-- `Gemfile.lock` - updated rack and faraday versions
-- `ui/package.json` - bumped webpack and webpack-dev-server, added qs and lodash overrides
+- `Gemfile.lock` - updated rack, faraday, and nokogiri versions
+- `ui/package.json` - bumped webpack and webpack-dev-server, added qs, lodash, and @babel/runtime overrides
 - `ui/package-lock.json` - regenerated
 - `package.json` - added phin override
 - `package-lock.json` - regenerated

@@ -59,7 +59,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "qs": "^6.14.2",
-    "lodash": "^4.17.23"
+    "lodash": "^4.17.23",
+    "@babel/runtime": "^7.26.10"
   },
   "browserslist": {
     "production": [
