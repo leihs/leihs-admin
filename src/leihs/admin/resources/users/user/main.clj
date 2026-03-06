@@ -17,8 +17,7 @@
                                                                   insert! jdbc-insert!,
                                                                   update! jdbc-update!,
                                                                   delete! jdbc-delete!}]
-   [slingshot.slingshot :refer [try+]]
-   [taoensso.timbre :refer [warn]]))
+   [slingshot.slingshot :refer [try+]]))
 
 ;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -255,7 +254,6 @@
    (when-not (requester-is-system-admin? request)
      (users-and-groups/assert-attributes-are-not-set!
       data system-admin-restricted-attributes))
-   (warn data)
    (if-let [user (jdbc-insert! tx :users data)]
      {:status 201, :body user}
      {:status 422

@@ -19,8 +19,7 @@
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
    [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
-   [reagent.core :as reagent]
-   [taoensso.timbre :refer [warn]]))
+   [reagent.core :as reagent]))
 
 (def requests* (reagent/atom {}))
 
@@ -124,7 +123,6 @@
       " " [clipboard/button-tiny path]])])
 
 (defn row-component [request tds]
-  (warn 'request request)
   [:tr.request
    {:key (:txid request)}
    [:td.text-monospace.timestamp {:key :timestamp} (:request_timestamp request)]
