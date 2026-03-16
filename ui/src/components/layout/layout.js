@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import s from './layout.module.scss'
+import * as s from './layout.module.scss'
 
 function Header({ children, className }) {
   return <header className={cx(s['header'], className)}>{children}</header>

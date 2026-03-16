@@ -51,7 +51,7 @@ const DatePicker = ({
   const [isFocussed, setFocus] = useState(false, [])
   // const dateVal = useRef(value, [value])
 
-  const isDateInputSupported = useMemo(checkIsDateInputBrowserSupported, [])
+  const isDateInputSupported = useMemo(() => checkIsDateInputBrowserSupported(), [])
   const useNativeInput = force ? false : isDateInputSupported
   const isOpen = !disabled && !useNativeInput
 
@@ -92,7 +92,7 @@ const DatePicker = ({
           style={isOpen ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 } : null}
           placeholder={placeholder}
           disabled={disabled}
-          defaultValue={inputVal.current || ''}
+          defaultValue={value || ''}
           onChange={e => {
             const val = e.target.value
             const date = parseDatefromInput(val)
