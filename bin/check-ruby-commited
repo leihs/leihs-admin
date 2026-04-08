@@ -9,7 +9,8 @@ cd $PROJECT_DIR
 
 # check that that repo has no uncommitted changes after setting up the ruby environment
 if [[ -n $(git status --porcelain) ]]; then
-  echo "Error: There are uncommitted changes in the repository."
+  echo "Error: There are uncommitted changes in the repository:"
+  git status --porcelain
   exit 1
 fi
 
