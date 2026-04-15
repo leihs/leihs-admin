@@ -95,7 +95,7 @@ feature "Deleting users", type: :feature do
       context "via the UI" do
         include_context :sign_in_to_admin
         scenario "I can delete an other admin" do
-          database[:users].where(id: @user[:id]) \
+          database[:users].where(id: @user[:id])
             .update(is_admin: true, admin_protected: true)
           ui_delete_user @user
         end
@@ -103,7 +103,7 @@ feature "Deleting users", type: :feature do
           ui_no_delete_button @system_admin
         end
         scenario "There is no delete button for an system_admin_protected user" do
-          database[:users].where(id: @user[:id]) \
+          database[:users].where(id: @user[:id])
             .update(admin_protected: true, system_admin_protected: true)
           ui_no_delete_button @user
         end
@@ -116,7 +116,7 @@ feature "Deleting users", type: :feature do
           api_delete_forbidden @system_admin
         end
         scenario "It is forbidden for me to delete an admin_protected user" do
-          database[:users].where(id: @user[:id]) \
+          database[:users].where(id: @user[:id])
             .update(admin_protected: true, system_admin_protected: true)
           api_delete_forbidden @user
         end
@@ -124,7 +124,7 @@ feature "Deleting users", type: :feature do
           api_transfer_delete_forbidden @system_admin
         end
         scenario "It is forbidden for me to transfer and delete an admin_protected user" do
-          database[:users].where(id: @user[:id]) \
+          database[:users].where(id: @user[:id])
             .update(admin_protected: true, system_admin_protected: true)
           api_transfer_delete_forbidden @user
         end
@@ -137,7 +137,7 @@ feature "Deleting users", type: :feature do
       context "via the UI" do
         include_context :sign_in_to_admin
         scenario "I can delete an other system_admin" do
-          database[:users].where(id: @user[:id]) \
+          database[:users].where(id: @user[:id])
             .update(is_admin: true, is_system_admin: true,
               admin_protected: true, system_admin_protected: true)
           ui_delete_user @user

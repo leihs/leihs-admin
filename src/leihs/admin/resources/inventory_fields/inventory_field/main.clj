@@ -30,13 +30,15 @@
 
 (defn usage [tx inventory-field]
   (let [property (-> inventory-field :data :attribute second)]
-    (-> (sql/select :%count.*)
-        (sql/from :items)
-        (sql/where [:raw (format "items.properties::json->>'%s' IS NOT NULL" property)])
-        sql-format
-        (->> (jdbc-query tx))
-        first
-        :count)))
+    (if-not (string? property)
+      0
+      (-> (sql/select :%count.*)
+          (sql/from :items)
+          (sql/where [:is-not [:->> :items.properties property] nil])
+          sql-format
+          (->> (jdbc-query tx))
+          first
+          :count))))
 
 (defn get-inventory-field
   [{tx :tx {inventory-field-id :inventory-field-id} :route-params}]
@@ -66,7 +68,9 @@
 (defn validated-merge [tx old-f new-f]
   (let [dynamic? (:dynamic old-f)
         required? (-> old-f :data :required boolean)
-        field-usage (usage tx old-f)
+        field-usage (if dynamic?
+                      (usage tx old-f)
+                      0)
         spec (case [dynamic? required?]
                [true true] ::field-specs/dynamic-required-field
                [true false] ::field-specs/dynamic-not-required-field
