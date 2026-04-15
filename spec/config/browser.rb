@@ -57,13 +57,19 @@ Capybara.register_driver :firefox do |app|
   end
   # opts.args << '--devtools' # NOTE: useful for local debug
 
+  service = Selenium::WebDriver::Firefox::Service.new(
+    # Selenium also binds to a lock port at (port - 1), so stay above 1025.
+    port: Selenium::WebDriver::PortProber.above(1025)
+  )
+
   # driver = Selenium::WebDriver.for :firefox, options: opts
   # Capybara::Selenium::Driver.new(app, browser: browser, options: opts)
   Capybara::Selenium::Driver.new(
     app,
     browser: :firefox,
     options: opts,
-    desired_capabilities: capabilities
+    desired_capabilities: capabilities,
+    service: service
   )
 end
 

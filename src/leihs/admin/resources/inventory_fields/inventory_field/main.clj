@@ -28,11 +28,16 @@
 
 (comment (inventory-field (db/get-ds) "attachments"))
 
+(defn- json-property-key-valid? [s]
+  (and (string? s) (re-matches #"\A[a-z_]+\z" s)))
+
 (defn usage [tx inventory-field]
   (let [property (-> inventory-field :data :attribute second)]
+    (when-not (json-property-key-valid? property)
+      (raise (clojure.core/str "Invalid property key for field data: " (pr-str property))))
     (-> (sql/select :%count.*)
         (sql/from :items)
-        (sql/where [:raw (format "items.properties::json->>'%s' IS NOT NULL" property)])
+        (sql/where [:is-not [:->> :items.properties property] nil])
         sql-format
         (->> (jdbc-query tx))
         first
@@ -66,7 +71,9 @@
 (defn validated-merge [tx old-f new-f]
   (let [dynamic? (:dynamic old-f)
         required? (-> old-f :data :required boolean)
-        field-usage (usage tx old-f)
+        field-usage (if dynamic?
+                      (usage tx old-f)
+                      0)
         spec (case [dynamic? required?]
                [true true] ::field-specs/dynamic-required-field
                [true false] ::field-specs/dynamic-not-required-field
