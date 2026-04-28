@@ -13,11 +13,11 @@
 (defn put []
   (go (when (some->
              {:chan (async/chan)
-              :json-params @data*
+              :json-params (dissoc @data* :logo_light_error :logo_dark_error)
               :method :put}
              http-client/request :chan <!
              http-client/filter-success :body)
-        (reset! core/data* @data*)
+        (reset! core/data* (dissoc @data* :logo_light_error :logo_dark_error))
         (search-params/delete-from-url "action"))))
 
 (def open?*

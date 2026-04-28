@@ -33,6 +33,9 @@ feature "Misc Settings" do
           check "lending_terms_acceptance_required_for_order"
           fill_in "lending_terms_url", with: "https://example.org/fileadmin/leihs-terms-2000-01-01.pdf"
           fill_in "home_page_image_url", with: "https://example.org/image.jpg"
+          attach_file "logo_light", File.expand_path("../../data/zhdk-logo.svg", __dir__)
+          attach_file "logo_dark", File.expand_path("../../data/zhdk-logo-dark.svg", __dir__)
+          sleep 0.3
 
           click_on "Save"
           sleep 0.5
@@ -58,6 +61,12 @@ feature "Misc Settings" do
           expect(page.text).to have_content "Your awesome Lending Desk"
           expect(page.text).to have_content "https://example.org/fileadmin/leihs-terms-2000-01-01.pdf"
           expect(page.text).to have_content "https://example.org/image.jpg"
+          within("tr", text: "Logo Light") do
+            expect(page).to have_css('img[src^="data:"]')
+          end
+          within("tr", text: "Logo Dark") do
+            expect(page).to have_css('img[src^="data:"]')
+          end
         end
       end
 

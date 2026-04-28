@@ -17,6 +17,14 @@
     :body
     [:<>
      [row "Logo URL" :logo_url @core/data*]
+     [:tr
+      [:td [:strong "Logo Light"] [:small (str " (" (name :logo_light) ")")]]
+      [:td  [core/logo-preview (:logo_light @core/data*) "light"]]]
+
+     [:tr
+      [:td [:strong "Logo Dark"] [:small (str " (" (name :logo_dark) ")")]]
+      [:td  [core/logo-preview (:logo_dark @core/data*) "dark"]]]
+
      [row "Documentation Link" :documentation_link @core/data*]
      [row "Contract Lending Party" :contract_lending_party_string @core/data*]
      [row "Custom Head Tag" :custom_head_tag @core/data*]

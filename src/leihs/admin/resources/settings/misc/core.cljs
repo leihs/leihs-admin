@@ -14,6 +14,29 @@
                       http-client/request :chan <!
                       http-client/filter-success :body))))
 
+(defn handle-logo-file-input [data* key error-key e]
+  (let [file (-> e .-target .-files (aget 0))]
+    (when file
+      (if (> (.-size file) 1048576)
+        (swap! data* assoc error-key "File exceeds 1MB limit.")
+        (let [reader (js/FileReader.)]
+          (swap! data* assoc error-key nil)
+          (set! (.-onload reader)
+                (fn [load-e]
+                  (swap! data* assoc key (-> load-e .-target .-result))))
+          (.readAsDataURL reader file))))))
+
+(defn logo-preview [b64 mode]
+  (when b64
+    [:div.mt-2
+     [:img {:src b64
+            :style {:max-height "80px"
+                    :max-width "100%"
+                    :background (if (= mode "light") "#fff" "#000")
+                    :border "1px solid #dee2e6"
+                    :border-radius "4px"
+                    :padding "4px"}}]]))
+
 (defn form [action data*]
   [:> Form
    {:id "misc-form"
@@ -48,6 +71,46 @@
        "Absolute URL for a documentation resource if available. "
        "It is displayed under " [:cite "leihs"]
        " in the footer of the legacy application."]]]]
+
+   [:> Row
+    [:> Col
+     [:> Form.Group {:id "logo_light"}
+      [:> Form.Label "Logo Light"]
+      [:input.form-control
+       {:type "file"
+        :id "logo_light"
+        :accept "image/png,image/jpeg,image/svg+xml,image/webp"
+        :onChange #(handle-logo-file-input data* :logo_light :logo_light_error %)}]
+      (when (:logo_light_error @data*)
+        [:div.text-danger "File exceeds 1MB limit."])
+      [logo-preview (:logo_light @data*) "light"]
+      (when (:logo_light @data*)
+        [:button.btn.btn-sm.btn-outline-danger.mt-1
+         {:type "button"
+          :on-click #(swap! data* assoc :logo_light nil)}
+         "Remove logo"])
+      [:> Form.Text {:className "text-muted"}
+       "Logo variant for light backgrounds."]]]
+
+    [:> Col
+     [:> Form.Group {:id "logo_dark"}
+      [:> Form.Label "Logo Dark"]
+      [:input.form-control
+       {:type "file"
+        :id "logo_dark"
+        :accept "image/png,image/jpeg,image/svg+xml,image/webp"
+        :onChange #(handle-logo-file-input data* :logo_dark :logo_dark_error %)}]
+      (when (:logo_dark_error @data*)
+        [:div.text-danger "File exceeds 1MB limit."])
+      [logo-preview (:logo_dark @data*) "dark"]
+
+      (when (:logo_dark @data*)
+        [:button.btn.btn-sm.btn-outline-danger.mt-1
+         {:type "button"
+          :on-click #(swap! data* assoc :logo_dark nil)}
+         "Remove logo"])
+      [:> Form.Text {:className "text-muted"}
+       "Logo variant for dark backgrounds."]]]]
 
    [:> Row
     [:> Col
