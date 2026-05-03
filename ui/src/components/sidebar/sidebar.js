@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import s from './sidebar.module.scss'
+import * as s from './sidebar.module.scss'
 import cx from 'classnames'
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -73,7 +73,7 @@ function Section({ title, children, className }) {
       <h1 role="heading" className={cx(s['section-title'], className)}>
         {title}
       </h1>
-      <ul ref={listRef} role="list" className={cx(s.section, s['list'], className)}>
+      <ul ref={listRef} role="list" className={cx(s['list'], className)}>
         {children}
       </ul>
     </li>
@@ -87,7 +87,7 @@ function Item({ icon = null, href = null, active = false, children, className })
     if (active && href) {
       setActive(href)
     }
-  }, [])
+  }, [active, href, setActive])
 
   return (
     <li role="listitem" className={cx(s['item'], className)}>
@@ -121,7 +121,10 @@ function Group({ icon = null, title = '', children, className }) {
   useEffect(() => {
     if (active) {
       const hasActiveItem = !!ref.current?.querySelector(`a[href="${active}"]`)
-      if (hasActiveItem) setOpen(true)
+      if (hasActiveItem) {
+        // Use a callback to avoid synchronous setState in effect
+        requestAnimationFrame(() => setOpen(true))
+      }
     }
   }, [active])
 

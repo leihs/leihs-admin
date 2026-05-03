@@ -27,7 +27,17 @@ const baseConfig = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              sassOptions: {
+                silenceDeprecations: [
+                  'import',
+                  'global-builtin',
+                  'color-functions',
+                  'legacy-js-api',
+                  'if-function',
+                  'abs-percent'
+                ]
+              }
             }
           }
         ]
@@ -49,7 +59,17 @@ const baseConfig = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              sassOptions: {
+                silenceDeprecations: [
+                  'import',
+                  'global-builtin',
+                  'color-functions',
+                  'legacy-js-api',
+                  'if-function',
+                  'abs-percent'
+                ]
+              }
             }
           }
         ]

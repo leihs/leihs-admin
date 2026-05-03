@@ -12,7 +12,7 @@
                                                                   insert! jdbc-insert!,
                                                                   update! jdbc-update!,
                                                                   delete! jdbc-delete!}]
-   [taoensso.timbre :as timbre :refer [debug info warn]]))
+   [taoensso.timbre :as timbre :refer [debug info]]))
 
 ;;; data keys ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

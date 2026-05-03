@@ -62,7 +62,10 @@ feature "User's audited requests" do
     req = AuditedRequest.where(user_id: @system_admin.id).order(:created_at).last
 
     fill_in "txid", with: req.txid
-    click_on "Request"
+    expect(page).to have_selector("tr.request", count: 1, wait: 5)
+    within("tr.request", match: :first) do
+      click_on "Request"
+    end
     expect(page).to have_content req.txid
 
     visit "/admin/audited/changes/"
@@ -86,7 +89,7 @@ feature "User's audited requests" do
     txid = req.txid
     create_changes_test_data(txid)
 
-    expect_changes_count(txid, today - 7, 1)   # 1 week ago
+    expect_changes_count(txid, today - 7, 1) # 1 week ago
     except_changes_counts(txid, today)
   end
 

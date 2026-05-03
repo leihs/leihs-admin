@@ -4,7 +4,7 @@
    [leihs.admin.common.roles.core :as roles]
    [leihs.core.auth.core :refer [http-safe?]]
    [leihs.core.core :refer [str]]
-   [taoensso.timbre :refer [error warn info debug spy]]))
+   [taoensso.timbre :refer [error info debug spy]]))
 
 (defn some-manager? [role request]
   (if (some

@@ -8,7 +8,7 @@
     :rename {delete! jdbc-delete! insert! jdbc-insert!
              query jdbc-query, update! jdbc-update!}]
    [next.jdbc.types :refer [as-date]]
-   [taoensso.timbre :refer [error warn info debug spy]]))
+   [taoensso.timbre :refer [error info debug spy]]))
 
 (def fields #{:id
               :name
