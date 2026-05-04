@@ -80,7 +80,7 @@
                               :authorizers [auth/admin-scopes?]}
                              {:icon solids/faPaperPlane
                               :href "/admin/settings/smtp/"
-                              :children "SMTP"
+                              :children "Email"
                               :authorizers [auth/system-admin-scopes?]}
                              {:icon solids/faShieldHalved
                               :href "/admin/settings/syssec/"

@@ -17,7 +17,7 @@ feature "SMTP-Settings" do
         scenario "updates the SMTP-Settings" do
           within "aside nav" do
             click_on "Settings"
-            click_on "SMTP"
+            click_on "Email"
           end
 
           wait_until { page.has_content? "Domain Name" }

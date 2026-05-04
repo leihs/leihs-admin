@@ -20,9 +20,11 @@
     :on-submit (fn [e]
                  (.preventDefault e)
                  (action))}
-   [:div.my-3
+   [:div.mb-4
     [form-components/checkbox-component data* [:enabled]
      :label "Sending Emails Enabled"]]
+
+   [:h4.mb-3 "SMTP Settings"]
    [:> Row
     [:> Col
      [form-components/input-component data* [:port]
@@ -54,4 +56,50 @@
     [:> Col
      [form-components/input-component data* [:openssl_verify_mode]]]
     [:> Col
-     [form-components/checkbox-component data* [:enable_starttls_auto]]]]])
+     [form-components/checkbox-component data* [:enable_starttls_auto]]]]
+
+   [:hr.my-4]
+   [:h4.mb-3 "Microsoft 365 OAuth Settings"]
+
+   [:div.my-3
+    [form-components/checkbox-component data* [:ms365_enabled]
+     :label "Microsoft 365 OAuth Enabled"]]
+
+   [:div.mb-3
+    [:label.form-label
+     [:strong "MS365 Auth Mode"]
+     " " [:small "(ms365_auth_mode)"]]
+    [:select.custom-select
+     {:value (or (:ms365_auth_mode @data*) "delegated")
+      :on-change (fn [e]
+                   (swap! data* assoc :ms365_auth_mode (-> e .-target .-value)))}
+     [:option {:value "delegated"} "Delegated (OAuth per mailbox)"]
+     [:option {:value "rbac"} "Client Credentials (RBAC)"]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_client_id]
+      :label "Client ID"]]
+    [:> Col
+     [form-components/input-component data* [:ms365_tenant_id]
+      :label "Tenant ID"]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_client_secret]
+      :type :password
+      :label "Client Secret"]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_token_url]
+      :label "Token URL"
+      :placeholder "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+      :hint [:span "Microsoft OAuth token endpoint. Use " [:code "{tenant_id}"] " as placeholder. Replaced with respective value during sending of emails."]]]]
+
+   [:> Row
+    [:> Col
+     [form-components/input-component data* [:ms365_graph_send_url]
+      :label "Graph Send URL"
+      :placeholder "https://graph.microsoft.com/v1.0/users/{user_id}/sendMail"
+      :hint [:span "Microsoft Graph API endpoint for sending mail. Use " [:code "{user_id}"] " as placeholder. Replaced with respective value during sending of emails."]]]]])
