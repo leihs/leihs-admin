@@ -2,6 +2,16 @@
  :builds {:leihs-admin-js
           {:asset-path "/admin/js"
            :devtools {:http-root "resources/public" :http-port 8020 :preloads [devtools.preload]}
+           :js-options {:resolve {;; --- polyfills and stubs for jimp dependencies
+                                  "path"   {:target :npm :require "path-browserify"}
+                                  "stream" {:target :npm :require "stream-browserify"}
+                                  "zlib"   {:target :npm :require "browserify-zlib"}
+                                  "fs"     {:target :file :file "src/js/empty.js"}
+                                  "phin"   {:target :file :file "src/js/empty.js"}
+                                  "http"   {:target :file :file "src/js/empty.js"}
+                                  "https"  {:target :file :file "src/js/empty.js"}
+                                  ;; ---
+                                  }}
            :modules {:main {:init-fn leihs.admin.main/init}}
            :output-dir "resources/public/admin/js"
            :release {:compiler-options {:optimizations :advanced
