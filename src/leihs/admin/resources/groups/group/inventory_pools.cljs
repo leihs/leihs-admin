@@ -3,12 +3,12 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.roles.components :refer [put-roles< roles-component]]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.group.core :as core]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Alert]]
    [reagent.core :as reagent]))
@@ -23,14 +23,12 @@
 (defonce data* (reagent/atom nil))
 
 (defn fetch []
-  (go (reset! data*
-              (some->
-               {:chan (async/chan)
-                :url (path :group-inventory-pools-roles
-                           (-> @routing/state* :route-params))}
-               http-client/request :chan <!
-               http-client/filter-success!
-               :body :inventory_pools_roles))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :group-inventory-pools-roles
+                                   (-> @routing/state* :route-params))} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data* (-> resp :body :inventory_pools_roles)))))))
 
 (defn clean-and-fetch [& args]
   (reset! data* nil)

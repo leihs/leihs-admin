@@ -14,6 +14,7 @@
    [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Alert Button]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -34,12 +35,12 @@
   (http/route-cached-fetch data* {:route @fetch-route*}))
 
 (defn fetch-inventory-fields-groups []
-  (go (reset! inventory-fields-groups-data*
-              (some-> {:chan (async/chan)
-                       :url (path :inventory-fields-groups)}
-                      http/request :chan <!
-                      http/filter-success!
-                      :body :inventory-fields-groups sort))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-fields-groups)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! inventory-fields-groups-data*
+                    (-> resp :body :inventory-fields-groups sort)))))))
 
 (defn link-to-inventory-field
   [inventory-field inner & {:keys [authorizers] :or {authorizers []}}]

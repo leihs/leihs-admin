@@ -1,26 +1,27 @@
 (ns leihs.admin.resources.users.user.groups
   (:require [cljs.core.async :as async :refer [go <!]]
             [cljs.pprint :refer [pprint]]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.paths :as paths :refer [path]]
             [leihs.admin.resources.groups.main :as groups-core]
             [leihs.admin.resources.users.user.core :as user-core :refer [user-data*
                                                                          user-id*]]
             [leihs.admin.state :as state]
             [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom nil))
 
 (defn fetch-groups []
-  (go (reset! data*
-              (-> {:chan (async/chan)
-                   :url (path :groups {} {:including-user @user-id*
-                                          :page 1
-                                          :pre-page 1000})}
-                  http-client/request
-                  :chan <! http-client/filter-success! :body :groups))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :groups {} {:including-user @user-id*
+                                               :page 1
+                                               :pre-page 1000})}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (reset! data* (-> resp :body :groups))))))
 
 (defn debug-component []
   [:div

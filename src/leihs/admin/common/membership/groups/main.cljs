@@ -3,11 +3,11 @@
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [go <!]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.groups.shared :refer [default-query-params]]
    [leihs.admin.resources.groups.main :as groups]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]))
 
 (defn form-membership-filter []
@@ -41,13 +41,10 @@
   (swap! groups/data* update-in
          [(:route @routing/state*) :groups (:page-index group) :member]
          #(identity nil))
-  (go (when (some->
-             {:chan (async/chan)
-              :url path
-              :method :delete}
-             http-client/request
-             :chan <! http-client/filter-success!)
-        (groups/fetch-groups))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url path :method :delete} {} :chan ch)
+    (go (when (:success (<! ch))
+          (groups/fetch-groups)))))
 
 (defn remove-memebership-component [path group]
   [:form
@@ -63,14 +60,11 @@
 (defn add-membership [path group]
   (let [data-path [(:route @routing/state*) :groups (:page-index group) :member]]
     (swap! groups/data* update-in data-path #(identity nil))
-    (go (when (some->
-               {:chan (async/chan)
-                :url path
-                :method :put}
-               http-client/request
-               :chan <! http-client/filter-success!)
-          (groups/fetch-groups)
-          (swap! groups/data* update-in data-path #(identity false))))))
+    (let [ch (async/chan)]
+      (requests/send-off {:url path :method :put} {} :chan ch)
+      (go (when (:success (<! ch))
+            (groups/fetch-groups)
+            (swap! groups/data* update-in data-path #(identity false)))))))
 
 (defn add-membership-component [path group]
   [:form

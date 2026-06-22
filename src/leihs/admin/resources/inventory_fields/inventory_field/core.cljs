@@ -9,6 +9,7 @@
             [leihs.admin.resources.inventory-fields.inventory-field.specs :as field-specs]
             [leihs.admin.state :as state]
             [leihs.core.core :refer [detect dissoc-in flip presence]]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent :refer [reaction]]))
 
@@ -75,12 +76,12 @@
   (http-client/route-cached-fetch cache* {:route @path*}))
 
 (defn fetch-inventory-fields-groups []
-  (go (reset! inventory-fields-groups-data*
-              (some-> {:chan (async/chan)
-                       :url (path :inventory-fields-groups)}
-                      http-client/request :chan <!
-                      http-client/filter-success!
-                      :body :inventory-fields-groups sort))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-fields-groups)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! inventory-fields-groups-data*
+                    (-> resp :body :inventory-fields-groups sort)))))))
 
 (defn set-value [value data* ks]
   (swap! data* assoc-in ks value)

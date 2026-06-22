@@ -3,7 +3,6 @@
    [cljs.core.async :as async :refer [<! go]]
    [clojure.string :refer [capitalize]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.workdays.core :as core]
@@ -12,6 +11,7 @@
    [leihs.core.auth.core :as auth]
    [leihs.core.constants :as constants]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -22,14 +22,12 @@
 
 (defn patch []
   (let [workdays-route (path :inventory-pool-workdays
-                             {:inventory-pool-id (:inventory_pool_id @data*)})]
-    (go (when (some->
-               {:url workdays-route
-                :method :patch
-                :json-params @data*
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!)
+                             {:inventory-pool-id (:inventory_pool_id @data*)})
+        ch (async/chan)]
+    (requests/send-off {:url workdays-route
+                        :method :patch
+                        :json-params @data*} {} :chan ch)
+    (go (when (:success (<! ch))
           (reset! core/data* @data*)
           (search-params/delete-from-url "action")))))
 

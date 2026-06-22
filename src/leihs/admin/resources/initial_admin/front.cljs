@@ -2,22 +2,20 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [reagent.core :as reagent :refer [reaction]]))
 
 (def form-data* (reagent/atom {}))
 
 (defn post []
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :initial-admin)
-              :json-params @form-data*
-              :method :post}
-             http-client/request :chan <!
-             http-client/filter-success! :body)
-        (accountant/navigate! (path :home)))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :initial-admin)
+                        :json-params @form-data*
+                        :method :post} {} :chan ch)
+    (go (when (:success (<! ch))
+          (accountant/navigate! (path :home))))))
 
 (def email-valid*?
   (reaction

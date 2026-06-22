@@ -2,13 +2,13 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.components.filter :as filter]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.common.membership.users.shared :refer [DEFAULT-MEMBERSHIP-QUERY-PARAM
                                                        MEMBERSHIP-QUERY-PARAM-KEY
                                                        QUERY-OPTIONS]]
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.utils.misc :refer [fetch-route*]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]))
 
 ;;; filter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -62,13 +62,10 @@
   [path user method]
   (let [new-state (case method
                     :put true
-                    :delete false)]
-    (go (when (some->
-               {:chan (async/chan)
-                :url path
-                :method method}
-               http-client/request :chan <!
-               http-client/filter-success!)
+                    :delete false)
+        ch (async/chan)]
+    (requests/send-off {:url path :method method} {} :chan ch)
+    (go (when (:success (<! ch))
           (update-membership-in-table new-state user)))))
 
 (defn remove-direct-memebership [path user]

@@ -2,9 +2,9 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [clojure.string :as string]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
    [react-bootstrap :refer [Breadcrumb BreadcrumbItem]]
@@ -116,17 +116,18 @@
 
 (defn- get-name [next]
   (when (:resolver next)
-    (go
-      (let [resolver (:resolver next)
-            res  (->
-                  {:chan (async/chan)
-                   :url (path resolver
-                              (-> @routing/state* :route-params))}
-                  http-client/request :chan <!
-                  http-client/filter-success! :body)]
-        (if (user? resolver)
-          (str (:firstname res) " " (:lastname res))
-          (str (:name res)))))))
+    (let [ch (async/chan)]
+      (requests/send-off {:url (path (:resolver next)
+                                     (-> @routing/state* :route-params))
+                          :method :get} {} :chan ch)
+      (go
+        (let [resolver (:resolver next)
+              resp (<! ch)]
+          (when (:success resp)
+            (let [res (:body resp)]
+              (if (user? resolver)
+                (str (:firstname res) " " (:lastname res))
+                (str (:name res))))))))))
 
 (def popstate? (atom false))
 

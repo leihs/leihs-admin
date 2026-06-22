@@ -3,7 +3,6 @@
    ["date-fns" :as date-fns]
    [cljs.core.async :as async :refer [<! go]]
    [clojure.string :refer [join]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.core :as core :refer [user-data*]]
@@ -11,6 +10,7 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [leihs.core.url.core :as url]
    [qrcode.react :as qrcode-recat]
@@ -36,14 +36,15 @@
    (:valid-for (:query-params @routing/state*))))
 
 (defn get-reset-data []
-  (go (let [res (some->
-                 {:chan (async/chan)
-                  :url (-> @routing/state* :path (str "/password-reset"))
-                  :method :post
-                  :json-params {:valid_for_hours @valid-for*}}
-                 http-client/request :chan <!
-                 http-client/filter-success! :body)]
-        (reset! data* res))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (-> @routing/state* :path (str "/password-reset"))
+                        :method :post
+                        :json-params {:valid_for_hours @valid-for*}}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data* (:body resp)))))))
 
 (defn reset-path-url []
   (str (-> @state/global-state*
@@ -158,4 +159,3 @@
 
    [:h1 "Password Reset Link for "
     [core/name-link-component]]])
-

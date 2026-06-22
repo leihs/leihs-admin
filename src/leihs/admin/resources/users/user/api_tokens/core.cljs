@@ -2,10 +2,10 @@
   (:require ["date-fns" :as date-fns]
             [cljs.core.async :as async :refer [<! go]]
             [clojure.string :refer [join split capitalize]]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.utils.misc :as front-shared :refer [humanize-datetime-component]]
             [leihs.core.core :refer [presence str]]
             [leihs.core.paths :refer [path]]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent]))
 
@@ -40,12 +40,12 @@
 
 (defn clean-and-fetch []
   (reset! data* nil)
-  (go (reset! data*
-              (some->
-               {:url (path :api-token (-> @routing/state* :route-params))
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success! :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :api-token (-> @routing/state* :route-params))}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (reset! data* (:body resp))))))
 
 (defn on-change-datetime-local [e]
   (let [value (-> e .-target .-value)

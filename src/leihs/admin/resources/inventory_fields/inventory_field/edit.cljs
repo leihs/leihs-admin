@@ -1,11 +1,11 @@
 (ns leihs.admin.resources.inventory-fields.inventory-field.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.resources.inventory-fields.inventory-field.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Alert Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -13,15 +13,13 @@
 (def data* (reagent/atom nil))
 
 (defn patch []
-  (go (when (some->
-             {:url @core/path*
-              :method :patch
-              :json-params (core/strip-of-uuids @data*)
-              :chan (async/chan)}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (go (<! (core/fetch))
-            (search-params/delete-from-url "action")))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url @core/path*
+                        :method :patch
+                        :json-params (core/strip-of-uuids @data*)} {} :chan ch)
+    (go (when (:success (<! ch))
+          (go (<! (core/fetch))
+              (search-params/delete-from-url "action"))))))
            ;; (swap! core/cache* assoc @core/path* @data*))
 
 (defn form []

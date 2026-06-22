@@ -4,11 +4,11 @@
    [cljs.core.async :as async :refer [<! go]]
    [clojure.set :refer [rename-keys]]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.core :as user-core :refer [user-id*]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -23,26 +23,26 @@
               (rename-keys {:user-uid :target-user-uid}))))
 
 (defn delete-user [& _]
-  (go (when (some->
-             {:url (path :user (-> @routing/state* :route-params))
-              :method :delete
-              :chan (async/chan)}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (search-params/delete-from-url "action")
-        (accountant/navigate! (path :users)))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user (-> @routing/state* :route-params))
+                        :method :delete}
+                       {}
+                       :chan ch)
+    (go (when (:success (<! ch))
+          (search-params/delete-from-url "action")
+          (accountant/navigate! (path :users))))))
 
 (defn transfer-data-and-delete-user [& _]
-  (go (when (some->
-             {:url  (path :user-transfer-data
-                          {:user-id @user-id*
-                           :target-user-uid (:target-user-uid @transfer-data*)})
-              :method :delete
-              :chan (async/chan)}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (search-params/delete-from-url "action")
-        (accountant/navigate! (path :users)))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user-transfer-data
+                                   {:user-id @user-id*
+                                    :target-user-uid (:target-user-uid @transfer-data*)})
+                        :method :delete}
+                       {}
+                       :chan ch)
+    (go (when (:success (<! ch))
+          (search-params/delete-from-url "action")
+          (accountant/navigate! (path :users))))))
 
 (defn delete-without-reasignment-component []
   [:<>

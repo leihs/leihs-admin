@@ -2,13 +2,13 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.users.user.core :as core]
    [leihs.admin.resources.users.user.edit :as edit]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -16,21 +16,22 @@
 (def data* (reagent/atom nil))
 
 (defn post []
-  (go (when-let [data (some->
-                       {:chan (async/chan)
-                        :url (path :users)
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :users)
                         :method :post
-                        :json-params  (-> @data*
-                                          (update-in
-                                           [:extended_info]
-                                           (fn [s] (js/JSON.parse
-                                                    (js/JSON.stringify
-                                                     (clj->js s))))))}
-                       http-client/request :chan <!
-                       http-client/filter-success! :body)]
-        (search-params/delete-from-url "action")
-        (accountant/navigate!
-         (path :user {:user-id (:id data)})))))
+                        :json-params (-> @data*
+                                         (update-in
+                                          [:extended_info]
+                                          (fn [s] (js/JSON.parse
+                                                   (js/JSON.stringify
+                                                    (clj->js s))))))}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (search-params/delete-from-url "action")
+            (accountant/navigate!
+             (path :user {:user-id (-> resp :body :id)})))))))
 
 (def open*
   (reaction

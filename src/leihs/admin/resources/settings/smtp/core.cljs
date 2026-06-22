@@ -2,17 +2,19 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
+   [leihs.core.requests.core :as requests]
+   [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Col Form Row]]
    [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom nil))
 
 (defn fetch []
-  (go (reset! data*
-              (some-> {:chan (async/chan)}
-                      http-client/request :chan <!
-                      http-client/filter-success :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (-> @routing/state* :url) :method :get} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data* (:body resp)))))))
 
 (defn form [action data*]
   [:> Form

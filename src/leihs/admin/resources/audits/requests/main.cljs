@@ -9,7 +9,6 @@
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.audits.requests.shared :refer [default-query-params]]
@@ -18,6 +17,7 @@
    [leihs.admin.utils.clipboard :as clipboard]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent]))
 
@@ -29,17 +29,17 @@
         (merge default-query-params (:query-params-raw @routing/state*) query-params)))
 
 (defn fetch [& _]
-  (let [chan (async/chan)
-        req (http/request {:chan chan})]
-    (go (let [resp (<! chan)]
-          (when (< (:status resp) 300)
-            (let [url (:url req)]
-              (swap! requests* assoc url (-> resp :body :requests))
-              ; after some time reload or clean cached
-              (go (<! (timeout (* 3 60 1000)))
-                  (if (= url (:route @routing/state*))
-                    (fetch)
-                    (swap! requests* dissoc url)))))))))
+  (let [ch (async/chan)
+        url (:route @routing/state*)]
+    (requests/send-off {} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (swap! requests* assoc url (-> resp :body :requests))
+            ; after some time reload or clean cached
+            (go (<! (timeout (* 3 60 1000)))
+                (if (= url (:route @routing/state*))
+                  (fetch)
+                  (swap! requests* dissoc url))))))))
 
 (defn responsible-user-choose-component []
   [:div.input-group-prepend

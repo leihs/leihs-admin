@@ -2,10 +2,10 @@
   (:require
    [cljs.core.async :as async :refer [<! go-loop]]
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.state :as state]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent]))
 
@@ -18,12 +18,11 @@
                 :statistics-pools
                 :statistics-users]]
     (when-let [k (first ks)]
-      (some->
-       {:url (path k)
-        :chan (async/chan)}
-       http-client/request :chan <!
-       http-client/filter-success! :body
-       (->> (swap! data* merge)))
+      (let [ch (async/chan)]
+        (requests/send-off {:url (path k)} {} :chan ch)
+        (let [resp (<! ch)]
+          (when (:success resp)
+            (swap! data* merge (:body resp)))))
       (recur (rest ks)))))
 
 (defn debug-component []

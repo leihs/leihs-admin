@@ -14,6 +14,7 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as users]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Table]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -96,15 +97,13 @@
    (-> delegation :groups_count)])
 
 (defn add-or-remove-delegation [method delegation]
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :inventory-pool-delegation
-                         {:inventory-pool-id @pool-core/id*
-                          :delegation-id (:id delegation)})
-              :method method}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (fetch))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-pool-delegation
+                                   {:inventory-pool-id @pool-core/id*
+                                    :delegation-id (:id delegation)})
+                        :method method} {} :chan ch)
+    (go (when (:success (<! ch))
+          (fetch)))))
 
 (defn action-td
   [{member :member id :id protected :pool_protected

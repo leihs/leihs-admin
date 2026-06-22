@@ -11,6 +11,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.clipboard :as clipboard]
    [leihs.core.core :refer [keyword]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent :refer [reaction]]))
 
@@ -23,10 +24,10 @@
 (defn fetch-changes-index [& _]
   (reset! changes-index* {})
   (let [url (path :audited-changes {} {:request-id @request-id*})
-        chan (async/chan)
-        req (http/request {:chan chan :url url})]
-    (go (let [resp (<! chan)]
-          (when (< (:status resp) 300)
+        ch (async/chan)]
+    (requests/send-off {:url url} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
             (reset! changes-index* (-> resp :body :changes)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

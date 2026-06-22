@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.users.user.groups-roles.main
   (:require [cljs.core.async :as async :refer [go <!]]
             [cljs.pprint :refer [pprint]]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.common.icons :as icons]
             [leihs.admin.common.roles.components :refer [put-roles<
                                                          roles-component]]
@@ -9,6 +8,7 @@
             [leihs.admin.paths :as paths :refer [path]]
             [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
             [leihs.admin.state :as state]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent :refer [reaction]]))
 
@@ -19,12 +19,11 @@
 (def data* (reagent/atom nil))
 
 (defn fetch [& _]
-  (go (reset!
-       data*
-       (-> {:chan (async/chan)
-            :url @roles-path*}
-           http-client/request
-           :chan <! http-client/filter-success! :body :groups-roles))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url @roles-path*} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data* (-> resp :body :groups-roles)))))))
 
 (defn debug-component2 []
   (when @state/debug?*

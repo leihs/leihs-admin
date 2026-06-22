@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.users.user.api-tokens.main
   (:require [cljs.core.async :as async :refer [<! go]]
             [leihs.admin.common.components.table :as table]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.paths :as paths :refer [path]]
             [leihs.admin.resources.users.user.api-tokens.core :as core]
             [leihs.admin.resources.users.user.api-tokens.create :as create]
@@ -9,6 +8,7 @@
                                                                          user-id*]]
             [leihs.admin.utils.misc :as front-shared :refer [humanize-datetime-component
                                                              wait-component]]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [react-bootstrap :as react-bootstrap :refer [Alert Button]]
             [reagent.core :as reagent]))
@@ -16,15 +16,13 @@
 (defonce data* (reagent/atom nil))
 
 (defn fetch []
-  (go (reset!
-       data*
-       (some->
-        {:chan (async/chan)
-         :url (path :user-api-tokens
-                    (-> @routing/state* :route-params))}
-        http-client/request :chan <!
-        http-client/filter-success!
-        :body :user-api-tokens))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user-api-tokens
+                                   (-> @routing/state* :route-params))}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (reset! data* (-> resp :body :user-api-tokens))))))
 
 (defn clean-and-fetch []
   (reset! data* nil)

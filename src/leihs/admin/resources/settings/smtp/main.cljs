@@ -1,12 +1,11 @@
 (ns leihs.admin.resources.settings.smtp.main
   (:require
    [accountant.core :as accountant]
-   [cljs.core.async :as async :refer [<!]]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
    [clojure.contrib.inflect :refer [pluralize-noun]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.resources.settings.shared.components :refer [row]]
@@ -16,6 +15,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Tab Tabs]]
    [reagent.core :as reagent]))
@@ -84,19 +84,16 @@
 (defonce test-email-result* (reagent/atom nil))
 
 (defn send-test-email []
-  (async/go
-    (reset! test-email-result* {:status :sending})
-    (let [response (<! (:chan (http-client/request
-                               {:method :post
-                                :url (path :smtp-test-email)
-                                :json-params @test-email-data*
-                                :chan (async/chan)})))]
-      (if (:success response)
-        (reset! test-email-result* {:status :success
-                                    :message "Test email enqueued for sending. Refresh this page to see its status."})
-        (reset! test-email-result* {:status :error
-                                    :message (or (-> response :body :message)
-                                                 "Failed to send test email")})))))
+  (reset! test-email-result* {:status :sending})
+  (let [ch (async/chan)]
+    (requests/send-off {:method :post :url (path :smtp-test-email) :json-params @test-email-data*} {} :chan ch)
+    (go (let [response (<! ch)]
+          (if (:success response)
+            (reset! test-email-result* {:status :success
+                                        :message "Test email enqueued for sending. Refresh this page to see its status."})
+            (reset! test-email-result* {:status :error
+                                        :message (or (-> response :body :message)
+                                                     "Failed to send test email")}))))))
 
 (defn test-form []
   [:div.mb-4
@@ -131,14 +128,12 @@
 (def page-size 10)
 
 (defn fetch-emails []
-  (async/go
-    (let [offset (* @current-page* page-size)
-          response (<! (:chan (http-client/request
-                               {:method :get
-                                :url (str (path :smtp-emails) "?limit=" page-size "&offset=" offset)
-                                :chan (async/chan)})))]
-      (when (:success response)
-        (reset! emails-data* (:body response))))))
+  (let [ch (async/chan)
+        offset (* @current-page* page-size)]
+    (requests/send-off {:method :get :url (str (path :smtp-emails) "?limit=" page-size "&offset=" offset)} {} :chan ch)
+    (go (let [response (<! ch)]
+          (when (:success response)
+            (reset! emails-data* (:body response)))))))
 
 (defn emails-table []
   (if-not @emails-data*

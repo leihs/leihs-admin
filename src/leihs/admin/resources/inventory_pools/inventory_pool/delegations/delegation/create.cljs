@@ -3,11 +3,11 @@
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
    [clojure.set :refer [rename-keys]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core :as core]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]
@@ -16,18 +16,17 @@
 (def data* (reagent/atom nil))
 
 (defn create []
-  (go (when-let [id (some->
-                     {:chan (async/chan)
-                      :url (path :inventory-pool-delegations
-                                 {:inventory-pool-id @pool-core/id*})
-                      :method :post
-                      :json-params @data*}
-                     http-client/request :chan <!
-                     http-client/filter-success! :body :id)]
-        (search-params/delete-from-url "action")
-        (accountant/navigate!
-         (path :inventory-pool-delegation {:inventory-pool-id @pool-core/id*
-                                           :delegation-id id})))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-pool-delegations
+                                   {:inventory-pool-id @pool-core/id*})
+                        :method :post
+                        :json-params @data*} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (search-params/delete-from-url "action")
+            (accountant/navigate!
+             (path :inventory-pool-delegation {:inventory-pool-id @pool-core/id*
+                                               :delegation-id (-> resp :body :id)})))))))
 
 (def open*
   (reaction

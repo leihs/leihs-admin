@@ -2,20 +2,20 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [go <!]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]))
 
 (defn delete []
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :user-api-token (-> @routing/state* :route-params))
-              :method :delete}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (accountant/navigate!
-         (path :user (-> @routing/state* :route-params))))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user-api-token (-> @routing/state* :route-params))
+                        :method :delete}
+                       {}
+                       :chan ch)
+    (go (when (:success (<! ch))
+          (accountant/navigate!
+           (path :user (-> @routing/state* :route-params)))))))
 
 (defn dialog [& {:keys [show on-hide]
                  :or {show false}}]

@@ -6,6 +6,7 @@
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Form]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -27,13 +28,11 @@
 (defonce data-buildings* (reagent/atom nil))
 
 (defn fetch-buildings []
-  (go (reset! data-buildings*
-              (some-> {:chan (async/chan)
-                       :url (path :buildings)}
-                      http-client/request
-                      :chan <!
-                      http-client/filter-success!
-                      :body :buildings))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :buildings)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data-buildings* (-> resp :body :buildings)))))))
 
 (defn room-form [action data*]
   [:> Form {:id "room-form"

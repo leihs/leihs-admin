@@ -2,11 +2,11 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.group.core :as core]
    [leihs.admin.resources.groups.group.edit-core :as edit-core]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -14,17 +14,15 @@
 (defonce data* (reagent/atom nil))
 
 (defn post []
-  (go (when-let [body (some->
-                       {:chan (async/chan)
-                        :url (path :groups)
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :groups)
                         :method :post
-                        :json-params @data*}
-                       http-client/request
-                       :chan <!
-                       http-client/filter-success! :body)]
-        (search-params/delete-from-url "action")
-        (accountant/navigate!
-         (path :group {:group-id (:id body)})))))
+                        :json-params @data*} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (search-params/delete-from-url "action")
+            (accountant/navigate!
+             (path :group {:group-id (-> resp :body :id)})))))))
 
 (def open*
   (reaction

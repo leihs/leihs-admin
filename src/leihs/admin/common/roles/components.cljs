@@ -5,30 +5,28 @@
             [cljs.core.async :as async :refer [go >! <!]]
             [cljs.pprint :refer [pprint]]
             [leihs.admin.common.form-components :as form-components]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.common.icons :as icons]
             [leihs.admin.common.roles.core :as roles]
             [leihs.admin.state :as state]
             [leihs.core.core :refer [str]]
+            [leihs.core.requests.core :as requests]
             [reagent.core :as reagent]))
 
 (defn fetch-roles< [path]
-  (let [chan (async/chan)]
-    (go (>! chan (some-> {:chan (async/chan)
-                          :url path}
-                         http-client/request
-                         :chan <! http-client/filter-success! :body)))
-    chan))
+  (let [ch (async/chan)
+        result-ch (async/chan)]
+    (requests/send-off {:url path} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (>! result-ch (when (:success resp) (:body resp)))))
+    result-ch))
 
 (defn put-roles< [path roles]
-  (let [chan (async/chan)]
-    (go (>! chan (some-> {:chan (async/chan)
-                          :method :put
-                          :json-params roles
-                          :url path}
-                         http-client/request
-                         :chan <! http-client/filter-success! :body)))
-    chan))
+  (let [ch (async/chan)
+        result-ch (async/chan)]
+    (requests/send-off {:url path :method :put :json-params roles} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (>! result-ch (when (:success resp) (:body resp)))))
+    result-ch))
 
 (defn inner-roles-component
   [roles* edit-mode? & {:keys [compact on-change-handler]

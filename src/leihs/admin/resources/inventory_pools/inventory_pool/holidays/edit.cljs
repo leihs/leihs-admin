@@ -4,7 +4,6 @@
    [com.rpl.specter :as s]
    [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
@@ -13,6 +12,7 @@
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
    [leihs.core.constants :as constants]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -25,14 +25,12 @@
 
 (defn patch []
   (let [route (path :inventory-pool-holidays
-                    {:inventory-pool-id (:id @pool-core/data*)})]
-    (go (when (some->
-               {:url route
-                :method :patch
-                :json-params (prepare-for-patch @data*)
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!)
+                    {:inventory-pool-id (:id @pool-core/data*)})
+        ch (async/chan)]
+    (requests/send-off {:url route
+                        :method :patch
+                        :json-params (prepare-for-patch @data*)} {} :chan ch)
+    (go (when (:success (<! ch))
           (core/fetch)
           (search-params/delete-from-url "action")))))
 

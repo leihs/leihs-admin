@@ -1,7 +1,6 @@
 (ns leihs.admin.resources.users.user.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.core :as core :refer [user-id*]]
    [leihs.admin.resources.users.user.edit-core :as edit-core]
@@ -9,26 +8,28 @@
    [leihs.admin.resources.users.user.inventory-pools :as user-inventory-pools]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
 
 (defn patch []
-  (go (when-let [res (some->
-                      {:chan (async/chan)
-                       :url (path :user {:user-id @user-id*})
-                       :method :patch
-                       :json-params  (-> @edit-core/data*
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user {:user-id @user-id*})
+                        :method :patch
+                        :json-params (-> @edit-core/data*
                                          (update-in
                                           [:extended_info]
                                           (fn [s] (js/JSON.parse
                                                    (js/JSON.stringify
                                                     (clj->js s))))))}
-                      http-client/request :chan <!
-                      http-client/filter-success! :body)]
-        (user-inventory-pools/clean-and-fetch)
-        (swap! core/cache* assoc @core/path* res)
-        (search-params/delete-from-url "action"))))
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (user-inventory-pools/clean-and-fetch)
+            (swap! core/cache* assoc @core/path* (:body resp))
+            (search-params/delete-from-url "action"))))))
 
 (defn inner-form-component [data*]
   [:<>
