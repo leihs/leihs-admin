@@ -6,10 +6,10 @@
    [leihs.admin.common.components :as components :refer [link]]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
    [leihs.admin.state :as state]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front]
    [leihs.core.user.shared :refer [short-id]]
@@ -27,12 +27,12 @@
    (get @data* @id*)))
 
 (defn fetch []
-  (go (swap! data* assoc @id*
-             (some-> {:url (path :inventory-pool-delegation
-                                 (-> @routing/state* :route-params))
-                      :chan (async/chan)}
-                     http-client/request :chan <!
-                     http-client/filter-success! :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-pool-delegation
+                                   (-> @routing/state* :route-params))} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (swap! data* assoc @id* (-> resp :body)))))))
 
 (defn merge-delegation-with-params [data*]
   (reset! data* (merge @delegation*

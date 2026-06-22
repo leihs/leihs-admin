@@ -2,11 +2,11 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.group.core :as core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :refer [reaction]]))
@@ -14,14 +14,12 @@
 ;;; delete ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn post []
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :group (-> @routing/state* :route-params))
-              :method :delete}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (search-params/delete-from-url "action")
-        (accountant/navigate! (path :groups {})))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :group (-> @routing/state* :route-params))
+                        :method :delete} {} :chan ch)
+    (go (when (:success (<! ch))
+          (search-params/delete-from-url "action")
+          (accountant/navigate! (path :groups {}))))))
 
 (def open*
   (reaction

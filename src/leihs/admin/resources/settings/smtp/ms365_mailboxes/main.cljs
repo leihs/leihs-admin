@@ -2,23 +2,22 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.resources.settings.smtp.ms365-mailboxes.add :as add]
    [leihs.admin.utils.misc :refer [wait-component]]
+   [leihs.core.requests.core :as requests]
    [react-bootstrap :as react-bootstrap :refer [Button Badge]]
    [reagent.core :as reagent]))
 
 (defonce mailboxes-data* (reagent/atom nil))
 
 (defn fetch-mailboxes []
-  (go (let [response (<! (:chan (http-client/request
-                                 {:method :get
-                                  :url (path :smtp-ms365-mailboxes)
-                                  :chan (async/chan)})))]
-        (when (:success response)
-          (reset! mailboxes-data* (:body response))))))
+  (let [ch (async/chan)]
+    (requests/send-off {:method :get :url (path :smtp-ms365-mailboxes)} {} :chan ch)
+    (go (let [response (<! ch)]
+          (when (:success response)
+            (reset! mailboxes-data* (:body response)))))))
 
 (defn calculate-status [mailbox]
   "Calculate mailbox status based on token expiry"
@@ -48,12 +47,9 @@
 
 (defn delete-mailbox [mailbox-id]
   (when (js/confirm (str "Are you sure you want to delete mailbox '" mailbox-id "'?"))
-    (go (let [response (<! (:chan (http-client/request
-                                   {:method :delete
-                                    :url (path :smtp-ms365-mailbox
-                                               {:mailbox-id mailbox-id})
-                                    :chan (async/chan)})))]
-          (when (:success response)
+    (let [ch (async/chan)]
+      (requests/send-off {:method :delete :url (path :smtp-ms365-mailbox {:mailbox-id mailbox-id})} {} :chan ch)
+      (go (when (:success (<! ch))
             (fetch-mailboxes))))))
 
 (defn mailboxes-table []

@@ -1,12 +1,12 @@
 (ns leihs.admin.resources.groups.group.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.group.core :as core :refer [group-id*]]
    [leihs.admin.resources.groups.group.edit-core :as edit-core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -14,15 +14,14 @@
 (defonce data* (reagent/atom nil))
 
 (defn patch []
-  (go (when-let [res (some->
-                      {:chan (async/chan)
-                       :url (path :group {:group-id @group-id*})
-                       :method :patch
-                       :json-params @data*}
-                      http-client/request :chan <!
-                      http-client/filter-success! :body)]
-        (swap! core/cache* assoc @core/path* res)
-        (search-params/delete-from-url "action"))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :group {:group-id @group-id*})
+                        :method :patch
+                        :json-params @data*} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (swap! core/cache* assoc @core/path* (:body resp))
+            (search-params/delete-from-url "action"))))))
 
 (def open*
   (reaction

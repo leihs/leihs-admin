@@ -4,11 +4,11 @@
    ["date-fns" :as date-fns]
    [cljs.core.async :as async :refer [<! >! go]]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [react-bootstrap :as react-bootstrap :refer [Button]]
    [reagent.core :as reagent]
    [taoensso.timbre]))
@@ -33,22 +33,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn fetch-suspension< [path]
-  (let [chan (async/chan)]
-    (go (>! chan  (some-> {:chan (async/chan)
-                           :url path}
-                          http-client/request
-                          :chan <! http-client/filter-success! :body)))
-    chan))
+  (let [out (async/chan)
+        ch (async/chan)]
+    (requests/send-off {:url path} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (>! out (when (:success resp) (-> resp :body)))))
+    out))
 
 (defn put-suspension< [path data]
-  (let [chan (async/chan)]
-    (go (>! chan (some-> {:chan (async/chan)
-                          :method :put
-                          :json-params data
-                          :url path}
-                         http-client/request
-                         :chan <! http-client/filter-success! :body)))
-    chan))
+  (let [out (async/chan)
+        ch (async/chan)]
+    (requests/send-off {:url path
+                        :method :put
+                        :json-params data} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (>! out (when (:success resp) (-> resp :body)))))
+    out))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

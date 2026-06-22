@@ -2,26 +2,25 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.users.user.api-tokens.core :as core]
    [leihs.admin.resources.users.user.core :as user-core]
+   [leihs.core.requests.core :as requests]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent]))
 
 (def saved-data* (reagent/atom nil))
 
 (defn create []
-  (go (when-let [saved-data
-                 (some->
-                  {:url (path :user-api-tokens {:user-id @user-core/user-id*})
-                   :method :post
-                   :json-params @core/data*
-                   :chan (async/chan)}
-                  http-client/request :chan <!
-                  http-client/filter-success!
-                  :body)]
-        (reset! saved-data* saved-data))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user-api-tokens {:user-id @user-core/user-id*})
+                        :method :post
+                        :json-params @core/data*}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! saved-data* (:body resp)))))))
 
 (defn confirm []
   (let [url (path :user-api-token {:user-id @user-core/user-id* :api-token-id (-> @saved-data* :id)})]

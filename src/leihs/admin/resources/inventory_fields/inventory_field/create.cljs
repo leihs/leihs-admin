@@ -2,11 +2,11 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-fields.inventory-field.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -14,17 +14,14 @@
 (defonce data* (reagent/atom nil))
 
 (defn create []
-  (go (when-let [id (some->
-                     {:url (path :inventory-fields)
-                      :method :post
-                      :json-params (core/strip-of-uuids
-                                    @data*)
-                      :chan (async/chan)}
-                     http-client/request
-                     :chan <!
-                     http-client/filter-success! :body :id)]
-        (accountant/navigate!
-         (path :inventory-field {:inventory-field-id id})))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-fields)
+                        :method :post
+                        :json-params (core/strip-of-uuids @data*)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (accountant/navigate!
+             (path :inventory-field {:inventory-field-id (-> resp :body :id)})))))))
 
 (defn form []
   (if-not @data*

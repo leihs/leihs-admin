@@ -1,10 +1,10 @@
 (ns leihs.admin.resources.system.authentication-systems.authentication-system.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.system.authentication-systems.authentication-system.core :as core]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -13,16 +13,14 @@
 
 (defn patch []
   (let [route (path :authentication-system
-                    {:authentication-system-id @core/id*})]
-    (go (when (some->
-               {:url route
-                :method :patch
-                :json-params  (dissoc @data* :users_count)
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!))
-        (swap! core/cache* assoc @core/path* @data*)
-        (search-params/delete-from-url "action"))))
+                    {:authentication-system-id @core/id*})
+        ch (async/chan)]
+    (requests/send-off {:url route
+                        :method :patch
+                        :json-params (dissoc @data* :users_count)} {} :chan ch)
+    (go (when (:success (<! ch))))
+    (swap! core/cache* assoc @core/path* @data*)
+    (search-params/delete-from-url "action")))
 
 (def open?*
   (reaction

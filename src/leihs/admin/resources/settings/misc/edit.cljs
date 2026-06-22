@@ -1,9 +1,9 @@
 (ns leihs.admin.resources.settings.misc.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.resources.settings.misc.core :as core]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -11,14 +11,11 @@
 (def data* (reagent/atom nil))
 
 (defn put []
-  (go (when (some->
-             {:chan (async/chan)
-              :json-params (dissoc @data* :logo_light_error :logo_dark_error)
-              :method :put}
-             http-client/request :chan <!
-             http-client/filter-success :body)
-        (reset! core/data* (dissoc @data* :logo_light_error :logo_dark_error))
-        (search-params/delete-from-url "action"))))
+  (let [ch (async/chan)]
+    (requests/send-off {:json-params (dissoc @data* :logo_light_error :logo_dark_error) :method :put} {} :chan ch)
+    (go (when (:success (<! ch))
+          (reset! core/data* (dissoc @data* :logo_light_error :logo_dark_error))
+          (search-params/delete-from-url "action")))))
 
 (def open?*
   (reaction

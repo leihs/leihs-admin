@@ -4,7 +4,6 @@
    [cljs.pprint :refer [pprint]]
    [clojure.string :refer [join]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.roles.core :as roles]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -13,20 +12,20 @@
                                                                 user-id*]]
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :as front-shared :refer [wait-component]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [reagent.core :as reagent]))
 
 (defonce data* (reagent/atom nil))
 
 (defn fetch []
-  (go (reset! data*
-              (some->
-               {:chan (async/chan)
-                :url (path :user-inventory-pools
-                           (-> @routing/state* :route-params))}
-               http-client/request :chan <!
-               http-client/filter-success!
-               :body :user-inventory-pools))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :user-inventory-pools
+                                   (-> @routing/state* :route-params))}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (reset! data* (-> resp :body :user-inventory-pools))))))
 
 (defn clean-and-fetch []
   (reset! data* nil)

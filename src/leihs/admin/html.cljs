@@ -4,13 +4,13 @@
    ["react-bootstrap" :as BS]
    [accountant.core :as accountant]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
-   [leihs.admin.common.http-client.modals]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.constants :as constants]
    [leihs.admin.paths :refer [path]]
    [leihs.admin.sidebar :as sidebar]
    [leihs.admin.state :as state :refer [global-state*] :rename {global-state* state*}]
    [leihs.core.dom :as dom]
+   [leihs.core.requests.modal :as requests-modal]
    [leihs.core.routing.front :as routing]
    [reagent.dom :as rdom]))
 
@@ -41,7 +41,7 @@
 
 (defn current-page []
   [:<>
-   [leihs.admin.common.http-client.modals/modal-component]
+   [requests-modal/modal-component]
    (let [navbar-data (dom/data-attribute "body" "navbar")]
      [:> UI/Components.Layout
       [:> UI/Components.Layout.Header

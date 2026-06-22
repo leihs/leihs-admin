@@ -1,12 +1,12 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.users.user.roles.main
   (:require [cljs.core.async :as async :refer [go <!]]
             [cljs.pprint :refer [pprint]]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.common.roles.components :as roles-ui :refer [put-roles<]]
             [leihs.admin.paths :as paths :refer [path]]
             [leihs.admin.resources.inventory-pools.inventory-pool.core :as inventory-pool]
             [leihs.admin.resources.users.user.core :as user]
             [leihs.admin.state :as state]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [reagent.core :as reagent]))
 
@@ -24,13 +24,12 @@
 ;;; fetch ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn fetch-inventory-pool-user-roles []
-  (go (reset! roles-data*
-              (some->
-               {:chan (async/chan)
-                :url (path :inventory-pool-user-roles
-                           (-> @routing/state* :route-params))}
-               http-client/request :chan <!
-               http-client/filter-success! :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :inventory-pool-user-roles
+                                   (-> @routing/state* :route-params))} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! roles-data* (-> resp :body)))))))
 
 (defn clean-and-fetch []
   (reset! roles-data* nil)

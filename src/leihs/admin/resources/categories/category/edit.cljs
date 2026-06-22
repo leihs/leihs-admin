@@ -1,12 +1,12 @@
 (ns leihs.admin.resources.categories.category.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.image :as image]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]
@@ -39,15 +39,13 @@
                  (remove-duplicates))})
 
 (defn patch []
-  (let [route (path :category {:category-id @core/id*})]
-    (go (when (some->
-               {:url route
-                :method :patch
-                :json-params  (conj @data* @image/data*)
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!)
-          ;; somehow the transaction on PATCH fails 
+  (let [route (path :category {:category-id @core/id*})
+        ch (async/chan)]
+    (requests/send-off {:url route
+                        :method :patch
+                        :json-params (conj @data* @image/data*)} {} :chan ch)
+    (go (when (:success (<! ch))
+          ;; somehow the transaction on PATCH fails
           ;; and therefore cannot return the new data
           ;; thats why the data gets re-fetched
           (core/fetch)

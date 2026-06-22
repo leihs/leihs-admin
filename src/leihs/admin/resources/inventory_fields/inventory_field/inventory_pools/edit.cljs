@@ -2,13 +2,13 @@
   (:require
    [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-fields.inventory-field.core :as inventory-field.core]
    [leihs.admin.resources.inventory-fields.inventory-field.inventory-pools.core :as core]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.constants :as constants]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as BS :refer [Button Form Modal Alert]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -32,14 +32,12 @@
                  pools))))
 
 (defn save []
-  (let [route (path :inventory-field-inventory-pools (-> @routing/state* :route-params))]
-    (go (when (some->
-               {:url route
-                :method :put
-                :json-params @data*
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!)
+  (let [route (path :inventory-field-inventory-pools (-> @routing/state* :route-params))
+        ch (async/chan)]
+    (requests/send-off {:url route
+                        :method :put
+                        :json-params @data*} {} :chan ch)
+    (go (when (:success (<! ch))
           (search-params/delete-from-url "action")
           (reset! data* nil)
           (core/clean-and-fetch)))))

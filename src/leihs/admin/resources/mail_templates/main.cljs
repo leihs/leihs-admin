@@ -11,6 +11,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [fetch-route* wait-component]]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Alert]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -32,13 +33,11 @@
                                   :reload true}))
 
 (defn fetch-languages []
-  (go (reset! languages-data*
-              (some->
-               {:chan (async/chan)
-                :url (path :languages-settings)}
-               http/request :chan <!
-               http/filter-success!
-               :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :languages-settings)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! languages-data* (:body resp)))))))
 
 ;;; helpers ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

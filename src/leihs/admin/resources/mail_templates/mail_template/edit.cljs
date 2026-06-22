@@ -1,11 +1,10 @@
 (ns leihs.admin.resources.mail-templates.mail-template.edit
   (:require
-   [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.mail-templates.mail-template.core :as core]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]))
@@ -13,15 +12,13 @@
 (def data* (reagent/atom nil))
 
 (defn patch []
-  (let [route (path :mail-template
-                    {:mail-template-id @core/id*})]
-    (go (when (some->
-               {:url route
-                :method :patch
-                :json-params  @data*
-                :chan (async/chan)}
-               http-client/request :chan <!
-               http-client/filter-success!)
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :mail-template {:mail-template-id @core/id*})
+                        :method :patch
+                        :json-params @data*}
+                       {}
+                       :chan ch)
+    (go (when (:success (<! ch))
           (swap! core/cache* assoc @core/path* @data*)
           (search-params/delete-from-url "action")))))
 

@@ -2,11 +2,11 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :as async :refer [<! go]]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.categories.category.core :as core]
    [leihs.admin.resources.categories.category.image :as image]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Modal]]
    [reagent.core :as reagent :refer [reaction]]
@@ -21,16 +21,14 @@
 
 (defn create []
   (debug (conj @data* @without-url*))
-  (go (when-let [id (some->
-                     {:url (path :categores)
-                      :method :post
-                      :json-params  (conj @data* @without-url*)
-                      :chan (async/chan)}
-                     http-client/request :chan <!
-                     http-client/filter-success!
-                     :body :id)]
-        (accountant/navigate!
-         (path :category {:category-id id})))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :categores)
+                        :method :post
+                        :json-params (conj @data* @without-url*)} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (accountant/navigate!
+             (path :category {:category-id (-> resp :body :id)})))))))
 
 (def open?*
   (reaction

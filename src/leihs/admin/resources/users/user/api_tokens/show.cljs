@@ -1,13 +1,13 @@
 (ns leihs.admin.resources.users.user.api-tokens.show
   (:require [cljs.core.async :as async :refer [<! go]]
             [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
-            [leihs.admin.common.http-client.core :as http-client]
             [leihs.admin.paths :as paths :refer [path]]
             [leihs.admin.resources.users.user.api-tokens.core :as core]
             [leihs.admin.resources.users.user.api-tokens.delete :as delete]
             [leihs.admin.resources.users.user.api-tokens.edit :as edit]
             [leihs.admin.resources.users.user.core :as user-core]
             [leihs.admin.utils.misc :refer [humanize-datetime-component wait-component]]
+            [leihs.core.requests.core :as requests]
             [leihs.core.routing.front :as routing]
             [react-bootstrap :as react-bootstrap :refer [Button Table]]
             [reagent.core :as reagent :refer [reaction]]))
@@ -17,13 +17,12 @@
 
 (defn fetch []
   (user-core/fetch)
-  (go (reset!
-       data*
-       (some->
-        {:url (path :api-token {:user-id @user-core/user-id* :api-token-id @api-token-id*})
-         :chan (async/chan)}
-        http-client/request :chan <!
-        http-client/filter-success! :body))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :api-token {:user-id @user-core/user-id* :api-token-id @api-token-id*})}
+                       {}
+                       :chan ch)
+    (go (let [resp (<! ch)]
+          (reset! data* (:body resp))))))
 
 (defn clean-and-fetch []
   (reset! data* nil)

@@ -5,7 +5,6 @@
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.common.icons :as icons]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.groups.group.core :as group-core :refer [group-id*]]
@@ -16,6 +15,7 @@
    [leihs.admin.resources.users.main :as users]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
    [react-bootstrap :as react-bootstrap :refer [Nav]]
@@ -42,24 +42,20 @@
 ;### actions ##################################################################
 
 (defn add-user [{user-id :id page-index :page-index}]
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :group-user {:group-id @group-id* :user-id user-id})
-              :method :put}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (swap! users/data* assoc-in [(:route @routing/state*)
-                                     :users page-index :group_id] @group-id*))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :group-user {:group-id @group-id* :user-id user-id})
+                        :method :put} {} :chan ch)
+    (go (when (:success (<! ch))
+          (swap! users/data* assoc-in [(:route @routing/state*)
+                                       :users page-index :group_id] @group-id*)))))
 
 (defn remove-user [{user-id :id page-index :page-index}]
-  (go (when (some->
-             {:chan (async/chan)
-              :url (path :group-user {:group-id @group-id* :user-id user-id})
-              :method :delete}
-             http-client/request :chan <!
-             http-client/filter-success!)
-        (swap! users/data* assoc-in [(:route @routing/state*)
-                                     :users page-index :group_id] nil))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :group-user {:group-id @group-id* :user-id user-id})
+                        :method :delete} {} :chan ch)
+    (go (when (:success (<! ch))
+          (swap! users/data* assoc-in [(:route @routing/state*)
+                                       :users page-index :group_id] nil)))))
 
 (defn action-th-component []
   [:th.text-right "Add or remove from this group"])

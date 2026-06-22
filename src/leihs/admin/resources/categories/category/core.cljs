@@ -10,6 +10,7 @@
    [leihs.admin.resources.categories.category.image :as image]
    [leihs.admin.state :as state]
    [leihs.core.core :refer [presence]]
+   [leihs.core.requests.core :as requests]
    [leihs.core.resources.categories.filter :as tree-filter]
    [leihs.core.resources.categories.tree :as tree-path]
    [leihs.core.routing.front :as routing]
@@ -43,13 +44,12 @@
   (http-client/route-cached-fetch cache* {:route @path*}))
 
 (defn fetch-models []
-  (go (reset! data-models*
-              (some-> {:chan (async/chan)
-                       :url (path :category-models {:category-id @id*})}
-                      http-client/request
-                      :chan <!
-                      http-client/filter-success!
-                      :body :models))))
+  (let [ch (async/chan)]
+    (requests/send-off {:url (path :category-models {:category-id @id*})
+                        :method :get} {} :chan ch)
+    (go (let [resp (<! ch)]
+          (when (:success resp)
+            (reset! data-models* (-> resp :body :models)))))))
 
 ;;; helper ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

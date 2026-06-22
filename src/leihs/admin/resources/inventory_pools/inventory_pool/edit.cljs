@@ -1,14 +1,13 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.edit
   (:require
-   [cljs.core.async :as async]
-   [clojure.core.async :refer [<! go]]
+   [cljs.core.async :as async :refer [<! go]]
    [leihs.admin.common.form-components :as form-components]
-   [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as core]
    [leihs.admin.utils.search-params :as search-params]
    [leihs.core.auth.core :as auth]
+   [leihs.core.requests.core :as requests]
    [leihs.core.routing.front :as routing]
    [leihs.core.user.front :as current-user]
    [react-bootstrap :refer [Button Modal]]
@@ -18,15 +17,12 @@
 
 (defn patch []
   (let [route (path :inventory-pool
-                    {:inventory-pool-id @core/id*})]
-    (go (when (some->
-               {:url route
-                :method :patch
-                :json-params @data*
-                :chan (async/chan)}
-               http-client/request
-               :chan <!
-               http-client/filter-success!)
+                    {:inventory-pool-id @core/id*})
+        ch (async/chan)]
+    (requests/send-off {:url route
+                        :method :patch
+                        :json-params @data*} {} :chan ch)
+    (go (when (:success (<! ch))
           (swap! core/cache* assoc @core/path* @data*)
           (search-params/delete-from-url "action")))))
 
