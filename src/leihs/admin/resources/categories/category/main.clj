@@ -5,6 +5,7 @@
    [clojure.string :as str]
    [honey.sql :refer [format] :rename {format sql-format}]
    [honey.sql.helpers :as sql]
+   [leihs.core.core :refer [presence]]
    [leihs.core.resources.categories.filter :refer [deep-filter]]
    [leihs.core.resources.categories.shared :refer [base-query sql-add-metadata]]
    [leihs.core.resources.categories.tree :refer [tree convert-tree-path roots]]
@@ -189,7 +190,7 @@
         (doseq [parent (:parents data)]
           (jdbc/insert! tx :model_group_links {:child_id id,
                                                :parent_id (:id parent),
-                                               :label (:label parent)}))
+                                               :label (presence (:label parent))}))
         {:status 200, :body {}})
     {:status 404}))
 
