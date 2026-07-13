@@ -67,6 +67,15 @@
 
    [:> Nav.Item
     [:> Nav.Link
+     (let [href (path :inventory-pool-pickup-locations
+                      {:inventory-pool-id @id*})]
+       {:active (clojure.string/includes? (:path @routing/state*) href)
+        :href href})
+     [icons/warehouse]
+     " Pickup Locations "]]
+
+   [:> Nav.Item
+    [:> Nav.Link
      (let [href (path :inventory-pool-fields
                       {:inventory-pool-id @id*})]
        {:active (clojure.string/includes? (:path @routing/state*) href)

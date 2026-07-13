@@ -28,10 +28,13 @@
                     :borrow_maximum_reservation_duration
                     :borrow_reservation_advance_days
                     :default_contract_note
+                    :default_pickup_location_name
                     :deliver_received_order_emails
                     :email_signature
                     :print_contracts
-                    :required_purpose})
+                    :required_purpose
+                    :transfer_buffer_after_drop_off
+                    :transfer_buffer_before_pick_up})
 
 (def create-fields base-fields)
 (def get-fields (set/union base-fields extra-fields))
