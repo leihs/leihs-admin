@@ -25,7 +25,6 @@
                      http-client/request :chan <!
                      http-client/filter-success!
                      :body :id)]
-        (search-params/delete-from-url "action")
         (accountant/navigate!
          (path :inventory-pool-pickup-location
                {:inventory-pool-id @pool-core/id*
@@ -59,5 +58,6 @@
                         auth/admin-scopes?])
     [:<>
      [:> Button
-      {:on-click #(search-params/append-to-url {:action "add"})}
+      {:className "ml-3"
+       :on-click #(search-params/append-to-url {:action "add"})}
       "Add Pickup Location"]]))

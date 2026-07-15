@@ -8,22 +8,28 @@
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.core.routing.front :as routing]))
 
+(defn property-td
+  ([label col-name] (property-td label col-name nil))
+  ([label col-name hint]
+   [:td [:strong label] [:small.text-monospace (str " (" col-name ")")]
+    (when hint [:small.form-text hint])]))
+
 (defn info-table []
   [table/container
    {:borders false
-    :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+    :header [:tr [:th.w-50 "Property"] [:th.w-50 "Value"]]
     :body
     [:<>
      [:tr.name
-      [:td [:strong "Name"]]
+      [property-td "Name" "name"]
       [:td.name (:name @core/data*)]]
      [:tr.description
-      [:td [:strong "Description"]]
+      [property-td "Description" "description"]
       [:td.description
        {:style {:white-space "break-spaces"}}
        (:description @core/data*)]]
      [:tr.created-at
-      [:td [:strong "Created"]]
+      [property-td "Created" "created_at"]
       [:td.created-at (:created_at @core/data*)]]]}])
 
 (defn page []
