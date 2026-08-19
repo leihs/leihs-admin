@@ -30,17 +30,21 @@
   [:div
    [form-components/input-component data* [:default_pickup_location_name]
     :label "Default Pickup Location Name"
-    :hint "Shown as the pickup location placeholder in the borrow area when no alternative pickup location is chosen."]
+    :hint "Shown as the pickup location placeholder in the borrow area when no alternative pickup location is chosen."
+    :required true]
    [form-components/input-component data* [:transfer_buffer_before_pick_up]
     :label "Transfer Buffer Before Pick-up (days)"
     :type :number
     :min 0
-    :placeholder "0"]
+    :required true]
    [form-components/input-component data* [:transfer_buffer_after_drop_off]
     :label "Transfer Buffer After Drop-off (days)"
     :type :number
     :min 0
-    :placeholder "0"]])
+    :required true]
+   [:div.mb-3
+    [form-components/switch-component data* [:enable_alternative_pickup_locations]
+     :label "Enable Alternative Pickup Locations"]]])
 
 (def open*
   (reaction

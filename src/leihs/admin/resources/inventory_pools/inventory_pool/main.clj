@@ -31,6 +31,7 @@
                     :default_pickup_location_name
                     :deliver_received_order_emails
                     :email_signature
+                    :enable_alternative_pickup_locations
                     :print_contracts
                     :required_purpose
                     :transfer_buffer_after_drop_off
@@ -106,6 +107,19 @@
     ;     first :exists)
     (validate-deactivation tx inventory-pool-id)))
 
+(defn validate-enable-alternative-pickup-locations [tx inventory-pool-id]
+  (when-not (-> (sql/select
+                 [[:exists
+                   (-> (sql/select 1)
+                       (sql/from :pickup_locations)
+                       (sql/where [:= :inventory_pool_id inventory-pool-id])
+                       (sql/where [:= :active true]))]])
+                sql-format
+                (->> (jdbc-query tx))
+                first :exists)
+    (throw (ex-info "Alternative pickup locations cannot be enabled because there is no active pickup location."
+                    {:status 422}))))
+
 (defn patch-inventory-pool
   [{{inventory-pool-id :inventory-pool-id} :route-params
     tx :tx data :body :as request}]
@@ -115,6 +129,8 @@
     (let [patch-data (select-keys data patch-fields)]
       (when-not (:is_active patch-data)
         (validate-deactivation tx inventory-pool-id))
+      (when (:enable_alternative_pickup_locations patch-data)
+        (validate-enable-alternative-pickup-locations tx inventory-pool-id))
       (jdbc-update! tx :inventory_pools patch-data
                     ["id = ?" inventory-pool-id]))
     {:status 204}))

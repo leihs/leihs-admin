@@ -20,6 +20,9 @@
     :header [:tr [:th.w-50 "Property"] [:th.w-50 "Value"]]
     :body
     [:<>
+     [:tr.active
+      [property-td "Active" "active"]
+      [:td.active (if (:active @core/data*) "Yes" "No")]]
      [:tr.name
       [property-td "Name" "name"]
       [:td.name (:name @core/data*)]]

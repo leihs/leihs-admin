@@ -40,12 +40,16 @@
       [:td.default-pickup-location-name (:default_pickup_location_name @pool-core/data*)]]
      [:tr.transfer-buffer-before-pick-up
       [property-td "Transfer Buffer Before Pick-up" "transfer_buffer_before_pick_up"
-       "Number of days needed to transfer an item to the pickup location before it can be picked up. Defaults to 0 if empty."]
+       "Number of days needed to transfer an item to the pickup location before it can be picked up."]
       [:td.transfer-buffer-before-pick-up (:transfer_buffer_before_pick_up @pool-core/data*)]]
      [:tr.transfer-buffer-after-drop-off
       [property-td "Transfer Buffer After Drop-off" "transfer_buffer_after_drop_off"
-       "Number of days needed to transfer an item back to the main warehouse after drop-off. Defaults to 0 if empty."]
-      [:td.transfer-buffer-after-drop-off (:transfer_buffer_after_drop_off @pool-core/data*)]]]}])
+       "Number of days needed to transfer an item back to the main warehouse after drop-off."]
+      [:td.transfer-buffer-after-drop-off (:transfer_buffer_after_drop_off @pool-core/data*)]]
+     [:tr.enable-alternative-pickup-locations
+      [property-td "Enable Alternative Pickup Locations" "enable_alternative_pickup_locations"
+       "Only possible to turn on if there is at least one active pickup location."]
+      [:td.enable-alternative-pickup-locations (if (:enable_alternative_pickup_locations @pool-core/data*) "Yes" "No")]]]}])
 
 (defn link-to-pickup-location [pickup-location inner]
   [:a {:href (path :inventory-pool-pickup-location
@@ -57,14 +61,15 @@
   (if-let [pickup-locations (seq pickup-locations)]
     [table/container
      {:className "pickup-locations"
-      :header [:tr [:th "Index"] [:th "Name"] [:th "Description"]]
+      :header [:tr [:th "Index"] [:th "Name"] [:th "Description"] [:th "Active"]]
       :body
       (doall (for [[index pickup-location] (map-indexed vector pickup-locations)]
                ^{:key (:id pickup-location)}
                [:tr.pickup-location
                 [:td (inc index)]
                 [:td [link-to-pickup-location pickup-location (:name pickup-location)]]
-                [:td (:description pickup-location)]]))}]
+                [:td (:description pickup-location)]
+                [:td (if (:active pickup-location) "Yes" "No")]]))}]
     [:> Alert {:variant "info"
                :className "text-center"}
      "No pickup locations found."]))

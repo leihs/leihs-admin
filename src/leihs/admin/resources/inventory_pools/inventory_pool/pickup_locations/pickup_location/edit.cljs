@@ -1,6 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.pickup-location.edit
   (:require
    [cljs.core.async :as async :refer [<! go]]
+   [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.authorization :as pool-auth]
@@ -39,7 +40,10 @@
                      :on-hide #(search-params/delete-from-url "action")}
     [:> Modal.Title "Edit Pickup Location"]]
    [:> Modal.Body
-    [core/pickup-location-form data*]]
+    [core/pickup-location-form data*]
+    [:div.mb-3
+     [form-components/switch-component data* [:active]
+      :label "Active"]]]
    [:> Modal.Footer
     [:> Button {:variant "secondary"
                 :on-click #(search-params/delete-from-url "action")}

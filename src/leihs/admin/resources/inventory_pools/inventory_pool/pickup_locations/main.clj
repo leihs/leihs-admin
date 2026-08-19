@@ -4,7 +4,8 @@
    [honey.sql.helpers :as sql]
    [next.jdbc.sql :as jdbc]))
 
-(def fields #{:id :inventory_pool_id :name :description :created_at :updated_at})
+(def fields #{:id :inventory_pool_id :name :description :active
+              :created_at :updated_at})
 
 (defn base-query [inventory-pool-id]
   (-> (apply sql/select fields)

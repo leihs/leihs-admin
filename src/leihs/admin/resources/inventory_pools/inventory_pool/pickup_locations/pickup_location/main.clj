@@ -21,21 +21,35 @@
 (defn patch-pickup-location
   [{tx :tx
     {:keys [inventory-pool-id pickup-location-id]} :route-params
-    {:keys [name description]} :body}]
-  (if (= 1 (::jdbc/update-count
-            (jdbc-update! tx :pickup_locations
-                          {:name name :description description}
-                          ["id = ? AND inventory_pool_id = ?" pickup-location-id inventory-pool-id])))
-    {:status 204}
-    {:status 404}))
+    body :body}]
+  (let [patch-data (merge {:name (:name body) :description (:description body)}
+                          (select-keys body [:active]))]
+    (if (= 1 (::jdbc/update-count
+              (jdbc-update! tx :pickup_locations patch-data
+                            ["id = ? AND inventory_pool_id = ?" pickup-location-id inventory-pool-id])))
+      {:status 204}
+      {:status 404})))
+
+(defn has-reservations? [tx pickup-location-id]
+  (-> (sql/select [[:exists
+                    (-> (sql/select 1)
+                        (sql/from :reservations)
+                        (sql/where [:= :pickup_location_id pickup-location-id]))]])
+      sql-format
+      (->> (jdbc-query tx))
+      first :exists))
 
 (defn delete-pickup-location
   [{tx :tx {:keys [inventory-pool-id pickup-location-id]} :route-params}]
-  (if (= 1 (::jdbc/update-count
-            (jdbc-delete! tx :pickup_locations
-                          ["id = ? AND inventory_pool_id = ?" pickup-location-id inventory-pool-id])))
-    {:status 204}
-    {:status 404}))
+  (if (has-reservations? tx pickup-location-id)
+    {:status 422
+     :body (str "This pickup location cannot be deleted because it is"
+                " referenced by reservations. Deactivate it instead.")}
+    (if (= 1 (::jdbc/update-count
+              (jdbc-delete! tx :pickup_locations
+                            ["id = ? AND inventory_pool_id = ?" pickup-location-id inventory-pool-id])))
+      {:status 204}
+      {:status 404})))
 
 (defn routes [request]
   (case (:request-method request)
