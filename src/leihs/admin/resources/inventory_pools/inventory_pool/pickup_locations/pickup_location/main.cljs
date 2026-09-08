@@ -1,5 +1,6 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.pickup-location.main
   (:require
+   [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
    [leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.pickup-location.core :as core]
@@ -22,7 +23,7 @@
     [:<>
      [:tr.active
       [property-td "Active" "active"]
-      [:td.active (if (:active @core/data*) "Yes" "No")]]
+      [:td.active (toggle-component (:active @core/data*))]]
      [:tr.name
       [property-td "Name" "name"]
       [:td.name (:name @core/data*)]]

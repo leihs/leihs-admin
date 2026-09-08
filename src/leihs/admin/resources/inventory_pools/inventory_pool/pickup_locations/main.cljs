@@ -2,6 +2,7 @@
   (:require
    [cljs.pprint :refer [pprint]]
    [leihs.admin.common.components.table :as table]
+   [leihs.admin.common.components :refer [toggle-component]]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
@@ -69,7 +70,7 @@
                 [:td (inc index)]
                 [:td [link-to-pickup-location pickup-location (:name pickup-location)]]
                 [:td (:description pickup-location)]
-                [:td (if (:active pickup-location) "Yes" "No")]]))}]
+                [:td (toggle-component (:active pickup-location))]]))}]
     [:> Alert {:variant "info"
                :className "text-center"}
      "No pickup locations found."]))
