@@ -663,6 +663,11 @@
   environment_variables:
     FEATURE_NAME: "Mail templates in pool 02"
     FEATURE: './spec/features/inventory-pools/mail_templates_spec.rb[1:2]'
+'./spec/features/inventory-pools/pickup_locations/deactivation_spec.rb[1:1:1]':
+  name: "Manage pickup locations an admin via the UI 01"
+  environment_variables:
+    FEATURE_NAME: "Manage pickup locations an admin via the UI 01"
+    FEATURE: './spec/features/inventory-pools/pickup_locations/deactivation_spec.rb[1:1:1]'
 './spec/features/inventory-pools/users/admin_manages_roles_spec.rb[1:1:1]':
   name: "Manage inventory-pool users   an admin, a pool, and  several users 01"
   environment_variables:
