@@ -18,12 +18,28 @@
     {:body pickup-location}
     {:status 404}))
 
+(defn validate-deactivation [tx pickup-location-id]
+  (when (-> (sql/select
+             [[:exists
+               (-> (sql/select 1)
+                   (sql/from :reservations)
+                   (sql/where [:= :pickup_location_id pickup-location-id])
+                   (sql/where [:in :status ["submitted" "approved" "signed"]]))]])
+            sql-format
+            (->> (jdbc-query tx))
+            first :exists)
+    (throw (ex-info (str "Pickup location cannot be deactivated because it is"
+                         " referenced by active reservations.")
+                    {:status 422}))))
+
 (defn patch-pickup-location
   [{tx :tx
     {:keys [inventory-pool-id pickup-location-id]} :route-params
     body :body}]
   (let [patch-data (merge {:name (:name body) :description (:description body)}
                           (select-keys body [:active]))]
+    (when (false? (:active patch-data))
+      (validate-deactivation tx pickup-location-id))
     (if (= 1 (::jdbc/update-count
               (jdbc-update! tx :pickup_locations patch-data
                             ["id = ? AND inventory_pool_id = ?" pickup-location-id inventory-pool-id])))
