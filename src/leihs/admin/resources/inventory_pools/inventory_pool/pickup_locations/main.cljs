@@ -34,6 +34,10 @@
     :header [:tr [:th.w-50 "Property"] [:th.w-50 "Value"]]
     :body
     [:<>
+     [:tr.enable-alternative-pickup-locations
+      [property-td "Enable Alternative Pickup Locations" "enable_alternative_pickup_locations"
+       "Only possible to turn on if there is at least one active pickup location."]
+      [:td.enable-alternative-pickup-locations (if (:enable_alternative_pickup_locations @pool-core/data*) "Yes" "No")]]
      [:tr.default-pickup-location-name
       [property-td "Default Pickup Location Name" "default_pickup_location_name"
        "Shown as the pickup location placeholder in the borrow area when no alternative pickup location is chosen."]
@@ -45,11 +49,7 @@
      [:tr.transfer-buffer-after-drop-off
       [property-td "Transfer Buffer After Drop-off" "transfer_buffer_after_drop_off"
        "Number of days needed to transfer an item back to the main warehouse after drop-off."]
-      [:td.transfer-buffer-after-drop-off (:transfer_buffer_after_drop_off @pool-core/data*)]]
-     [:tr.enable-alternative-pickup-locations
-      [property-td "Enable Alternative Pickup Locations" "enable_alternative_pickup_locations"
-       "Only possible to turn on if there is at least one active pickup location."]
-      [:td.enable-alternative-pickup-locations (if (:enable_alternative_pickup_locations @pool-core/data*) "Yes" "No")]]]}])
+      [:td.transfer-buffer-after-drop-off (:transfer_buffer_after_drop_off @pool-core/data*)]]]}])
 
 (defn link-to-pickup-location [pickup-location inner]
   [:a {:href (path :inventory-pool-pickup-location

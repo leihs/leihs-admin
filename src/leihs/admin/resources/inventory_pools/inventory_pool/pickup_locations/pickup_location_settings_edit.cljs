@@ -28,6 +28,9 @@
 
 (defn form []
   [:div
+   [:div.mb-3
+    [form-components/switch-component data* [:enable_alternative_pickup_locations]
+     :label "Enable Alternative Pickup Locations"]]
    [form-components/input-component data* [:default_pickup_location_name]
     :label "Default Pickup Location Name"
     :hint "Shown as the pickup location placeholder in the borrow area when no alternative pickup location is chosen."
@@ -41,10 +44,7 @@
     :label "Transfer Buffer After Drop-off (days)"
     :type :number
     :min 0
-    :required true]
-   [:div.mb-3
-    [form-components/switch-component data* [:enable_alternative_pickup_locations]
-     :label "Enable Alternative Pickup Locations"]]])
+    :required true]])
 
 (def open*
   (reaction
