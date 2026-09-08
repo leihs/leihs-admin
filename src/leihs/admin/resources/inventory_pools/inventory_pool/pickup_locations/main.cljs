@@ -1,8 +1,8 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.main
   (:require
    [cljs.pprint :refer [pprint]]
-   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.components :refer [toggle-component]]
+   [leihs.admin.common.components.table :as table]
    [leihs.admin.common.http-client.core :as http-client]
    [leihs.admin.paths :as paths :refer [path]]
    [leihs.admin.resources.inventory-pools.inventory-pool.core :as pool-core]
