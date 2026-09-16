@@ -248,6 +248,8 @@
                           :authorizers [auth/system-admin-scopes?]}
           :smtp-emails {:handler smtp-settings/get-emails
                         :authorizers [auth/system-admin-scopes?]}
+          :smtp-email {:handler smtp-settings/get-email
+                       :authorizers [auth/system-admin-scopes?]}
           :smtp-test-email {:handler smtp-settings/send-test-email
                             :authorizers [auth/system-admin-scopes?]}
           :smtp-ms365-callback {:handler smtp-ms365/callback

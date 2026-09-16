@@ -813,6 +813,46 @@
   environment_variables:
     FEATURE_NAME: "Misc Settings a plain admin exist a plain_admin via the API 01"
     FEATURE: './spec/features/settings/misc_settings_spec.rb[1:1:1:2:1]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:1]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 01"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 01"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:1]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:2]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 02"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 02"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:2]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:3]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 03"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 03"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:3]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:4]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 04"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 04"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:4]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:5]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 05"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 05"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:5]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:6]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 06"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 06"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:6]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:1:7]':
+  name: "SMTP-Emails a system_admin and some emails exist via the API 07"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the API 07"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:1:7]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1:2:1]':
+  name: "SMTP-Emails a system_admin and some emails exist via the UI 01"
+  environment_variables:
+    FEATURE_NAME: "SMTP-Emails a system_admin and some emails exist via the UI 01"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1:2:1]'
 './spec/features/settings/smtp_settings_spec.rb[1:1:1:1:1]':
   name: "SMTP-Settings a system_admin and a plain admin exist a system_admin via the UI 01"
   environment_variables:

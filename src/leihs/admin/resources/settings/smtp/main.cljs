@@ -4,6 +4,8 @@
    [cljs.core.async :as async :refer [<!]]
    [cljs.pprint :refer [pprint]]
    [clojure.contrib.inflect :refer [pluralize-noun]]
+   [clojure.string :as string]
+   [leihs.admin.common.components.filter :as filter]
    [leihs.admin.common.components.table :as table]
    [leihs.admin.common.form-components :as form-components]
    [leihs.admin.common.http-client.core :as http-client]
@@ -16,6 +18,7 @@
    [leihs.admin.state :as state]
    [leihs.admin.utils.misc :refer [wait-component]]
    [leihs.admin.utils.search-params :as search-params]
+   [leihs.core.core :refer [presence]]
    [leihs.core.routing.front :as routing]
    [react-bootstrap :as react-bootstrap :refer [Button Form Tab Tabs]]
    [reagent.core :as reagent]))
@@ -126,84 +129,164 @@
       "Send Test Email"]]]])
 
 (defonce emails-data* (reagent/atom nil))
-(defonce current-page* (reagent/atom 0))
 
 (def page-size 10)
 
+(defn current-filters []
+  (let [qp (:query-params-raw @routing/state*)]
+    {:term (:term qp)
+     :template (:template qp)
+     :state (:state qp)
+     :page (or (some-> qp :page int) 1)}))
+
 (defn fetch-emails []
   (async/go
-    (let [offset (* @current-page* page-size)
+    (let [{:keys [term template state page]} (current-filters)
+          offset (* (dec page) page-size)
+          params (cond-> {:limit page-size :offset offset}
+                   (presence term) (assoc :term term)
+                   (presence template) (assoc :template template)
+                   (presence state) (assoc :state state))
+          query-string (->> params
+                            (map (fn [[k v]] (str (name k) "=" (js/encodeURIComponent v))))
+                            (string/join "&"))
           response (<! (:chan (http-client/request
                                {:method :get
-                                :url (str (path :smtp-emails) "?limit=" page-size "&offset=" offset)
+                                :url (str (path :smtp-emails) "?" query-string)
                                 :chan (async/chan)})))]
       (when (:success response)
         (reset! emails-data* (:body response))))))
 
+(defn emails-filters []
+  [filter/container
+   [:<>
+    [filter/form-term-filter-component
+     :label "Search"
+     :placeholder "pool id, user id, from, to, subject, body, error"
+     :classes [:col-md-5]]
+    [filter/select-component
+     :label "Template"
+     :query-params-key :template
+     :classes [:col-md-3]
+     :default-option ""
+     :options (into [["" "(any)"] ["none" "(none)"]] (map (fn [t] [t t]) (:templates @emails-data*)))]
+    [filter/select-component
+     :label "State"
+     :query-params-key :state
+     :classes [:col-md-2]
+     :default-option ""
+     :options {"" "(all)" "success" "Success" "failure" "Failure"}]
+    [:div.form-group.m-2
+     [:label {:for :reset-query-params} "Filters"]
+     [:div
+      [:button#reset-query-params.btn.btn-secondary
+       {:tab-index 1
+        :on-click #(accountant/navigate!
+                    (path :smtp-settings {} {:tab "test-history"}))}
+       [:i.fas.fa-times]
+       " Reset "]]]]])
+
+(defn status-badge [email]
+  (cond
+    (true? (:is_successful email)) [:span.badge.bg-success "Sent"]
+    (false? (:is_successful email)) [:span.badge.bg-danger "Failed"]
+    :else [:span.badge.bg-secondary "Pending"]))
+
 (defn emails-table []
   (if-not @emails-data*
     [:div [wait-component]]
-    [table/container
-     {:borders true
-      :header [:tr
-               [:th "From"]
-               [:th "To"]
-               [:th "Subject"]
-               [:th "Status"]
-               [:th "Attempts"]
-               [:th "Message"]
-               [:th "Created"]]
-      :body
-      (if (empty? (:emails @emails-data*))
-        [:<> [:tr [:td {:col-span 7 :class "text-center"} "No emails found"]]]
-        [:<>
-         (for [email (:emails @emails-data*)]
-           [:tr {:key (:id email)}
-            [:td (:from_address email)]
-            [:td (:to_address email)]
-            [:td (:subject email)]
-            [:td (if (= 0 (:code email))
-                   [:span.badge.bg-success "Sent"]
-                   [:span.badge.bg-danger "Failed"])]
-            [:td (:trials email)]
-            [:td (:message email)]
-            [:td (str (:created_at email))]])])}]))
-
-(defn pagination-controls []
-  (let [total-count (or (:total @emails-data*) 0)
-        total-pages (js/Math.ceil (/ total-count page-size))
-        current-page @current-page*]
-    (when (> total-pages 1)
-      [:div.d-flex.justify-content-between.align-items-center.mt-3.mb-3
-       [:div
-        [:> Button {:variant "secondary"
-                    :disabled (= current-page 0)
-                    :on-click #(do (swap! current-page* dec)
-                                   (fetch-emails))}
-         "Previous"]]
-       [:div.text-center
-        [:span "Page " (inc current-page) " of " total-pages
-         " (" total-count " total emails)"]]
-       [:div
-        [:> Button {:variant "secondary"
-                    :disabled (>= current-page (dec total-pages))
-                    :on-click #(do (swap! current-page* inc)
-                                   (fetch-emails))}
-         "Next"]]])))
+    (let [{:keys [page]} (current-filters)]
+      [table/container
+       {:borders true
+        :className "emails"
+        :actions [table/toolbar
+                  [:span.text-muted.ml-3.align-self-center (:total @emails-data*) " total emails"]]
+        :header [:tr
+                 [:th "#"]
+                 [:th "From"]
+                 [:th "To"]
+                 [:th "Template"]
+                 [:th "Status"]
+                 [:th "Created"]]
+        :body
+        (if (empty? (:emails @emails-data*))
+          [:<> [:tr [:td {:col-span 6 :class "text-center"} "No emails found"]]]
+          [:<>
+           (map-indexed
+            (fn [index email]
+              [:tr {:key (:id email)}
+               [:td [:a {:href (path :smtp-email {:email-id (:id email)})}
+                     (+ 1 index (* (dec page) page-size))]]
+               [:td (:from_address email)]
+               [:td (:to_address email)]
+               [:td (:template email)]
+               [:td (status-badge email)]
+               [:td (str (:created_at email))]])
+            (:emails @emails-data*))])}])))
 
 (defn emails-list []
   [:div
    [:h4.mb-3 "Email History"]
    [:div.alert.alert-info
     "Emails are processed asynchronously with automatic retry attempts. Refresh this page to see updated status."]
-   [emails-table]
-   [pagination-controls]])
+   [emails-filters]
+   [emails-table]])
 
 (defn test-history-tab []
   [:div.mt-4
    [test-form]
    [:hr.my-4]
    [emails-list]])
+
+(defonce email-detail-data* (reagent/atom nil))
+
+(defn fetch-email [email-id]
+  (reset! email-detail-data* nil)
+  (async/go
+    (let [response (<! (:chan (http-client/request
+                               {:method :get
+                                :url (path :smtp-email {:email-id email-id})
+                                :chan (async/chan)})))]
+      (when (:success response)
+        (reset! email-detail-data* (:body response))))))
+
+(defn email-info-table []
+  (let [email @email-detail-data*]
+    [table/container
+     {:borders false
+      :header [:tr [:th "Property"] [:th.w-75 "Value"]]
+      :body
+      [:<>
+       [row "From" :from_address email]
+       [row "To" :to_address email]
+       [row "Subject" :subject email]
+       [row "Template" :template email]
+       [:tr.status
+        [:td [:strong "Status"] [:small " (is_successful)"]]
+        [:td [status-badge email]]]
+       [row "Attempts" :trials email]
+       [row "Error Message" :error_message email]
+       [row "Target User Id" :user_id email]
+       [row "Target Pool Id" :inventory_pool_id email]
+       [row "Source Pool Id" :source_pool_id email]
+       [row "Created" :created_at email]
+       [row "Updated" :updated_at email]
+       [:tr.body
+        [:td [:strong "Body"] [:small " (body)"]]
+        [:td {:style {:white-space "break-spaces"}} (:body email)]]]}]))
+
+(defn email-page []
+  [:<>
+   [routing/hidden-state-component
+    {:did-mount (fn []
+                  (fetch-email (-> @routing/state* :route-params :email-id)))}]
+   [:article.settings-page.smtp.email
+    [:header.my-5
+     [:a {:href (str (path :smtp-settings) "?tab=test-history")} "← Back to Email History"]
+     [:h1.mt-3 [icons/paper-plane] " Email"]]
+    (if-not @email-detail-data*
+      [:div.my-5 [wait-component]]
+      [email-info-table])]])
 
 (defn debug-component []
   (when @state/debug?*
@@ -214,12 +297,12 @@
 (defn page []
   [:<>
    [routing/hidden-state-component
-    {:did-mount (fn []
-                  (core/fetch)
-                  (let [tab (-> @routing/state* :query-params-raw :tab)]
-                    (cond
-                      (= tab "test-history") (fetch-emails)
-                      (= tab "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes))))}]
+    {:did-mount (fn [] (core/fetch))
+     :did-change (fn []
+                   (let [tab (-> @routing/state* :query-params-raw :tab)]
+                     (cond
+                       (= tab "test-history") (fetch-emails)
+                       (= tab "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes))))}]
 
    (if-not @core/data*
      [:div.my-5
@@ -253,10 +336,7 @@
                   :activeKey active-tab
                   :transition false
                   :onSelect (fn [key]
-                              (accountant/navigate! (str (path :smtp-settings) "?tab=" key))
-                              (cond
-                                (= key "test-history") (fetch-emails)
-                                (= key "ms365-mailboxes") (ms365-mailboxes/fetch-mailboxes)))}
+                              (accountant/navigate! (str (path :smtp-settings) "?tab=" key)))}
          [:> Tab {:eventKey "settings" :title "Settings"}
           [settings-tab]]
          (when (= (:ms365_auth_mode @core/data*) "delegated")

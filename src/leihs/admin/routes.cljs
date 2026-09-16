@@ -109,6 +109,7 @@
    :inventory-pool-user-suspension #'inventory-pool-user-suspension/page
    :inventory-pool-users #'inventory-pool-users/page
    :inventory-pools #'inventory-pools/page
+   :smtp-email #'smtp-settings/email-page
    :languages-settings #'languages-settings/page
    :misc-settings #'misc-settings/page
    :mail-template #'mail-template/page
