@@ -813,6 +813,11 @@
   environment_variables:
     FEATURE_NAME: "Misc Settings a plain admin exist a plain_admin via the API 01"
     FEATURE: './spec/features/settings/misc_settings_spec.rb[1:1:1:2:1]'
+'./spec/features/settings/smtp_emails_spec.rb[1:1]':
+  name: "SMTP Email History 01"
+  environment_variables:
+    FEATURE_NAME: "SMTP Email History 01"
+    FEATURE: './spec/features/settings/smtp_emails_spec.rb[1:1]'
 './spec/features/settings/smtp_settings_spec.rb[1:1:1:1:1]':
   name: "SMTP-Settings a system_admin and a plain admin exist a system_admin via the UI 01"
   environment_variables:
