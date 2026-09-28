@@ -140,6 +140,12 @@
       (when (:success response)
         (reset! emails-data* (:body response))))))
 
+(defn status-badge [email]
+  (cond
+    (true? (:is_successful email)) [:span.badge.bg-success "Sent"]
+    (false? (:is_successful email)) [:span.badge.bg-danger "Failed"]
+    :else [:span.badge.bg-secondary "Pending"]))
+
 (defn emails-table []
   (if-not @emails-data*
     [:div [wait-component]]
@@ -162,11 +168,9 @@
             [:td (:from_address email)]
             [:td (:to_address email)]
             [:td (:subject email)]
-            [:td (if (= 0 (:code email))
-                   [:span.badge.bg-success "Sent"]
-                   [:span.badge.bg-danger "Failed"])]
+            [:td (status-badge email)]
             [:td (:trials email)]
-            [:td (:message email)]
+            [:td (:error_message email)]
             [:td (str (:created_at email))]])])}]))
 
 (defn pagination-controls []
