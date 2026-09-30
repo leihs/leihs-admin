@@ -10,7 +10,11 @@
           (leaf "misc/" :misc-settings)
           (branch "smtp/"
                   (leaf "" :smtp-settings)
-                  (leaf "emails" :smtp-emails)
+                  (branch "emails"
+                          (leaf "" :smtp-emails)
+                          (branch "/"
+                                  (param [#"[^/]+" :email-id])
+                                  (leaf "" :smtp-email)))
                   (leaf "test-email" :smtp-test-email)
                   (leaf "ms365-callback" :smtp-ms365-callback)
                   (branch "ms365-mailboxes"

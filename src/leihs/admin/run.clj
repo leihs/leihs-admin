@@ -19,7 +19,7 @@
 
 (defn run [options]
   (catcher/snatch
-   {:return-fn (fn [e] (System/exit -1))}
+   {:return-fn (shutdown/run-return-fn options)}
    (info "Invoking run with options: " options)
    (shutdown/init options)
    (let [status (status/init)]

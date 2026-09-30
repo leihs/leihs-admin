@@ -58,6 +58,11 @@ scripts:
 
   container-destroy:
     start_when:
+      # also runs when container-create itself failed (build is then skipped),
+      # so no ephemeral container is left running on the executor
+      create done:
+        script_key: container-create
+        states: [aborted, passed, failed, skipped]
       build done:
         script_key: container-build
         states: [aborted, passed, failed, skipped]

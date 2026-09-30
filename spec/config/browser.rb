@@ -21,7 +21,13 @@ def set_capybara_values
   Capybara.test_id = "data-test-id"
 end
 
-firefox_bin_path = if ENV["TOOL_VERSIONS_MANAGER"] == "mise"
+# Mirrors bin/env/select-tool-versions-manager: TOOL_VERSIONS_MANAGER wins,
+# otherwise mise if available, else asdf. The bin/env/*-setup scripts export
+# the variable only within their own process, so rspec cannot rely on it
+# (e.g. `bin/rspec` on a mise-only executor previously shelled out to asdf).
+tool_versions_manager = ENV["TOOL_VERSIONS_MANAGER"].presence ||
+  (system("type mise > /dev/null 2>&1") ? "mise" : "asdf")
+firefox_bin_path = if tool_versions_manager == "mise"
   Pathname.new(`mise where firefox`.strip).join("bin/firefox").expand_path.to_s
 else
   Pathname.new(`asdf where firefox`.strip).join("bin/firefox").expand_path.to_s
