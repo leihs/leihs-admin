@@ -29,4 +29,22 @@ feature "Manage inventory-pools", type: :feature do
       expect(page).not_to have_content @pools.first.name
     end
   end
+
+  context "an inventory manager via API" do
+    before :each do
+      @manager = FactoryBot.create :user
+      @pool = FactoryBot.create :inventory_pool
+      FactoryBot.create :access_right, user: @manager,
+        inventory_pool: @pool, role: "inventory_manager"
+      @http_client = plain_faraday_client
+      @api_token = FactoryBot.create :api_token, user_id: @manager.id
+      @http_client.headers["Authorization"] = "Token #{@api_token.token_secret}"
+    end
+
+    scenario "deleting the own pool is forbidden" do
+      resp = @http_client.delete "/admin/inventory-pools/#{@pool[:id]}"
+      expect(resp.status).to be == 403
+      expect(InventoryPool.find(id: @pool[:id])).to be
+    end
+  end
 end

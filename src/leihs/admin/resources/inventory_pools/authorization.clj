@@ -44,6 +44,10 @@
     (#{"inventory_manager"} (:role access-right))
     false))
 
+(defn pool-inventory-manager-and-not-delete? [request]
+  (and (pool-inventory-manager? request)
+       (not= :delete (:request-method request))))
+
 (defn pool-inventory-manager-and-http-safe? [request]
   (and (pool-inventory-manager? request)
        (http-safe? request)))

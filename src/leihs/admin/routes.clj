@@ -158,7 +158,7 @@
           :initial-admin {:handler initial-admin/routes :authorizers [all-granted]}
           :inventory-pool {:handler inventory-pool/routes
                            :authorizers [auth/admin-scopes?
-                                         pool-auth/pool-inventory-manager?
+                                         pool-auth/pool-inventory-manager-and-not-delete?
                                          pool-auth/pool-lending-manager-and-http-safe?]}
           :inventory-pool-delegation {:handler pool-delegation/routes
                                       :authorizers [auth/admin-scopes? pool-auth/pool-lending-manager?]}
