@@ -96,6 +96,20 @@ feature "Password Reset Link" do
         let(:target_user) { @system_admin }
         include_examples :create_password_reset_link_via_api_is_forbidden
       end
+
+      context "with a read-only admin API token" do
+        scenario "Creating a password reset link via API is forbidden" do
+          api_token = FactoryBot.create :api_token, user_id: @admin.id,
+            scope_read: true, scope_write: false,
+            scope_admin_read: true, scope_admin_write: false
+          http_client = plain_faraday_client
+          http_client.headers["Authorization"] = "Token #{api_token.token_secret}"
+          http_client.headers["Content-Type"] = "application/json"
+          resp = http_client.post "/admin/users/#{@user[:id]}/password-reset",
+            {valid_for_hours: 48}.to_json
+          expect(resp.status).to be == 403
+        end
+      end
     end
 
     context "as an system admin" do
