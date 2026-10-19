@@ -1,21 +1,14 @@
 (ns leihs.admin.resources.categories.category.edit-image-resize
   (:require
-   ["@jimp/custom"]
-   ["jimp" :as Jimp]))
+   ["jimp" :refer [Jimp]]))
 
 (defn resize-to-b64
   [data max-dimension & {:keys [error-handler success-handler]
                          :or {error-handler #()
                               success-handler #()}}]
-  (.read Jimp data
-         (fn [err ^js img]
-           (if err
-             (error-handler err)
-             (do (doto img
-                   (.resize max-dimension max-dimension)
-                   (.quality 80))
-                 (.getBase64 img "image/jpeg"
-                             (fn [err b64]
-                               (if err
-                                 (error-handler err)
-                                 (success-handler b64)))))))))
+  (-> (.read Jimp data)
+      (.then (fn [^js img]
+               (.resize img #js {:w max-dimension :h max-dimension})
+               (.getBase64 img "image/jpeg" #js {:quality 80})))
+      (.then success-handler)
+      (.catch error-handler)))
