@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/admin-ui.js",
   "// update notes": [
-    "react: pinned at v17 — cljs reagent is incompatible with react 18. Unblock by upgrading reagent first."
+    "react: pinned at v17 — cljs reagent is incompatible with react 18. Unblock by upgrading reagent first.",
+    "sockjs > uuid: overridden to 11 (GHSA-w5hq-g745-h8pq); uuid 12+ is ESM-only and breaks sockjs' require. Remove once webpack-dev-server drops sockjs (v6)."
   ],
   "scripts": {
     "start": "webpack serve --mode=development",
@@ -25,7 +26,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.0",
     "@fortawesome/free-solid-svg-icons": "^6.7.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@leihs/calendar": "github:leihs/leihs-calendar#3.3.1",
+    "@leihs/calendar": "github:leihs/leihs-calendar#3.3.2",
     "@svgr/webpack": "^8.0.1",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^10.1.1",
@@ -58,7 +59,10 @@
   },
   "overrides": {
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "sockjs": {
+      "uuid": "^11.1.1"
+    }
   },
   "browserslist": {
     "production": [

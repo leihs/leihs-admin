@@ -1,7 +1,6 @@
 (ns leihs.admin.utils.image-resize
   (:require
-   ["@jimp/custom"]
-   ["jimp" :as Jimp]
+   ["jimp" :refer [Jimp]]
    [clojure.string :as str]))
 
 (defn base64-size
@@ -23,19 +22,13 @@
   [data max-dimension & {:keys [error-handler success-handler]
                          :or {error-handler #()
                               success-handler #()}}]
-  (.read Jimp data
-         (fn [err ^js img]
-           (if err
-             (error-handler err)
-             (do (doto img
-                   (.scaleToFit max-dimension max-dimension)
-                   (.quality 80))
-                 (let [width (.getWidth img)
-                       height (.getHeight img)
-                       content-type "image/jpeg"]
-
-                   (.getBase64 img content-type
-                               (fn [err b64]
-                                 (if err
-                                   (error-handler err)
-                                   (success-handler b64 (raw-data b64) width height content-type))))))))))
+  (-> (.read Jimp data)
+      (.then (fn [^js img]
+               (.scaleToFit img #js {:w max-dimension :h max-dimension})
+               (let [width (.-width img)
+                     height (.-height img)
+                     content-type "image/jpeg"]
+                 (-> (.getBase64 img content-type #js {:quality 80})
+                     (.then (fn [b64]
+                              (success-handler b64 (raw-data b64) width height content-type)))))))
+      (.catch error-handler)))
