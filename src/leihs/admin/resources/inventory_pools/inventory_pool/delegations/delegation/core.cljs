@@ -1,8 +1,7 @@
 (ns leihs.admin.resources.inventory-pools.inventory-pool.delegations.delegation.core
   (:require
-   [cljs.core.async :as async :refer [<! go timeout]]
+   [cljs.core.async :as async :refer [<! go]]
    [cljs.pprint :refer [pprint]]
-   [clojure.set :refer [rename-keys]]
    [leihs.admin.common.components :as components :refer [link]]
    [leihs.admin.common.components.navigation.breadcrumbs :as breadcrumbs]
    [leihs.admin.common.form-components :as form-components]
@@ -33,11 +32,6 @@
                       :chan (async/chan)}
                      http-client/request :chan <!
                      http-client/filter-success! :body))))
-
-(defn merge-delegation-with-params [data*]
-  (reset! data* (merge @delegation*
-                       (rename-keys (dissoc (get @routing/state* :query-params) :action)
-                                    {:user-uid :responsible_user_id}))))
 
 (defn responsible-user-choose-component [data*]
   [:div.input-group-append
