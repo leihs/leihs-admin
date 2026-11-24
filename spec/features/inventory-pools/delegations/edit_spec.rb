@@ -12,7 +12,9 @@ shared_examples :edit do
     within("section.info") {
       click_on "Edit"
     }
+    expect(page).to have_field("name", with: @delegation.firstname)
     fill_in :name, with: "New-Name"
+    expect(find_field("name").value).to eq "New-Name"
     uncheck :pool_protected
     click_on "Choose responsible user"
     fill_in "Search", with: resp_user.email
@@ -20,6 +22,7 @@ shared_examples :edit do
     within("tr", text: resp_user.email) do
       click_on "Choose user"
     end
+    expect(find_field("name").value).to eq "New-Name"
     click_on "Save"
     expect(page).to have_content "New-Name"
     expect(page).to have_content resp_user.email

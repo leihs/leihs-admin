@@ -30,10 +30,17 @@
 
 (def open*
   (reaction
-   (core/merge-delegation-with-params data*)
-   (->> (:query-params @routing/state*)
-        :action
-        (= "edit"))))
+   (let [qp (:query-params @routing/state*)
+         open? (= "edit" (:action qp))]
+     ;; Merge query-params only (e.g. return from choose-user). Do not
+     ;; re-seed from @core/delegation* here: that atom updates when fetch
+     ;; completes and would wipe in-progress edits.
+     (when open?
+       (swap! data* (fn [d]
+                      (merge (or d {})
+                             (rename-keys (dissoc qp :action)
+                                          {:user-uid :responsible_user_id})))))
+     open?)))
 
 (defn dialog []
   [:> Modal {:size "lg"
@@ -55,6 +62,8 @@
 
 (defn button []
   [:> Button
-   {:on-click #(search-params/append-to-url
-                {:action "edit"})}
+   {:on-click #(do
+                 (reset! data* (or @core/delegation* {}))
+                 (search-params/append-to-url
+                  {:action "edit"}))}
    "Edit"])

@@ -40,7 +40,7 @@ feature "Manage categories ", type: :feature do
         expect(page).to have_content("Child Category")
 
         all("li", text: "Child Category").last.hover
-        click_on "Select"
+        find("button", text: "Select").click
 
         fill_in "label", with: label
       end

@@ -31,10 +31,16 @@
 
 (def open*
   (reaction
-   (core/merge-delegation-with-params data*)
-   (->> (:query-params @routing/state*)
-        :action
-        (= "add"))))
+   (let [qp (:query-params @routing/state*)
+         open? (= "add" (:action qp))]
+     ;; Merge query-params only (e.g. return from choose-user). Seeding
+     ;; happens in the button so a late fetch cannot wipe the form.
+     (when open?
+       (swap! data* (fn [d]
+                      (merge (or d {})
+                             (rename-keys (dissoc qp :action)
+                                          {:user-uid :responsible_user_id})))))
+     open?)))
 
 (defn dialog []
   [:> Modal {:size "lg"
@@ -57,6 +63,8 @@
 (defn button []
   [:> Button
    {:className "ml-3"
-    :on-click #(search-params/append-to-url
-                {:action "add" :pool_protected true})}
+    :on-click #(do
+                 (reset! data* {:pool_protected true})
+                 (search-params/append-to-url
+                  {:action "add" :pool_protected true}))}
    "Add Delegation"])

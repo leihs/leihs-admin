@@ -121,7 +121,7 @@ function TreeElement({ element, searchTerm, getNodeProps, handleSelect, level, i
           <button
             onClick={event => handleClick(event)}
             type="button"
-            className={cx(s['visible-on-hover'], 'btn btn-primary ml-auto mr-4')}
+            className="btn btn-primary ml-auto mr-4"
           >
             Select
           </button>
