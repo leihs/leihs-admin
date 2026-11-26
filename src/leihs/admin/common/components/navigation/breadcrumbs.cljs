@@ -54,7 +54,9 @@
                     ":inventory-pool-entitlement-groups"
                     ":inventory-pool-mail-templates"
                     ":inventory-pool-users"
-                    ":inventory-pool-fields"]
+                    ":inventory-pool-fields"
+                    ":inventory-pool-pickup-locations"
+                    ":inventory-pool-pickup-location"]
    :inventory-pool-delegation [":inventory-pool-delegation.*"]
    :inventory-pool-entitlement-group [":inventory-pool-entitlement-group-.*"]
    :inventory-pool-user [":inventory-pool-user"]

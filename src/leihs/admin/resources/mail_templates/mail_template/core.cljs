@@ -42,6 +42,7 @@
     [:ul
      [:li [:code :l.end_date]]
      [:li [:code :l.model_name]],
+     [:li [:code :l.pickup_location_name]],
      [:li [:code :l.quantity]],
      [:li [:code :l.start_date]]]],
    [:li [:code :user.name]]])
@@ -62,6 +63,7 @@
      [:li [:code :l.end_date]]
      [:li [:code :l.item_inventory_code]]
      [:li [:code :l.model_name]],
+     [:li [:code :l.pickup_location_name]],
      [:li [:code :l.quantity]],
      [:li [:code :l.start_date]]]],
    [:li [:code :user.name]]])

@@ -31,6 +31,8 @@
    [leihs.admin.resources.inventory-pools.inventory-pool.mail-templates.main :as inventory-pool-mail-templates]
    [leihs.admin.resources.inventory-pools.inventory-pool.main :as inventory-pool]
    [leihs.admin.resources.inventory-pools.inventory-pool.opening-times.main :as inventory-pool-opening-times]
+   [leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.main :as inventory-pool-pickup-locations]
+   [leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.pickup-location.main :as inventory-pool-pickup-location]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.main :as inventory-pool-users]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.direct-roles.main :as inventory-pool-user-direct-roles]
    [leihs.admin.resources.inventory-pools.inventory-pool.users.user.edit :as inventory-pool-user-edit]
@@ -102,6 +104,8 @@
    :inventory-pool-mail-template #'inventory-pool-mail-template/page
    :inventory-pool-mail-templates #'inventory-pool-mail-templates/page
    :inventory-pool-opening-times #'inventory-pool-opening-times/page
+   :inventory-pool-pickup-location #'inventory-pool-pickup-location/page
+   :inventory-pool-pickup-locations #'inventory-pool-pickup-locations/page
    :inventory-pool-user #'inventory-pool-user/page
    :inventory-pool-user-edit #'inventory-pool-user-edit/page
    :inventory-pool-user-direct-roles #'inventory-pool-user-direct-roles/page

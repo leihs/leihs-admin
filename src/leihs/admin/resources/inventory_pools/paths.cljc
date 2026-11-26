@@ -1,7 +1,8 @@
 (ns leihs.admin.resources.inventory-pools.paths
   (:require
    [bidi.verbose :refer [branch param leaf]]
-   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.paths :as delegations]))
+   [leihs.admin.resources.inventory-pools.inventory-pool.delegations.paths :as delegations]
+   [leihs.admin.resources.inventory-pools.inventory-pool.pickup-locations.paths :as pickup-locations]))
 
 (def entitlement-groups-paths
   (branch "/entitlement-groups/"
@@ -68,4 +69,5 @@
                   delegations/paths
                   groups-paths
                   entitlement-groups-paths
-                  mail-templates-paths)))
+                  mail-templates-paths
+                  pickup-locations/paths)))
